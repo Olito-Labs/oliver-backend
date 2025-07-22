@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - LLM_PROVIDER=openai
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - OPENAI_MODEL=gpt-4
+      - ANTHROPIC_MODEL=claude-3-sonnet-20240229
+      - GOOGLE_MODEL=gemini-1.5-pro
+      - MAX_TOKENS=2000
+      - TEMPERATURE=0.7
+      - FRONTEND_URL=http://localhost:3000
+      - PORT=8000
+    volumes:
+      - .:/app
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: sync
+          path: ./app
+          target: /app/app
+        - action: rebuild
+          path: ./requirements.txt
+
+  # Optional: Add Redis for caching in the future
+  # redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"
+  #   restart: unless-stopped 
