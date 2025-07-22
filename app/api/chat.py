@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
-from typing import AsyncGenerator
+from typing import AsyncGenerator, List, Dict
 import json
 import uuid
 from datetime import datetime
@@ -11,16 +11,45 @@ from app.llm_providers import llm_manager
 
 router = APIRouter(prefix="/api", tags=["chat"])
 
+def _convert_messages_to_history(messages: List[ChatMessage]) -> List[Dict[str, str]]:
+    """
+    Convert ChatMessage list to conversation history format for DSPy.
+    
+    Args:
+        messages: List of ChatMessage objects
+        
+    Returns:
+        List of conversation turns in {"query": "...", "response": "..."} format
+    """
+    conversation_history = []
+    current_query = None
+    
+    for message in messages[:-1]:  # Exclude the last message (current query)
+        if message.sender == "user":
+            current_query = message.content
+        elif message.sender == "assistant" and current_query:
+            conversation_history.append({
+                "query": current_query,
+                "response": message.content
+            })
+            current_query = None
+    
+    return conversation_history
+
 @router.post("/chat")
 async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
-    """Non-streaming chat endpoint."""
+    """Non-streaming chat endpoint with conversation memory."""
     try:
-        # Get the last message from the user
+        # Get the current user message
         user_message = request.messages[-1]
         
-        # Process with DSPy assistant
+        # Convert message history to conversation format
+        conversation_history = _convert_messages_to_history(request.messages)
+        
+        # Process with DSPy assistant including conversation history
         result = assistant(
             query=user_message.content,
+            conversation_history=conversation_history,
             context=request.context,
             analysis_type=request.analysis_type
         )
@@ -33,7 +62,8 @@ async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
             timestamp=datetime.now(),
             metadata={
                 "analysis_type": result.get("type"),
-                "reasoning": result.get("reasoning", "")
+                "reasoning": result.get("reasoning", ""),
+                "conversation_turns": len(conversation_history)
             }
         )
         
@@ -49,18 +79,27 @@ async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
 
 @router.post("/chat/stream")
 async def chat_streaming(request: ChatRequest):
-    """Streaming chat endpoint."""
+    """Streaming chat endpoint with conversation memory."""
     async def generate_stream() -> AsyncGenerator[str, None]:
         try:
-            # Get the last message from the user
+            # Get the current user message
             user_message = request.messages[-1]
             
-            # Start streaming response
+            # Convert message history to conversation format
+            conversation_history = _convert_messages_to_history(request.messages)
+            
+            # Start streaming response with conversation history
             async for chunk in streaming_assistant.stream_response(
                 query=user_message.content,
+                conversation_history=conversation_history,
                 context=request.context,
                 analysis_type=request.analysis_type
             ):
+                # Add conversation context to metadata
+                if chunk.get("type") == "done":
+                    chunk["metadata"] = chunk.get("metadata", {})
+                    chunk["metadata"]["conversation_turns"] = len(conversation_history)
+                
                 # Format as SSE (Server-Sent Events)
                 yield f"data: {json.dumps(chunk)}\n\n"
                 
