@@ -38,34 +38,32 @@ class StreamingOliverAssistant(dspy.Module):
         self.compliance_analyzer = dspy.ChainOfThought(ComplianceAnalysis)
         self.document_analyzer = dspy.Predict(DocumentAnalysis)
         
-        # Create streamified versions with different listeners for each analysis type
+        # Create streamified versions with simplified listeners (only main output fields)
         self._setup_streaming_modules()
     
     def _setup_streaming_modules(self):
         """Setup streaming versions of all modules with appropriate listeners."""
         status_provider = OliverStatusMessageProvider()
         
-        # General assistant streaming - listen to response field
+        # General assistant streaming - only listen to response field
         self.stream_general = dspy.streamify(
             self.general_assistant,
             stream_listeners=[
-                dspy.streaming.StreamListener(signature_field_name="response"),
-                dspy.streaming.StreamListener(signature_field_name="rationale")
+                dspy.streaming.StreamListener(signature_field_name="response")
             ],
             status_message_provider=status_provider
         )
         
-        # Compliance analyzer streaming - listen to analysis field  
+        # Compliance analyzer streaming - only listen to analysis field  
         self.stream_compliance = dspy.streamify(
             self.compliance_analyzer,
             stream_listeners=[
-                dspy.streaming.StreamListener(signature_field_name="analysis"),
-                dspy.streaming.StreamListener(signature_field_name="rationale")
+                dspy.streaming.StreamListener(signature_field_name="analysis")
             ],
             status_message_provider=status_provider
         )
         
-        # Document analyzer streaming - listen to findings field
+        # Document analyzer streaming - only listen to findings field
         self.stream_document = dspy.streamify(
             self.document_analyzer,
             stream_listeners=[
@@ -105,11 +103,10 @@ class StreamingOliverAssistant(dspy.Module):
             
             # Stream the response
             full_response = ""
-            full_reasoning = ""
             
             async for chunk in stream_module(**inputs):
                 if isinstance(chunk, dspy.streaming.StreamResponse):
-                    # Handle streaming tokens
+                    # Handle streaming tokens for main content
                     field_name = chunk.signature_field_name
                     token_chunk = chunk.chunk
                     
@@ -118,15 +115,6 @@ class StreamingOliverAssistant(dspy.Module):
                         full_response += token_chunk
                         yield {
                             "type": "content",
-                            "content": token_chunk,
-                            "done": False,
-                            "field": field_name
-                        }
-                    elif field_name == "rationale":
-                        # Reasoning/thinking process
-                        full_reasoning += token_chunk
-                        yield {
-                            "type": "reasoning",
                             "content": token_chunk,
                             "done": False,
                             "field": field_name
@@ -152,6 +140,11 @@ class StreamingOliverAssistant(dspy.Module):
                             "done": False
                         }
                     
+                    # Try to extract reasoning from the prediction if available
+                    reasoning = ""
+                    if hasattr(chunk, 'rationale'):
+                        reasoning = chunk.rationale
+                    
                     # Final completion message
                     yield {
                         "type": "done",
@@ -159,7 +152,7 @@ class StreamingOliverAssistant(dspy.Module):
                         "done": True,
                         "metadata": {
                             "analysis_type": analysis_type,
-                            "reasoning": full_reasoning,
+                            "reasoning": reasoning,
                             "conversation_turns": len(conversation_history or []),
                             "full_response": full_response
                         }
@@ -263,8 +256,7 @@ class SyncStreamingAssistant:
             stream_module = dspy.streamify(
                 self.async_assistant.compliance_analyzer,
                 stream_listeners=[
-                    dspy.streaming.StreamListener(signature_field_name="analysis"),
-                    dspy.streaming.StreamListener(signature_field_name="rationale")
+                    dspy.streaming.StreamListener(signature_field_name="analysis")
                 ],
                 status_message_provider=status_provider,
                 async_streaming=False  # Enable sync streaming
@@ -284,8 +276,7 @@ class SyncStreamingAssistant:
             stream_module = dspy.streamify(
                 self.async_assistant.general_assistant,
                 stream_listeners=[
-                    dspy.streaming.StreamListener(signature_field_name="response"),
-                    dspy.streaming.StreamListener(signature_field_name="rationale")
+                    dspy.streaming.StreamListener(signature_field_name="response")
                 ],
                 status_message_provider=status_provider,
                 async_streaming=False
@@ -298,7 +289,6 @@ class SyncStreamingAssistant:
         
         # Stream synchronously
         full_response = ""
-        full_reasoning = ""
         
         for chunk in stream_module(**inputs):
             if isinstance(chunk, dspy.streaming.StreamResponse):
@@ -309,14 +299,6 @@ class SyncStreamingAssistant:
                     full_response += token_chunk
                     yield {
                         "type": "content",
-                        "content": token_chunk,
-                        "done": False,
-                        "field": field_name
-                    }
-                elif field_name == "rationale":
-                    full_reasoning += token_chunk
-                    yield {
-                        "type": "reasoning", 
                         "content": token_chunk,
                         "done": False,
                         "field": field_name
@@ -339,13 +321,18 @@ class SyncStreamingAssistant:
                         "done": False
                     }
                 
+                # Try to extract reasoning if available
+                reasoning = ""
+                if hasattr(chunk, 'rationale'):
+                    reasoning = chunk.rationale
+                
                 yield {
                     "type": "done",
                     "content": "",
                     "done": True,
                     "metadata": {
                         "analysis_type": analysis_type,
-                        "reasoning": full_reasoning,
+                        "reasoning": reasoning,
                         "conversation_turns": len(conversation_history or []),
                         "full_response": full_response
                     }
