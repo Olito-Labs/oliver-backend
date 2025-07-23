@@ -176,4 +176,5 @@ class StreamingAssistant(dspy.Module):
 
 # Global assistant instance
 assistant = OliverAssistant()
-streaming_assistant = StreamingAssistant() 
+# Import from the new streaming module
+from .streaming import streaming_assistant 

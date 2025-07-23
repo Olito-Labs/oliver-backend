@@ -4,9 +4,11 @@ AI-powered compliance assistant backend using DSPy framework with support for mu
 
 ## Features
 
-- 🤖 **DSPy Integration**: Advanced prompting and optimization framework
+- 🤖 **DSPy Integration**: Advanced prompting and optimization framework with streaming support
 - 🔄 **Multiple LLM Providers**: Easy switching between OpenAI, Anthropic, and Google
-- 📡 **Streaming Responses**: Real-time chat with Server-Sent Events
+- 📡 **Real-time Streaming**: Token-level streaming with status updates via DSPy streamify
+- 🧠 **Reasoning Visualization**: Real-time Chain-of-Thought process streaming
+- 📊 **Progress Indicators**: Live status updates during AI processing
 - 🎯 **Compliance Focused**: Specialized modules for regulatory analysis
 - 🚀 **FastAPI**: High-performance, async API framework
 - 🐳 **Docker Ready**: Containerized for easy deployment
@@ -254,6 +256,22 @@ The `/api/health` endpoint provides:
 - Current LLM provider information
 - System timestamp
 - API version
+
+### Testing Streaming
+
+Test the DSPy streaming implementation:
+
+```bash
+# Run streaming tests
+python test_streaming.py
+
+# Test debug endpoint
+curl -X POST http://localhost:8000/api/chat/stream/debug \
+  -H "Content-Type: application/json" \
+  -d '{"messages": [{"content": "Test streaming", "sender": "user"}], "analysis_type": "general"}'
+```
+
+For detailed streaming documentation, see [STREAMING_IMPLEMENTATION.md](STREAMING_IMPLEMENTATION.md).
 
 ## Troubleshooting
 

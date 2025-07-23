@@ -6,7 +6,8 @@ import uuid
 from datetime import datetime
 
 from app.models.api import ChatRequest, ChatResponse, ChatMessage, StreamChunk
-from app.dspy_modules.modules import assistant, streaming_assistant
+from app.dspy_modules.modules import assistant
+from app.dspy_modules.streaming import streaming_assistant
 from app.llm_providers import llm_manager
 
 router = APIRouter(prefix="/api", tags=["chat"])
@@ -79,7 +80,7 @@ async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
 
 @router.post("/chat/stream")
 async def chat_streaming(request: ChatRequest):
-    """Streaming chat endpoint with conversation memory."""
+    """Streaming chat endpoint with DSPy streaming and conversation memory."""
     async def generate_stream() -> AsyncGenerator[str, None]:
         try:
             # Get the current user message
@@ -88,28 +89,33 @@ async def chat_streaming(request: ChatRequest):
             # Convert message history to conversation format
             conversation_history = _convert_messages_to_history(request.messages)
             
-            # Start streaming response with conversation history
+            # Start DSPy streaming with conversation history
             async for chunk in streaming_assistant.stream_response(
                 query=user_message.content,
                 conversation_history=conversation_history,
                 context=request.context,
                 analysis_type=request.analysis_type
             ):
-                # Add conversation context to metadata
+                # The chunk is already in the correct format from our streaming module
+                # Add conversation context to metadata for done chunks
                 if chunk.get("type") == "done":
                     chunk["metadata"] = chunk.get("metadata", {})
                     chunk["metadata"]["conversation_turns"] = len(conversation_history)
+                    # Add message ID for frontend to track
+                    chunk["metadata"]["message_id"] = str(uuid.uuid4())
                 
                 # Format as SSE (Server-Sent Events)
                 yield f"data: {json.dumps(chunk)}\n\n"
                 
         except Exception as e:
-            error_chunk = StreamChunk(
-                type="error",
-                content=f"Error: {str(e)}",
-                done=True
-            )
-            yield f"data: {json.dumps(error_chunk.dict())}\n\n"
+            # Return error in Oliver streaming format
+            error_chunk = {
+                "type": "error",
+                "content": f"Error processing request: {str(e)}",
+                "done": True,
+                "error": str(e)
+            }
+            yield f"data: {json.dumps(error_chunk)}\n\n"
     
     return StreamingResponse(
         generate_stream(),
@@ -117,9 +123,41 @@ async def chat_streaming(request: ChatRequest):
         headers={
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
-            "X-Accel-Buffering": "no"  # Disable nginx buffering
+            "X-Accel-Buffering": "no",  # Disable nginx buffering
+            "Access-Control-Allow-Origin": "*",  # For CORS in development
+            "Access-Control-Allow-Headers": "Cache-Control"
         }
     )
+
+@router.post("/chat/stream/debug")
+async def chat_streaming_debug(request: ChatRequest):
+    """Debug endpoint to test raw DSPy streaming without SSE formatting."""
+    try:
+        # Get the current user message
+        user_message = request.messages[-1]
+        
+        # Convert message history to conversation format
+        conversation_history = _convert_messages_to_history(request.messages)
+        
+        # Collect all streaming chunks for debugging
+        chunks = []
+        async for chunk in streaming_assistant.stream_response(
+            query=user_message.content,
+            conversation_history=conversation_history,
+            context=request.context,
+            analysis_type=request.analysis_type
+        ):
+            chunks.append(chunk)
+        
+        return {
+            "total_chunks": len(chunks),
+            "chunks": chunks,
+            "conversation_turns": len(conversation_history),
+            "analysis_type": request.analysis_type
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error in debug streaming: {str(e)}")
 
 @router.get("/provider/info")
 async def get_provider_info():
