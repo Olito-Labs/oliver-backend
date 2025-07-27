@@ -59,6 +59,7 @@ class StreamingEvent(BaseModel):
 class ProviderSwitchRequest(BaseModel):
     """Request to switch LLM provider."""
     provider: Literal["openai", "anthropic", "google"]
+    model: Optional[str] = Field(None, description="Specific model to use (e.g., gpt-4.1, claude-4-sonnet, gemini-2.5-pro)")
     api_key: Optional[str] = None
 
 class ProviderInfo(BaseModel):

@@ -7,6 +7,7 @@ from app.config import settings
 from app.llm_providers import llm_manager
 from app.api.chat import router as chat_router
 from app.api.health import router as health_router
+from app.api.providers import router as providers_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -61,6 +62,7 @@ app.add_middleware(
 # Include routers
 app.include_router(health_router)
 app.include_router(chat_router)
+app.include_router(providers_router)
 
 # Exception handlers
 @app.exception_handler(ValueError)
