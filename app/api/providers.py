@@ -48,7 +48,7 @@ async def switch_provider(request: ProviderSwitchRequest):
         if request.provider not in ["openai", "anthropic", "google"]:
             raise HTTPException(status_code=400, detail=f"Unsupported provider: {request.provider}")
         
-        # Check if API key is provided or already exists
+        # Check if API key exists in environment variables
         current_key = None
         if request.provider == "openai":
             current_key = settings.OPENAI_API_KEY
@@ -57,17 +57,16 @@ async def switch_provider(request: ProviderSwitchRequest):
         elif request.provider == "google":
             current_key = settings.GOOGLE_API_KEY
             
-        if not request.api_key and not current_key:
+        if not current_key:
             raise HTTPException(
                 status_code=400, 
-                detail=f"API key required for {request.provider}. Please provide api_key in request."
+                detail=f"API key for {request.provider} not configured on server. Please add {request.provider.upper()}_API_KEY to environment variables."
             )
         
-        # Attempt to switch provider
+        # Attempt to switch provider using environment variables
         success = llm_manager.switch_provider(
             provider=request.provider,
-            api_key=request.api_key,
-            model=None  # Use default model for now
+            model=getattr(request, 'model', None)  # Use model from request if provided
         )
         
         if not success:
