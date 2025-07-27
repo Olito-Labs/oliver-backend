@@ -17,9 +17,9 @@ class Settings:
     GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
     
     # Model Configuration
-    OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4")
-    ANTHROPIC_MODEL: str = os.getenv("ANTHROPIC_MODEL", "claude-3-sonnet-20240229")
-    GOOGLE_MODEL: str = os.getenv("GOOGLE_MODEL", "gemini-1.5-pro")
+    OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4.1")
+    ANTHROPIC_MODEL: str = os.getenv("ANTHROPIC_MODEL", "claude-4-sonnet")
+    GOOGLE_MODEL: str = os.getenv("GOOGLE_MODEL", "gemini-2.5-pro")
     
     # General Model Settings
     MAX_TOKENS: int = int(os.getenv("MAX_TOKENS", "2000"))
