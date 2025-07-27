@@ -7,7 +7,7 @@ from datetime import datetime
 
 from app.models.api import ChatRequest, ChatResponse, ChatMessage, StreamChunk
 from app.dspy_modules.modules import assistant
-from app.dspy_modules.streaming import streaming_assistant
+from app.dspy_modules.streaming import sync_streaming_assistant
 from app.llm_providers import llm_manager
 
 router = APIRouter(prefix="/api", tags=["chat"])
@@ -89,8 +89,8 @@ async def chat_streaming(request: ChatRequest):
             # Convert message history to conversation format
             conversation_history = _convert_messages_to_history(request.messages)
             
-            # Start DSPy streaming with conversation history
-            async for chunk in streaming_assistant.stream_response(
+            # Start DSPy streaming with conversation history (using sync streaming)
+            for chunk in sync_streaming_assistant.stream_response(
                 query=user_message.content,
                 conversation_history=conversation_history,
                 context=request.context,
