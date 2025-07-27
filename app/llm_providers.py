@@ -34,12 +34,13 @@ class LLMProviderManager:
             else:
                 raise ValueError(f"Unsupported LLM provider: {provider}")
             
-            # Create the unified LM instance
+            # Create the unified LM instance with streaming enabled
             self.current_lm = dspy.LM(
                 model=model_string,
                 api_key=api_key,
                 max_tokens=settings.MAX_TOKENS,
-                temperature=settings.TEMPERATURE
+                temperature=settings.TEMPERATURE,
+                stream=True  # Enable streaming for real-time token generation
             )
             
             # Configure DSPy's global settings
@@ -60,7 +61,8 @@ class LLMProviderManager:
                 model="openai/gpt-3.5-turbo",
                 api_key="dummy-key",
                 max_tokens=1500,
-                temperature=0.7
+                temperature=0.7,
+                stream=True  # Enable streaming for fallback as well
             )
             dspy.settings.configure(lm=self.current_lm)
             print("Fallback provider initialized with unified dspy.LM")
