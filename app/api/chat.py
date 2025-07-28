@@ -16,10 +16,11 @@ def _convert_messages_to_openai_format(messages: List[ChatMessage]) -> List[Dict
     openai_messages = []
     
     for message in messages:
+        # Don't add custom IDs to messages - let OpenAI handle internal message IDs
+        # Only use response_id for conversation state via previous_response_id parameter
         openai_messages.append({
             "role": "user" if message.sender == "user" else "assistant",
-            "content": [{"type": "input_text" if message.sender == "user" else "output_text", "text": message.content}],
-            **({"id": f"msg_{message.id}"} if message.sender == "assistant" else {})
+            "content": [{"type": "input_text" if message.sender == "user" else "output_text", "text": message.content}]
         })
     
     return openai_messages
@@ -212,7 +213,10 @@ async def chat_streaming(request: ChatRequest):
             
             # Critical: Include previous_response_id for conversation state
             if request.previous_response_id:
+                print(f"[DEBUG] Using previous_response_id: {request.previous_response_id}")
                 request_params["previous_response_id"] = request.previous_response_id
+            else:
+                print("[DEBUG] No previous_response_id provided (first message)")
             
             # Call OpenAI Responses API with streaming
             stream = client.responses.create(**request_params)
@@ -223,6 +227,7 @@ async def chat_streaming(request: ChatRequest):
             for chunk in stream:
                 if chunk.type == "response.created":
                     response_id = chunk.response.id
+                    print(f"[DEBUG] OpenAI Response ID created: {response_id}")
                     yield f"data: {json.dumps({'type': 'status', 'content': '🤖 Analyzing your request...', 'done': False})}\n\n"
                 
                 elif chunk.type == "response.in_progress":
@@ -252,6 +257,7 @@ async def chat_streaming(request: ChatRequest):
                 
                 elif chunk.type == "response.completed":
                     # Send completion signal with conversation state
+                    print(f"[DEBUG] Sending response_id to frontend: {response_id}")
                     completion_metadata = {
                         'analysis_type': request.analysis_type,
                         'response_id': response_id,
