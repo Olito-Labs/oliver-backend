@@ -231,7 +231,7 @@ async def chat_streaming(request: ChatRequest):
                     yield f"data: {json.dumps({'type': 'status', 'content': '🤖 Analyzing your request...', 'done': False})}\n\n"
                 
                 elif chunk.type == "response.in_progress":
-                    yield f"data: {json.dumps({'type': 'status', 'content': '✨ Generating response...', 'done': False})}\n\n"
+                    yield f"data: {json.dumps({'type': 'status', 'content': '🧠 Thinking...', 'done': False})}\n\n"
                 
                 elif chunk.type == "response.content_part.added":
                     # New content part started
@@ -240,19 +240,36 @@ async def chat_streaming(request: ChatRequest):
                             yield f"data: {json.dumps({'type': 'status', 'content': '📝 Writing response...', 'done': False})}\n\n"
                 
                 elif chunk.type == "response.content_part.done":
-                    # Content part is complete - extract the text
+                    # Content part is complete - send with natural chunking for better streaming
                     if hasattr(chunk, 'part') and hasattr(chunk.part, 'text'):
                         content_text = chunk.part.text
-                        accumulated_text = content_text  # Full text for this part
+                        accumulated_text = content_text
                         
-                        # Send content in smaller chunks for streaming effect
-                        chunk_size = 15  # characters per chunk
-                        for i in range(0, len(content_text), chunk_size):
-                            text_chunk = content_text[i:i + chunk_size]
-                            yield f"data: {json.dumps({'type': 'content', 'content': text_chunk, 'done': False})}\n\n"
+                        # Send content in natural sentence/phrase chunks for smooth streaming
+                        sentences = []
+                        current_sentence = ""
+                        words = content_text.split(' ')
+                        
+                        for word in words:
+                            current_sentence += word + " "
+                            
+                            # End sentence on punctuation or every 8-12 words
+                            if (word.endswith('.') or word.endswith('!') or word.endswith('?') or 
+                                word.endswith(':') or len(current_sentence.split()) >= 10):
+                                sentences.append(current_sentence.strip())
+                                current_sentence = ""
+                        
+                        # Add any remaining text
+                        if current_sentence.strip():
+                            sentences.append(current_sentence.strip())
+                        
+                        # Send each sentence chunk immediately
+                        for sentence in sentences:
+                            if sentence:
+                                yield f"data: {json.dumps({'type': 'content', 'content': sentence + ' ', 'done': False})}\n\n"
                 
                 elif chunk.type == "response.output_item.done":
-                    # Output item complete - could have multiple content parts
+                    # Output item complete
                     yield f"data: {json.dumps({'type': 'status', 'content': '✅ Response complete', 'done': False})}\n\n"
                 
                 elif chunk.type == "response.completed":
