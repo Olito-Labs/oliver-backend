@@ -239,7 +239,8 @@ async def chat_streaming(request: ChatRequest):
                             if tool_name == 'web_search':
                                 yield f"data: {json.dumps({'type': 'reasoning', 'content': '💭 I need to search for current information to provide you with accurate details...', 'done': False})}\n\n"
                             else:
-                                yield f"data: {json.dumps({'type': 'reasoning', 'content': f'💭 I\'m going to use {tool_name} to help answer your question...', 'done': False})}\n\n"
+                                reasoning_msg = f"💭 I'm going to use {tool_name} to help answer your question..."
+                                yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
                         else:
                             yield f"data: {json.dumps({'type': 'status', 'content': '📝 Preparing my response...', 'done': False})}\n\n"
                 
@@ -272,7 +273,8 @@ async def chat_streaming(request: ChatRequest):
                                 # Chain of thought: Show what we're searching for
                                 if tool_name == 'web_search' and 'query' in args:
                                     search_query = args['query']
-                                    yield f"data: {json.dumps({'type': 'reasoning', 'content': f'🔍 Searching for: \"{search_query}\"', 'done': False})}\n\n"
+                                    search_msg = f'🔍 Searching for: "{search_query}"'
+                                    yield f"data: {json.dumps({'type': 'reasoning', 'content': search_msg, 'done': False})}\n\n"
                                     yield f"data: {json.dumps({'type': 'status', 'content': '⚡ Executing search...', 'done': False})}\n\n"
                                 
                                 # Here you would normally execute the actual function
