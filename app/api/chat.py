@@ -206,6 +206,7 @@ async def chat_streaming(request: ChatRequest):
             response_id = None
             accumulated_text = ""
             function_calls = {}  # Track function calls by call_id
+            reasoning_messages = []  # Accumulate reasoning for metadata
             
             for chunk in stream:
                 # Debug: Log all chunk types we receive
@@ -241,11 +242,14 @@ async def chat_streaming(request: ChatRequest):
                                 'id': getattr(chunk.item, 'id', 'unknown')
                             }
                             
-                            # Chain of thought: Show what tool Oliver is using
+                            # Accumulate reasoning for final metadata AND send real-time reasoning
                             if tool_name in ['web_search', 'web_search_preview']:
-                                yield f"data: {json.dumps({'type': 'reasoning', 'content': '💭 I need to search for current information to provide you with accurate details...', 'done': False})}\n\n"
+                                reasoning_msg = '💭 I need to search for current information to provide you with accurate details...'
+                                reasoning_messages.append(reasoning_msg)
+                                yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
                             else:
                                 reasoning_msg = f"💭 I'm going to use {tool_name} to help answer your question..."
+                                reasoning_messages.append(reasoning_msg)
                                 yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
                         else:
                             yield f"data: {json.dumps({'type': 'status', 'content': '📝 Preparing my response...', 'done': False})}\n\n"
@@ -263,7 +267,9 @@ async def chat_streaming(request: ChatRequest):
                         if call_id and hasattr(chunk, 'delta'):
                             function_calls[call_id]['arguments'] += chunk.delta
                             # Show progress of building the search query
-                            yield f"data: {json.dumps({'type': 'reasoning', 'content': '🔍 Building search query...', 'done': False})}\n\n"
+                            reasoning_msg = '🔍 Building search query...'
+                            reasoning_messages.append(reasoning_msg)
+                            yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
                 
                 elif chunk.type == "response.function_call_arguments.done":
                     # Function call arguments complete - execute the function
@@ -280,17 +286,24 @@ async def chat_streaming(request: ChatRequest):
                                 if tool_name in ['web_search', 'web_search_preview'] and 'query' in args:
                                     search_query = args['query']
                                     search_msg = f'🔍 Searching for: "{search_query}"'
+                                    reasoning_messages.append(search_msg)
                                     yield f"data: {json.dumps({'type': 'reasoning', 'content': search_msg, 'done': False})}\n\n"
                                     yield f"data: {json.dumps({'type': 'status', 'content': '⚡ Executing search...', 'done': False})}\n\n"
                                 
-                                # Here you would normally execute the actual function
-                                # For now, we'll simulate the process
-                                yield f"data: {json.dumps({'type': 'reasoning', 'content': '📊 Found relevant information, analyzing results...', 'done': False})}\n\n"
-                                yield f"data: {json.dumps({'type': 'reasoning', 'content': '🧩 Incorporating search results into my response...', 'done': False})}\n\n"
+                                # Add reasoning for result processing
+                                processing_msg = '📊 Found relevant information, analyzing results...'
+                                reasoning_messages.append(processing_msg)
+                                yield f"data: {json.dumps({'type': 'reasoning', 'content': processing_msg, 'done': False})}\n\n"
+                                
+                                integration_msg = '🧩 Incorporating search results into my response...'
+                                reasoning_messages.append(integration_msg)
+                                yield f"data: {json.dumps({'type': 'reasoning', 'content': integration_msg, 'done': False})}\n\n"
                                 
                             except json.JSONDecodeError as e:
                                 print(f"[DEBUG] Error parsing function arguments: {e}")
-                                yield f"data: {json.dumps({'type': 'reasoning', 'content': '⚠️ Having trouble with the search parameters, continuing...', 'done': False})}\n\n"
+                                error_msg = '⚠️ Having trouble with the search parameters, continuing...'
+                                reasoning_messages.append(error_msg)
+                                yield f"data: {json.dumps({'type': 'reasoning', 'content': error_msg, 'done': False})}\n\n"
                 
                 elif chunk.type == "response.output_text.delta":
                     # Real-time token streaming - this is the key for true streaming!
@@ -322,16 +335,19 @@ async def chat_streaming(request: ChatRequest):
                                 yield f"data: {json.dumps({'type': 'content', 'content': missing_content, 'done': False})}\n\n"
                 
                 elif chunk.type == "response.completed":
-                    # Send completion signal with conversation state
+                    # Send completion signal with conversation state AND accumulated reasoning
                     print(f"[DEBUG] Response completed. Final accumulated text length: {len(accumulated_text)}")
+                    print(f"[DEBUG] Accumulated reasoning messages: {len(reasoning_messages)}")
                     print(f"[DEBUG] Sending response_id to frontend: {response_id}")
+                    
                     completion_metadata = {
                         'analysis_type': request.analysis_type,
                         'response_id': response_id,
                         'previous_response_id': request.previous_response_id,
                         'full_response': accumulated_text,
                         'conversation_turns': len(request.messages),
-                        'function_calls_used': len(function_calls)
+                        'function_calls_used': len(function_calls),
+                        'reasoning': '\n'.join(reasoning_messages) if reasoning_messages else ''  # KEY: Send accumulated reasoning
                     }
                     yield f"data: {json.dumps({'type': 'done', 'content': '', 'done': True, 'metadata': completion_metadata})}\n\n"
                     break
@@ -341,15 +357,6 @@ async def chat_streaming(request: ChatRequest):
                     print(f"[DEBUG] Unhandled chunk type: {chunk.type}")
                     if hasattr(chunk, '__dict__'):
                         print(f"[DEBUG] Chunk attributes: {list(chunk.__dict__.keys())}")
-                
-        except Exception as e:
-            error_chunk = {
-                "type": "error",
-                "content": f"Error processing request: {str(e)}",
-                "done": True,
-                "error": str(e)
-            }
-            yield f"data: {json.dumps(error_chunk)}\n\n"
     
     return StreamingResponse(
         generate_stream(),
