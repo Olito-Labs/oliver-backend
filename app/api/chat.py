@@ -148,6 +148,7 @@ async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
             "text": {
                 "format": {
                     "type": "json_schema",
+                    "name": "compliance_intake_response",
                     "strict": True,
                     "schema": {
                         "type": "object",
@@ -306,6 +307,7 @@ async def chat_streaming(request: ChatRequest):
                 "text": {
                     "format": {
                         "type": "json_schema",
+                        "name": "compliance_intake_response",
                         "strict": True,
                         "schema": {
                             "type": "object",
