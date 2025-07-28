@@ -1,15 +1,55 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
-from typing import AsyncGenerator, List, Dict, Any
+from typing import AsyncGenerator, List, Dict, Any, Optional
 import json
 import uuid
 from datetime import datetime
+from pydantic import BaseModel
 
 from app.models.api import ChatRequest, ChatResponse, ChatMessage, StreamChunk
 from app.llm_providers import openai_manager
 from app.config import settings
 
 router = APIRouter(prefix="/api", tags=["chat"])
+
+# Structured Output Models for Banking Compliance
+class BankingInstitution(BaseModel):
+    name: str
+    charter_type: str
+    asset_size: str
+    asset_size_source: str
+    primary_regulators: List[str]
+    holding_company: Optional[str] = None
+
+class ComplianceIssue(BaseModel):
+    description: str
+    urgency: str  # "low", "medium", "high", "critical"
+    deadline: Optional[str] = None
+    regulatory_context: Optional[str] = None
+
+class WorkflowRecommendation(BaseModel):
+    primary_workflow: str
+    confidence: str  # "low", "medium", "high"
+    reasoning: str
+    alternative_workflows: List[str]
+
+class IntakeResponse(BaseModel):
+    message_type: str  # "intake_confirmation", "non_banking_redirect", "information_request"
+    institution: Optional[BankingInstitution] = None
+    issue: Optional[ComplianceIssue] = None
+    workflow: Optional[WorkflowRecommendation] = None
+    next_steps: List[str]
+    requires_confirmation: bool
+    response_text: str  # Human-readable response for display
+
+class ComplianceAnalysis(BaseModel):
+    summary: str
+    key_findings: List[str]
+    regulatory_implications: List[str]
+    risk_assessment: str  # "low", "medium", "high", "critical"
+    recommendations: List[str]
+    timeline: Optional[str] = None
+    response_text: str  # Human-readable response for display
 
 def _convert_messages_to_openai_format(messages: List[ChatMessage]) -> List[Dict[str, Any]]:
     """Convert ChatMessage list to OpenAI Responses API input format."""
@@ -26,50 +66,45 @@ def _convert_messages_to_openai_format(messages: List[ChatMessage]) -> List[Dict
     return openai_messages
 
 def _create_oliver_system_prompt(analysis_type: str) -> str:
-    """Create system prompt with industry/institution validation first."""
+    """Create system prompt optimized for structured outputs."""
     
     return """You are Oliver, a regulatory risk management agent currently focusing on banking institutions.
 
+Your responses must be structured and include both machine-readable data and human-readable text.
+
 **CRITICAL FIRST STEP - Industry & Institution Validation:**
 
-Before proceeding with any analysis, you MUST first determine:
-1. **Is this inquiry about a banking institution?** (commercial banks, credit unions, savings associations, bank holding companies, etc.)
-2. **What specific institution** is involved (name, charter type, approximate asset size if known)
+1. **Determine if this is a banking inquiry:** Commercial banks, credit unions, savings associations, bank holding companies, etc.
 
-**If this is NOT about banking or financial institutions:**
-Respond politely: "I'm Oliver, a regulatory risk management agent currently focusing on banking institutions. More features for other industries coming soon. Please contact us if you have banking-related regulatory questions."
+2. **If NOT banking/financial institutions:** 
+   - Set message_type to "non_banking_redirect"
+   - Provide polite redirect in response_text
+   - Include next_steps for contacting about banking questions
 
-**If this IS about banking institutions:**
-Proceed as a senior banking risk advisor and primary intake specialist. Your job is to:
+3. **If IS banking institutions:**
+   - Set message_type to "intake_confirmation" or "information_request"
+   - Gather/confirm institution details (name, charter, assets, regulators)
+   - Understand the compliance issue (problem, urgency, deadline)
+   - Classify the workflow from these options:
+     * Marketing Material Compliance Review
+     * Examination Preparation
+     * MRA / Enforcement Action Remediation  
+     * Change Management Governance
+     * New Law/Regulation Impact Analysis
+     * Proposed Rulemaking Comment Analysis
+     * Board Reporting / Risk Dashboard Preparation
+     * Third-Party (FinTech) Risk Assessment
+     * Other
 
-1. **Confirm Institution Details:**
-   - Bank/institution name and holding company (if different)  
-   - Charter type (national, state member, state non-member, credit union, etc.)
-   - Asset size tier and latest figures (cite source: "e.g., $47bn assets, 2024 Q1 Call Report")
-   - Primary regulators (Fed, OCC, FDIC, CFPB, state, etc.)
+**Response Structure Requirements:**
+- Always provide a clear, professional response_text for display
+- Include structured data for institution, issue, and workflow when applicable
+- Set requires_confirmation=true when waiting for user confirmation
+- Include specific next_steps for the user
+- Use evidence-based language and cite data sources
+- Maintain professional banking advisor tone
 
-2. **Understand the Risk/Compliance Issue:**
-   - The specific problem, deadline, or objective  
-   - Any counterparties or FinTech partners involved
-   - Regulatory context or examination findings (if applicable)
-
-3. **Classify the Workflow:**
-   - Marketing Material Compliance Review
-   - Examination Preparation  
-   - MRA / Enforcement Action Remediation
-   - Change Management Governance
-   - New Law/Regulation Impact Analysis
-   - Proposed Rulemaking Comment Analysis
-   - Board Reporting / Risk Dashboard Preparation
-   - Third-Party (FinTech) Risk Assessment
-   - Other
-
-4. **Confirm & Hand Off:**
-   - Summarize institution details, issue, and recommended workflow
-   - Ask for confirmation before proceeding
-   - Once confirmed: "Context locked. Handing you to the [workflow-name] module now."
-
-**Style:** Professional, evidence-based, concise. Always cite data sources. Use full paragraphs, not bullet lists. Stop and wait for confirmation before proceeding past intake."""
+**Style:** Professional, concise, evidence-based. Always include both structured data and readable text."""
     
 
 
@@ -100,7 +135,7 @@ async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
             }
         ]
         
-        # Build request parameters
+        # Build request parameters with structured outputs
         request_params = {
             "model": settings.OPENAI_MODEL,
             "input": openai_messages,
@@ -110,7 +145,76 @@ async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
             "tools": tools,
             "stream": False,
             "store": True,
-            "text": {"format": {"type": "text"}},
+            "text": {
+                "format": {
+                    "type": "json_schema",
+                    "strict": True,
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "message_type": {
+                                "type": "string",
+                                "enum": ["intake_confirmation", "non_banking_redirect", "information_request"]
+                            },
+                            "institution": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {"type": "string"},
+                                    "charter_type": {"type": "string"},
+                                    "asset_size": {"type": "string"},
+                                    "asset_size_source": {"type": "string"},
+                                    "primary_regulators": {
+                                        "type": "array",
+                                        "items": {"type": "string"}
+                                    },
+                                    "holding_company": {"type": ["string", "null"]}
+                                },
+                                "required": ["name", "charter_type", "asset_size", "asset_size_source", "primary_regulators"],
+                                "additionalProperties": False
+                            },
+                            "issue": {
+                                "type": "object", 
+                                "properties": {
+                                    "description": {"type": "string"},
+                                    "urgency": {
+                                        "type": "string",
+                                        "enum": ["low", "medium", "high", "critical"]
+                                    },
+                                    "deadline": {"type": ["string", "null"]},
+                                    "regulatory_context": {"type": ["string", "null"]}
+                                },
+                                "required": ["description", "urgency"],
+                                "additionalProperties": False
+                            },
+                            "workflow": {
+                                "type": "object",
+                                "properties": {
+                                    "primary_workflow": {"type": "string"},
+                                    "confidence": {
+                                        "type": "string", 
+                                        "enum": ["low", "medium", "high"]
+                                    },
+                                    "reasoning": {"type": "string"},
+                                    "alternative_workflows": {
+                                        "type": "array",
+                                        "items": {"type": "string"}
+                                    }
+                                },
+                                "required": ["primary_workflow", "confidence", "reasoning", "alternative_workflows"],
+                                "additionalProperties": False
+                            },
+                            "next_steps": {
+                                "type": "array",
+                                "items": {"type": "string"}
+                            },
+                            "requires_confirmation": {"type": "boolean"},
+                            "response_text": {"type": "string"}
+                        },
+                        "required": ["message_type", "next_steps", "requires_confirmation", "response_text"],
+                        "additionalProperties": False
+                    }
+                }
+            },
             "reasoning": {}
         }
         
@@ -121,14 +225,23 @@ async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
         # Call OpenAI Responses API
         response = client.responses.create(**request_params)
         
-        # Extract response text
+        # Extract structured response
         response_text = ""
+        structured_data = None
+        
         if response.output and len(response.output) > 0:
             message_output = response.output[0]
             if hasattr(message_output, 'content') and len(message_output.content) > 0:
-                response_text = message_output.content[0].text
+                raw_response = message_output.content[0].text
+                try:
+                    # Parse structured JSON response
+                    structured_data = json.loads(raw_response)
+                    response_text = structured_data.get('response_text', raw_response)
+                except json.JSONDecodeError:
+                    # Fallback to raw response if not valid JSON
+                    response_text = raw_response
         
-        # Create assistant response
+        # Create assistant response with structured metadata
         assistant_message = ChatMessage(
             id=str(uuid.uuid4()),
             content=response_text,
@@ -137,7 +250,8 @@ async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
             metadata={
                 "analysis_type": request.analysis_type,
                 "response_id": response.id,
-                "previous_response_id": request.previous_response_id
+                "previous_response_id": request.previous_response_id,
+                "structured_data": structured_data  # Include structured response data
             }
         )
         
@@ -179,7 +293,7 @@ async def chat_streaming(request: ChatRequest):
                 }
             ]
             
-            # Build request parameters
+            # Build request parameters with structured outputs
             request_params = {
                 "model": settings.OPENAI_MODEL,
                 "input": openai_messages,
@@ -189,7 +303,76 @@ async def chat_streaming(request: ChatRequest):
                 "tools": tools,
                 "stream": True,
                 "store": True,
-                "text": {"format": {"type": "text"}},
+                "text": {
+                    "format": {
+                        "type": "json_schema",
+                        "strict": True,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message_type": {
+                                    "type": "string",
+                                    "enum": ["intake_confirmation", "non_banking_redirect", "information_request"]
+                                },
+                                "institution": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {"type": "string"},
+                                        "charter_type": {"type": "string"},
+                                        "asset_size": {"type": "string"},
+                                        "asset_size_source": {"type": "string"},
+                                        "primary_regulators": {
+                                            "type": "array",
+                                            "items": {"type": "string"}
+                                        },
+                                        "holding_company": {"type": ["string", "null"]}
+                                    },
+                                    "required": ["name", "charter_type", "asset_size", "asset_size_source", "primary_regulators"],
+                                    "additionalProperties": False
+                                },
+                                "issue": {
+                                    "type": "object", 
+                                    "properties": {
+                                        "description": {"type": "string"},
+                                        "urgency": {
+                                            "type": "string",
+                                            "enum": ["low", "medium", "high", "critical"]
+                                        },
+                                        "deadline": {"type": ["string", "null"]},
+                                        "regulatory_context": {"type": ["string", "null"]}
+                                    },
+                                    "required": ["description", "urgency"],
+                                    "additionalProperties": False
+                                },
+                                "workflow": {
+                                    "type": "object",
+                                    "properties": {
+                                        "primary_workflow": {"type": "string"},
+                                        "confidence": {
+                                            "type": "string", 
+                                            "enum": ["low", "medium", "high"]
+                                        },
+                                        "reasoning": {"type": "string"},
+                                        "alternative_workflows": {
+                                            "type": "array",
+                                            "items": {"type": "string"}
+                                        }
+                                    },
+                                    "required": ["primary_workflow", "confidence", "reasoning", "alternative_workflows"],
+                                    "additionalProperties": False
+                                },
+                                "next_steps": {
+                                    "type": "array",
+                                    "items": {"type": "string"}
+                                },
+                                "requires_confirmation": {"type": "boolean"},
+                                "response_text": {"type": "string"}
+                            },
+                            "required": ["message_type", "next_steps", "requires_confirmation", "response_text"],
+                            "additionalProperties": False
+                        }
+                    }
+                },
                 "reasoning": {}
             }
             
@@ -219,13 +402,25 @@ async def chat_streaming(request: ChatRequest):
                     yield f"data: {json.dumps({'type': 'status', 'content': '🧠 Thinking...', 'done': False})}\n\n"
                 
                 elif chunk.type == "response.output_text.delta":
-                    # Real-time token streaming - this is the key for true streaming!
+                    # Real-time token streaming for structured JSON
                     print(f"[DEBUG] Text delta received: '{chunk.delta}'")
                     if hasattr(chunk, 'delta'):
                         token_text = chunk.delta
                         accumulated_text += token_text
-                        # Send each token immediately as it arrives
-                        yield f"data: {json.dumps({'type': 'content', 'content': token_text, 'done': False})}\n\n"
+                        # Try to parse accumulated JSON and extract response_text for display
+                        try:
+                            # Attempt to parse the accumulated JSON
+                            json_data = json.loads(accumulated_text)
+                            if 'response_text' in json_data:
+                                # Send the response_text for live display
+                                display_text = json_data['response_text']
+                                yield f"data: {json.dumps({'type': 'content', 'content': display_text, 'done': False})}\n\n"
+                            else:
+                                # If no response_text yet, send a status update
+                                yield f"data: {json.dumps({'type': 'status', 'content': '📝 Structuring response...', 'done': False})}\n\n"
+                        except json.JSONDecodeError:
+                            # JSON not complete yet, send status
+                            yield f"data: {json.dumps({'type': 'status', 'content': '🧠 Processing...', 'done': False})}\n\n"
                 
                 elif chunk.type == "response.function_call_arguments.delta":
                     # Stream function call arguments for tool calls like web search
@@ -269,17 +464,36 @@ async def chat_streaming(request: ChatRequest):
                     yield f"data: {json.dumps({'type': 'status', 'content': '✅ Response complete', 'done': False})}\n\n"
                 
                 elif chunk.type == "response.completed":
-                    # Send completion signal with conversation state
+                    # Send completion signal with structured data
                     print(f"[DEBUG] Response completed. Final accumulated text length: {len(accumulated_text)}")
                     print(f"[DEBUG] Sending response_id to frontend: {response_id}")
-                    completion_metadata = {
-                        'analysis_type': request.analysis_type,
-                        'response_id': response_id,
-                        'previous_response_id': request.previous_response_id,
-                        'full_response': accumulated_text,
-                        'conversation_turns': len(request.messages)
-                    }
-                    yield f"data: {json.dumps({'type': 'done', 'content': '', 'done': True, 'metadata': completion_metadata})}\n\n"
+                    
+                    # Parse the final structured response
+                    try:
+                        structured_data = json.loads(accumulated_text)
+                        completion_metadata = {
+                            'analysis_type': request.analysis_type,
+                            'response_id': response_id,
+                            'previous_response_id': request.previous_response_id,
+                            'full_response': structured_data.get('response_text', ''),
+                            'structured_data': structured_data,  # Include full structured response
+                            'conversation_turns': len(request.messages)
+                        }
+                        
+                        # Send the final response_text as content
+                        final_content = structured_data.get('response_text', accumulated_text)
+                        yield f"data: {json.dumps({'type': 'content', 'content': final_content, 'done': False})}\n\n"
+                        yield f"data: {json.dumps({'type': 'done', 'content': '', 'done': True, 'metadata': completion_metadata})}\n\n"
+                    except json.JSONDecodeError:
+                        # Fallback for non-JSON response
+                        completion_metadata = {
+                            'analysis_type': request.analysis_type,
+                            'response_id': response_id,
+                            'previous_response_id': request.previous_response_id,
+                            'full_response': accumulated_text,
+                            'conversation_turns': len(request.messages)
+                        }
+                        yield f"data: {json.dumps({'type': 'done', 'content': '', 'done': True, 'metadata': completion_metadata})}\n\n"
                     break
                 
                 else:
