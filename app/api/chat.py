@@ -170,7 +170,7 @@ async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
                                     },
                                     "holding_company": {"type": ["string", "null"]}
                                 },
-                                "required": ["name", "charter_type", "asset_size", "asset_size_source", "primary_regulators"],
+                                                                 "required": ["name", "charter_type", "asset_size", "asset_size_source", "primary_regulators", "holding_company"],
                                 "additionalProperties": False
                             },
                             "issue": {
@@ -184,7 +184,7 @@ async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
                                     "deadline": {"type": ["string", "null"]},
                                     "regulatory_context": {"type": ["string", "null"]}
                                 },
-                                "required": ["description", "urgency"],
+                                                                 "required": ["description", "urgency", "deadline", "regulatory_context"],
                                 "additionalProperties": False
                             },
                             "workflow": {
@@ -329,7 +329,7 @@ async def chat_streaming(request: ChatRequest):
                                         },
                                         "holding_company": {"type": ["string", "null"]}
                                     },
-                                    "required": ["name", "charter_type", "asset_size", "asset_size_source", "primary_regulators"],
+                                    "required": ["name", "charter_type", "asset_size", "asset_size_source", "primary_regulators", "holding_company"],
                                     "additionalProperties": False
                                 },
                                 "issue": {
@@ -343,7 +343,7 @@ async def chat_streaming(request: ChatRequest):
                                         "deadline": {"type": ["string", "null"]},
                                         "regulatory_context": {"type": ["string", "null"]}
                                     },
-                                    "required": ["description", "urgency"],
+                                    "required": ["description", "urgency", "deadline", "regulatory_context"],
                                     "additionalProperties": False
                                 },
                                 "workflow": {
