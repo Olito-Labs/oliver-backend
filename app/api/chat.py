@@ -225,6 +225,9 @@ async def chat_streaming(request: ChatRequest):
             accumulated_text = ""
             
             for chunk in stream:
+                # Debug: Log all chunk types we receive
+                print(f"[DEBUG] Received chunk type: {chunk.type}")
+                
                 if chunk.type == "response.created":
                     response_id = chunk.response.id
                     print(f"[DEBUG] OpenAI Response ID created: {response_id}")
@@ -233,47 +236,59 @@ async def chat_streaming(request: ChatRequest):
                 elif chunk.type == "response.in_progress":
                     yield f"data: {json.dumps({'type': 'status', 'content': '🧠 Thinking...', 'done': False})}\n\n"
                 
-                elif chunk.type == "response.content_part.added":
-                    # New content part started
-                    if hasattr(chunk, 'part') and hasattr(chunk.part, 'type'):
-                        if chunk.part.type == "output_text":
+                elif chunk.type == "response.output_text.delta":
+                    # Real-time token streaming - this is the key for true streaming!
+                    print(f"[DEBUG] Text delta received: '{chunk.delta}'")
+                    if hasattr(chunk, 'delta'):
+                        token_text = chunk.delta
+                        accumulated_text += token_text
+                        # Send each token immediately as it arrives
+                        yield f"data: {json.dumps({'type': 'content', 'content': token_text, 'done': False})}\n\n"
+                
+                elif chunk.type == "response.function_call_arguments.delta":
+                    # Stream function call arguments for tool calls like web search
+                    print(f"[DEBUG] Function call delta: {chunk.delta}")
+                    if hasattr(chunk, 'delta'):
+                        # Show that we're building function arguments
+                        yield f"data: {json.dumps({'type': 'status', 'content': f'🔍 Building search query...', 'done': False})}\n\n"
+                
+                elif chunk.type == "response.output_item.added":
+                    # New output item (function call or text) started
+                    print(f"[DEBUG] Output item added: {getattr(chunk, 'item', 'unknown')}")
+                    if hasattr(chunk, 'item'):
+                        if hasattr(chunk.item, 'type') and chunk.item.type == "function_call":
+                            tool_name = getattr(chunk.item, 'name', 'unknown')
+                            yield f"data: {json.dumps({'type': 'status', 'content': f'🛠️ Calling {tool_name}...', 'done': False})}\n\n"
+                        else:
                             yield f"data: {json.dumps({'type': 'status', 'content': '📝 Writing response...', 'done': False})}\n\n"
                 
+                elif chunk.type == "response.function_call_arguments.done":
+                    # Function call arguments complete
+                    print(f"[DEBUG] Function call arguments done")
+                    yield f"data: {json.dumps({'type': 'status', 'content': '⚡ Executing search...', 'done': False})}\n\n"
+                
                 elif chunk.type == "response.content_part.done":
-                    # Content part is complete - send with natural chunking for better streaming
+                    # Content part complete - this is backup in case deltas were missed
+                    print(f"[DEBUG] Content part done, checking for missing content")
                     if hasattr(chunk, 'part') and hasattr(chunk.part, 'text'):
-                        content_text = chunk.part.text
-                        accumulated_text = content_text
-                        
-                        # Send content in natural sentence/phrase chunks for smooth streaming
-                        sentences = []
-                        current_sentence = ""
-                        words = content_text.split(' ')
-                        
-                        for word in words:
-                            current_sentence += word + " "
-                            
-                            # End sentence on punctuation or every 8-12 words
-                            if (word.endswith('.') or word.endswith('!') or word.endswith('?') or 
-                                word.endswith(':') or len(current_sentence.split()) >= 10):
-                                sentences.append(current_sentence.strip())
-                                current_sentence = ""
-                        
-                        # Add any remaining text
-                        if current_sentence.strip():
-                            sentences.append(current_sentence.strip())
-                        
-                        # Send each sentence chunk immediately
-                        for sentence in sentences:
-                            if sentence:
-                                yield f"data: {json.dumps({'type': 'content', 'content': sentence + ' ', 'done': False})}\n\n"
+                        complete_text = chunk.part.text
+                        print(f"[DEBUG] Complete text length: {len(complete_text)}, accumulated: {len(accumulated_text)}")
+                        if complete_text != accumulated_text:
+                            # Send any missing content
+                            missing_content = complete_text[len(accumulated_text):]
+                            if missing_content:
+                                print(f"[DEBUG] Sending missing content: {len(missing_content)} chars")
+                                accumulated_text = complete_text
+                                yield f"data: {json.dumps({'type': 'content', 'content': missing_content, 'done': False})}\n\n"
                 
                 elif chunk.type == "response.output_item.done":
                     # Output item complete
+                    print(f"[DEBUG] Output item done")
                     yield f"data: {json.dumps({'type': 'status', 'content': '✅ Response complete', 'done': False})}\n\n"
                 
                 elif chunk.type == "response.completed":
                     # Send completion signal with conversation state
+                    print(f"[DEBUG] Response completed. Final accumulated text length: {len(accumulated_text)}")
                     print(f"[DEBUG] Sending response_id to frontend: {response_id}")
                     completion_metadata = {
                         'analysis_type': request.analysis_type,
@@ -285,16 +300,12 @@ async def chat_streaming(request: ChatRequest):
                     yield f"data: {json.dumps({'type': 'done', 'content': '', 'done': True, 'metadata': completion_metadata})}\n\n"
                     break
                 
-                elif chunk.type == "response.failed":
-                    error_msg = chunk.response.error.message if chunk.response.error else "Unknown error"
-                    yield f"data: {json.dumps({'type': 'error', 'content': f'Error: {error_msg}', 'done': True, 'error': error_msg})}\n\n"
-                    break
+                else:
+                    # Log any unhandled chunk types
+                    print(f"[DEBUG] Unhandled chunk type: {chunk.type}")
+                    if hasattr(chunk, '__dict__'):
+                        print(f"[DEBUG] Chunk attributes: {list(chunk.__dict__.keys())}")
                 
-                elif chunk.type == "response.incomplete":
-                    reason = chunk.response.incomplete_details.reason if chunk.response.incomplete_details else "unknown"
-                    yield f"data: {json.dumps({'type': 'error', 'content': f'Response incomplete: {reason}', 'done': True, 'error': f'incomplete_{reason}'})}\n\n"
-                    break
-                    
         except Exception as e:
             error_chunk = {
                 "type": "error",
