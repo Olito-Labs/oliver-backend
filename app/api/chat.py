@@ -211,6 +211,12 @@ async def chat_streaming(request: ChatRequest):
                 # Debug: Log all chunk types we receive
                 print(f"[DEBUG] Received chunk type: {chunk.type}")
                 
+                # Extra debugging for function calls
+                if hasattr(chunk, 'item'):
+                    print(f"[DEBUG] Chunk has item: {getattr(chunk.item, 'type', 'no-type')} - {getattr(chunk.item, 'name', 'no-name')}")
+                if hasattr(chunk, '__dict__'):
+                    print(f"[DEBUG] Chunk attributes: {list(chunk.__dict__.keys())}")
+                
                 if chunk.type == "response.created":
                     response_id = chunk.response.id
                     print(f"[DEBUG] OpenAI Response ID created: {response_id}")
