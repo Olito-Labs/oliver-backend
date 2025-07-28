@@ -157,8 +157,8 @@ async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
                                 "type": "string",
                                 "enum": ["intake_confirmation", "non_banking_redirect", "information_request"]
                             },
-                            "institution": {
-                                "type": "object",
+                                                         "institution": {
+                                 "type": ["object", "null"],
                                 "properties": {
                                     "name": {"type": "string"},
                                     "charter_type": {"type": "string"},
@@ -173,8 +173,8 @@ async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
                                                                  "required": ["name", "charter_type", "asset_size", "asset_size_source", "primary_regulators", "holding_company"],
                                 "additionalProperties": False
                             },
-                            "issue": {
-                                "type": "object", 
+                                                         "issue": {
+                                 "type": ["object", "null"], 
                                 "properties": {
                                     "description": {"type": "string"},
                                     "urgency": {
@@ -187,8 +187,8 @@ async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
                                                                  "required": ["description", "urgency", "deadline", "regulatory_context"],
                                 "additionalProperties": False
                             },
-                            "workflow": {
-                                "type": "object",
+                                                         "workflow": {
+                                 "type": ["object", "null"],
                                 "properties": {
                                     "primary_workflow": {"type": "string"},
                                     "confidence": {
@@ -211,7 +211,7 @@ async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
                             "requires_confirmation": {"type": "boolean"},
                             "response_text": {"type": "string"}
                         },
-                        "required": ["message_type", "next_steps", "requires_confirmation", "response_text"],
+                                                 "required": ["message_type", "institution", "issue", "workflow", "next_steps", "requires_confirmation", "response_text"],
                         "additionalProperties": False
                     }
                 }
@@ -317,7 +317,7 @@ async def chat_streaming(request: ChatRequest):
                                     "enum": ["intake_confirmation", "non_banking_redirect", "information_request"]
                                 },
                                 "institution": {
-                                    "type": "object",
+                                    "type": ["object", "null"],
                                     "properties": {
                                         "name": {"type": "string"},
                                         "charter_type": {"type": "string"},
@@ -333,7 +333,7 @@ async def chat_streaming(request: ChatRequest):
                                     "additionalProperties": False
                                 },
                                 "issue": {
-                                    "type": "object", 
+                                    "type": ["object", "null"], 
                                     "properties": {
                                         "description": {"type": "string"},
                                         "urgency": {
@@ -347,7 +347,7 @@ async def chat_streaming(request: ChatRequest):
                                     "additionalProperties": False
                                 },
                                 "workflow": {
-                                    "type": "object",
+                                    "type": ["object", "null"],
                                     "properties": {
                                         "primary_workflow": {"type": "string"},
                                         "confidence": {
@@ -370,7 +370,7 @@ async def chat_streaming(request: ChatRequest):
                                 "requires_confirmation": {"type": "boolean"},
                                 "response_text": {"type": "string"}
                             },
-                            "required": ["message_type", "next_steps", "requires_confirmation", "response_text"],
+                            "required": ["message_type", "institution", "issue", "workflow", "next_steps", "requires_confirmation", "response_text"],
                             "additionalProperties": False
                         }
                     }
