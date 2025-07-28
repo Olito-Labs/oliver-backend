@@ -236,7 +236,7 @@ async def chat_streaming(request: ChatRequest):
                             }
                             
                             # Chain of thought: Show what tool Oliver is using
-                            if tool_name == 'web_search':
+                            if tool_name in ['web_search', 'web_search_preview']:
                                 yield f"data: {json.dumps({'type': 'reasoning', 'content': '💭 I need to search for current information to provide you with accurate details...', 'done': False})}\n\n"
                             else:
                                 reasoning_msg = f"💭 I'm going to use {tool_name} to help answer your question..."
@@ -271,7 +271,7 @@ async def chat_streaming(request: ChatRequest):
                                 tool_name = call_data['name']
                                 
                                 # Chain of thought: Show what we're searching for
-                                if tool_name == 'web_search' and 'query' in args:
+                                if tool_name in ['web_search', 'web_search_preview'] and 'query' in args:
                                     search_query = args['query']
                                     search_msg = f'🔍 Searching for: "{search_query}"'
                                     yield f"data: {json.dumps({'type': 'reasoning', 'content': search_msg, 'done': False})}\n\n"
