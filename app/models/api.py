@@ -17,6 +17,7 @@ class ChatRequest(BaseModel):
     analysis_type: Literal["general", "compliance", "document"] = "general"
     context: Optional[str] = ""
     stream: bool = True
+    previous_response_id: Optional[str] = None  # Critical: For conversation state management
 
 class ChatResponse(BaseModel):
     """Response model for chat endpoints."""
@@ -59,7 +60,6 @@ class StreamingEvent(BaseModel):
 class ProviderSwitchRequest(BaseModel):
     """Request to switch LLM provider."""
     provider: Literal["openai", "anthropic", "google"]
-    model: Optional[str] = Field(None, description="Specific model to use (e.g., gpt-4.1, claude-4-sonnet, gemini-2.5-pro)")
     api_key: Optional[str] = None
 
 class ProviderInfo(BaseModel):
