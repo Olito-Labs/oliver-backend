@@ -4,10 +4,9 @@ from contextlib import asynccontextmanager
 import logging
 
 from app.config import settings
-from app.llm_providers import llm_manager
+from app.llm_providers import openai_manager
 from app.api.chat import router as chat_router
 from app.api.health import router as health_router
-from app.api.providers import router as providers_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -19,12 +18,12 @@ async def lifespan(app: FastAPI):
     logger.info("Starting Oliver Backend...")
     
     try:
-        # Initialize LLM provider
-        llm_manager.initialize_provider()
-        logger.info(f"Successfully initialized LLM provider: {settings.LLM_PROVIDER}")
+        # Initialize OpenAI client
+        openai_manager.initialize_client()
+        logger.info(f"Successfully initialized OpenAI client with model: {settings.OPENAI_MODEL}")
         
         # Log current configuration
-        provider_info = llm_manager.get_current_provider_info()
+        provider_info = openai_manager.get_current_provider_info()
         logger.info(f"Provider info: {provider_info}")
         
         yield
@@ -40,7 +39,7 @@ async def lifespan(app: FastAPI):
 # Create FastAPI app
 app = FastAPI(
     title="Oliver Backend",
-    description="AI-powered compliance assistant backend using DSPy",
+    description="AI-powered compliance assistant backend using OpenAI Responses API",
     version="1.0.0",
     lifespan=lifespan
 )
@@ -62,7 +61,6 @@ app.add_middleware(
 # Include routers
 app.include_router(health_router)
 app.include_router(chat_router)
-app.include_router(providers_router)
 
 # Exception handlers
 @app.exception_handler(ValueError)

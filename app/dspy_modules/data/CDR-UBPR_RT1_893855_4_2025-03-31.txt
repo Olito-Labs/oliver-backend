@@ -1,0 +1,1842 @@
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Summary Ratios
+OCC Charter # 0			County: JACKSON			Summary Ratios--Page 1						7/23/2025 12:03:05 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ Earnings and Profitability	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 5	PCT	BANK	PG 5	PCT
+ Percent of Average Assets:	
+    Interest Income (TE)	8.57	5.24	98	11.23	5.12	99	10.36	5.27	98	11.20	4.72	99	13.63	3.68	99	
+    - Interest Expense	0.63	1.97	1	0.56	2.07	1	0.80	2.13	2	0.22	1.39	0	0.03	0.38	0	
+       Net Interest Income (TE)	7.94	3.28	98	10.67	3.07	99	9.56	3.15	99	10.98	3.33	99	13.60	3.30	99	
+    + Noninterest Income	4.65	0.61	98	4.26	0.61	98	4.81	0.63	98	4.44	0.55	98	5.46	0.56	98	
+    - Noninterest Expense	10.57	2.46	99	12.85	2.42	99	11.73	2.43	99	12.80	2.47	99	17.23	2.40	99	
+       Pre-Provision Net Revenue (TE)	2.02	1.45	81	2.08	1.30	85	2.64	1.39	93	2.62	1.44	92	1.83	1.49	76	
+    - Provision: Credit Losses	0.42	0.10	93	0.14	0.08	77	0.22	0.11	83	0.21	0.07	88	0.92	0.07	99	
+    - Provision: Credit Loss Oth Assets	0.00	0.00	22	-0.02	0.00	18	0.01	0.00	82	0.02	0.00	87	N/A	0.00	N/A	
+       Pretax Operating Income (TE)	1.60	1.34	69	1.95	1.19	86	2.41	1.25	93	2.39	1.35	91	0.91	1.42	13	
+    + Realized Gains/Losses Sec	0.00	0.00	92	-0.04	0.00	6	-0.01	0.00	15	-0.03	-0.01	16	0.00	-0.01	86	
+    + Unrealized Gains / Losses Equity Sec	0.01	0.00	93	-0.01	0.00	3	0.00	0.00	4	0.00	0.00	86	-0.03	0.00	1	
+    Pretax Net Operating Income (TE)	1.61	1.34	70	1.91	1.19	83	2.40	1.25	93	2.36	1.33	91	0.88	1.41	13	
+       Net Operating Income	1.19	1.09	61	1.41	0.97	79	1.85	1.02	90	1.76	1.12	85	0.66	1.18	9	
+    Net Inc Attrib to Min Ints	0.00	0.00	98	0.00	0.00	98	0.00	0.00	97	0.00	0.00	98	0.00	0.00	99	
+    Net Income Adjusted Sub S	1.19	1.04	65	1.41	0.93	81	1.85	0.97	93	1.76	1.04	89	0.66	1.09	10	
+       Net Income	1.19	1.09	61	1.41	0.97	79	1.85	1.02	90	1.76	1.11	85	0.66	1.18	9	
+
+ Margin Analysis:	
+ Avg Earning Assets to Avg Assets	88.82	95.49	1	93.39	95.47	16	93.96	95.54	22	90.68	96.22	2	90.06	95.73	2	
+ Avg Int-Bearing Funds to Avg Assets	43.95	72.53	1	58.67	72.50	9	54.49	72.64	4	54.70	69.44	6	60.94	67.86	24	
+ Int Inc (TE) to Avg Earn Assets	9.64	5.49	98	12.03	5.38	99	11.03	5.53	98	12.35	4.91	99	15.13	3.86	99	
+ Int Expense to Avg Earn Assets	0.71	2.07	1	0.60	2.17	1	0.86	2.23	2	0.24	1.44	1	0.04	0.39	0	
+ Net Int Inc-TE to Avg Earn Assets	8.94	3.44	99	11.43	3.23	99	10.18	3.31	99	12.11	3.47	99	15.10	3.45	99	
+
+ Loan & Lease Analysis:	
+ Net Loss to Average Total LN&LS	0.31	0.07	89	0.02	0.06	55	0.20	0.09	83	0.32	0.04	93	0.01	0.02	54	
+ Earnings Coverage of Net Losses (X)	12.49	146.31	27	166.88	108.66	78	20.74	91.38	40	11.28	131.02	19	400.67	226.96	80	
+ ACL on LN&LS HFI to LN&LS HFI	0.89	1.21	13	0.73	1.22	6	0.80	1.20	9	0.66	1.28	4	0.50	1.31	1	
+ ACL on LN&LS HFI to Net Losses (X)	2.38	87.86	11	36.37	76.43	53	3.61	59.02	14	2.02	80.61	3	85.51	122.38	66	
+ ACL on LN&LS HFI to Nonaccrual LN&LS (X)	1.44	6.66	28	0.81	8.91	5	1.32	7.34	22	0.74	12.13	5	1.02	13.54	9	
+ 30-89 Days Past Due	3.31	0.48	99	4.20	0.39	99	4.67	0.39	99	6.12	0.38	99	7.45	0.31	99	
+ Total LN&LS-90+ Days PD & Nonaccrual	1.83	0.60	91	2.61	0.46	98	1.98	0.57	93	2.26	0.38	95	1.59	0.34	92	
+ Non-Curr Lns+OREO to Lns+OREO	1.83	0.66	90	2.72	0.51	98	1.98	0.63	92	2.38	0.42	95	1.95	0.39	94	
+
+ Liquidity	
+ Net Non Core Fund Dep New $250M	-27.93	8.96	1	4.73	10.91	29	-21.49	10.02	3	18.28	7.24	80	24.01	2.61	94	
+ Net Loans & Leases to Assets	45.77	70.60	3	64.92	69.83	31	47.83	70.94	4	73.46	66.18	65	75.06	64.01	72	
+ Net Loans & Leases to Deposits	52.07	82.61	3	77.77	82.95	35	54.71	83.32	3	89.90	78.03	72	90.95	73.79	78	
+
+ Capitalization	
+ Leverage Ratio	7.7114	10.40	1	9.9272	10.25	47	8.4411	10.31	7	10.0115	10.50	46	10.1909	10.20	55	
+ Total Capital Ratio	27.5210	14.56	98	28.1489	14.47	98	25.3911	14.46	96	25.6081	15.55	94	21.9188	15.49	90	
+ Cash Dividends to Net Income	0.00	30.28	37	0.00	27.68	40	0.00	36.24	18	0.00	38.88	15	0.00	33.97	16	
+ Non-Curr Lns+OREO to T1 Capital+ACL	11.06	4.06	90	18.22	3.17	98	11.91	3.96	91	16.62	2.44	97	14.57	2.19	97	
+
+ Growth Rates	
+ Total Assets	67.02	5.42	99	7.55	5.58	65	69.66	5.05	99	14.43	4.89	88	10.69	3.95	79	
+ Tier 1 Capital	29.65	7.17	96	18.51	7.68	90	28.35	7.02	97	18.35	6.80	93	38.30	9.39	95	
+ Net Loans & Leases	17.76	6.19	91	6.89	8.79	40	10.47	6.43	75	12.00	8.88	69	3.62	13.02	15	
+ Short Term Investments	149.99	25.04	91	15.09	42.18	47	489.59	33.19	97	46.34	44.54	61	-21.24	-38.88	70	
+ Short Term Non Core Funding	66.39	7.26	90	-43.48	55.51	4	159.31	11.91	97	-53.97	105.75	1	-12.91	69.06	23	
+
+
+ Average Total Assets		1,688,049			1,025,836			1,186,136			930,316			799,662				
+ Net Income		5,042			3,617			21,973			16,371			2,196				
+
+
+ Number of banks in Peer Group		515			519			521			512			502				
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Income Statement $
+OCC Charter # 0			County: JACKSON			Income Statement $--Page 2						7/23/2025 12:03:06 PM
+Public Report
+																	Percent Change
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022			1 Year
+ Interest and Fees on Loans		29,166			25,638			105,886			95,507			43,899			13.76	
+ Income From Lease Financing		0			0			0			0			0			N/A	
+    Tax-Exempt		0			0			0			0			0			N/A	
+    Estimated Tax Benefit		0			0			0			0			0			N/A	
+       Income on Loans & Leases (TE)		29,166			25,638			105,886			95,507			43,899			13.76	
+
+ US Treas & Agency (Excl MBS)		628			372			1,902			862			131			68.82	
+ Mortgage Backed Securities		800			143			1,623			764			329			459.44	
+    Estimated Tax Benefit		11			11			45			41			13			0.00	
+ All Other Securities		150			226			576			1,109			424			-33.63	
+    Tax-Exempt Securities Income		42			42			169			156			50			0.00	
+ Investment Interest Income (TE)		1,589			752			4,146			2,776			897			111.28	
+
+ Interest on Due From Banks		5,386			2,403			12,853			5,854			879			124.14	
+ Int on Fed Funds Sold & Resales		0			0			0			0			0			N/A	
+ Trading Account Income		N/A			N/A			N/A			N/A			N/A			N/A	
+ Other Interest Income		9			9			45			29			13			0.00	
+
+    Total Interest Income (TE)		36,150			28,802			122,930			104,166			45,688			25.51	
+
+ Int on Deposits in Foreign Off		N/A			N/A			N/A			N/A			N/A			N/A	
+ Interest on Domestic Deposits		2,643			1,236			9,156			1,991			115			113.83	
+ Int on Fed Funds Purch & Repos		0			0			0			0			0			N/A	
+ Int Trad Liab & Oth Borrowings		N/A			N/A			N/A			N/A			N/A			N/A	
+ Int on Sub Notes & Debentures		N/A			N/A			N/A			N/A			N/A			N/A	
+ Other Interest Expense		0			197			373			14			0			-100.00	
+
+    Total Interest Expense		2,643			1,433			9,529			2,005			115			84.44	
+
+    Net Interest Income (TE)		33,507			27,369			113,401			102,161			45,573			22.43	
+ Non-interest Income		19,609			10,920			57,008			41,277			18,311			79.57	
+    Adjusted Operating Income (TE)		53,116			38,289			170,409			143,438			63,884			38.72	
+
+ Non-Interest Expense		44,589			32,961			139,115			119,079			57,750			35.28	
+    Pre-Provision Net Revenue (TE)		8,527			5,328			31,294			24,359			6,134			60.04	
+ Provision: Credit Losses		1,771			366			2,603			1,909			3,076			383.88	
+ Provision: Credit Losses Other Assets		-6			-47			91			201			N/A			N/A	
+    Pretax Operating Income (TE)		6,762			5,009			28,600			22,249			3,058			35.00	
+
+ Realized G/L Hld-to-Maturity Sec		0			0			0			0			0			N/A	
+ Realized G/L Avail-for Sale Sec		0			-93			-93			-312			0			N/A	
+ Unrealized G/L Equity Securities		33			-24			-26			32			-111			N/A	
+    Pretax Net Operating Inc (TE)		6,795			4,892			28,481			21,969			2,947			38.90	
+
+ Applicable Income Taxes		1,742			1,264			6,463			5,557			738			37.82	
+ Current Tax Equiv Adjustment		11			11			45			41			13			0.00	
+ Other Tax Equiv Adjustments		0			0			0			0			0			N/A	
+    Applicable Income Taxes (TE)		1,753			1,275			6,508			5,598			751			37.49	
+
+    Net Operating Income		5,042			3,617			21,973			16,371			2,196			39.40	
+
+ Net Discontinued / Extraordinary Items		0			0			0			0			0			N/A	
+ Net Inc Noncontrolling Minority Interests		0			0			0			0			0			N/A	
+    Net Income		5,042			3,617			21,973			16,371			2,196			39.40	
+
+ Cash Dividends Declared		0			0			0			0			0			N/A	
+ Retained Earnings		5,042			3,617			21,973			16,371			2,196			39.40	
+ Memo: Net International Income		N/A			N/A			N/A			N/A			N/A			N/A	
+ Memo: Interest on Time Dep Over Ins Limit		1			16			26			28			11			-93.75	
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			QTR Income Statement $
+OCC Charter # 0			County: JACKSON			QTR Income Statement --Page 2A						7/23/2025 12:03:06 PM
+Public Report
+																	Percent Change
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022			Prior Year QTR
+ Interest and Fees on Loans		29,166			25,638			28,528			25,559			27,849			13.76	
+ Income From Lease Financing		0			0			0			0			0			N/A	
+    Tax-Exempt		0			0			0			0			0			N/A	
+    Estimated Tax Benefit		0			0			0			0			0			N/A	
+       Income on Loans & Leases (TE)		29,166			25,638			28,528			25,559			27,849			13.76	
+
+ US Treas & Agency (Excl MBS)		628			372			587			372			81			68.82	
+ Mortgage Backed Securities		800			143			624			172			192			459.44	
+    Estimated Tax Benefit		11			11			11			11			8			0.00	
+ All Other Securities		150			226			139			251			344			-33.63	
+    Tax-Exempt Securities Income		42			42			42			42			30			0.00	
+ Investment Interest Income (TE)		1,589			752			1,361			806			625			111.28	
+
+ Interest on Due From Banks		5,386			2,403			4,984			1,821			598			124.14	
+ Int on Fed Funds Sold & Resales		0			0			0			0			0			N/A	
+ Trading Account Income		N/A			N/A			N/A			N/A			N/A			N/A	
+ Other Interest Income		9			9			11			8			6			0.00	
+
+    Total Interest Income (TE)		36,150			28,802			34,884			28,194			29,078			25.51	
+
+ Int on Deposits in Foreign Off		N/A			N/A			N/A			N/A			N/A			N/A	
+ Interest on Domestic Deposits		2,643			1,236			3,012			800			75			113.83	
+ Int on Fed Funds Purch & Repos		0			0			0			0			0			N/A	
+ Int Trad Liab & Oth Borrowings		N/A			N/A			N/A			N/A			N/A			N/A	
+ Int on Sub Notes & Debentures		N/A			N/A			N/A			N/A			N/A			N/A	
+ Other Interest Expense		0			197			28			14			0			-100.00	
+
+    Total Interest Expense		2,643			1,433			3,040			814			75			84.44	
+
+    Net Interest Income (TE)		33,507			27,369			31,844			27,380			29,003			22.43	
+ Non-interest Income		19,609			10,920			19,909			10,394			10,813			79.57	
+    Adjusted Operating Income (TE)		53,116			38,289			51,753			37,774			39,816			38.72	
+
+ Non-Interest Expense		44,589			32,961			39,534			30,621			35,578			35.28	
+    Pre-Provision Net Revenue (TE)		8,527			5,328			12,219			7,153			4,238			60.04	
+ Provision: Credit Losses		1,771			366			1,055			1,105			2,860			383.88	
+ Provision: Credit Losses Other Assets		-6			-47			-73			166			N/A			N/A	
+    Pretax Operating Income (TE)		6,762			5,009			11,237			5,882			1,378			35.00	
+
+ Realized G/L Hld-to-Maturity Sec		0			0			0			0			0			N/A	
+ Realized G/L Avail-for Sale Sec		0			-93			0			0			0			N/A	
+ Unrealized G/L Equity Securities		33			-24			-67			91			4			N/A	
+    Pretax Net Operating Inc (TE)		6,795			4,892			11,170			5,973			1,382			38.90	
+
+ Applicable Income Taxes		1,742			1,264			2,314			1,416			415			37.82	
+ Current Tax Equiv Adjustment		11			11			11			11			8			0.00	
+ Other Tax Equiv Adjustments		0			0			0			0			0			N/A	
+    Applicable Income Taxes (TE)		1,753			1,275			2,325			1,427			423			37.49	
+
+    Net Operating Income		5,042			3,617			8,845			4,546			959			39.40	
+
+ Net Discontinued / Extraordinary Items		0			0			0			0			0			N/A	
+ Net Inc Noncontrolling Minority Interests		0			0			0			0			0			N/A	
+    Net Income		5,042			3,617			8,845			4,546			959			39.40	
+
+ Cash Dividends Declared		0			0			0			0			0			N/A	
+ Retained Earnings		5,042			3,617			8,845			4,546			959			39.40	
+ Memo: Net International Income		N/A			N/A			N/A			N/A			N/A			N/A	
+ Memo: Interest on Time Dep Over Ins Limit		1			16			1			15			7			-93.75	
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Noninterest Income and Expenses
+OCC Charter # 0			County: JACKSON			Noninterest Income and Expenses--Page 3						7/23/2025 12:03:07 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ PERCENT OF AVERAGE ASSETS:	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 5	PCT	BANK	PG 5	PCT
+    Personnel Expense	1.97	1.41	91	2.13	1.40	94	1.96	1.39	91	1.95	1.42	90	2.80	1.40	97	
+    Occupancy Expense	0.11	0.25	6	0.13	0.25	9	0.14	0.25	10	0.14	0.26	12	0.17	0.26	21	
+    Other Oper Exp (Incl Intangibles)	8.48	0.78	99	10.59	0.75	99	9.63	0.78	99	10.71	0.77	99	14.26	0.73	99	
+       Total Overhead Expense	10.57	2.46	99	12.85	2.42	99	11.73	2.43	99	12.80	2.47	99	17.23	2.40	99	
+
+
+ NON-INTEREST EXPENSES:																		
+    Personnel Expense		8,328			5,459			23,228			18,105			9,382				
+    Occupancy Expense		483			336			1,613			1,333			582				
+    Goodwill Impairment		0			0			0			0			0				
+    Other Intangible Amortiz		1,527			635			3,744			1,293			257				
+    Other Oper Exp (incl Intangibles)		34,251			26,531			110,530			98,348			47,529				
+       Non-Interest Expense		44,589			32,961			139,115			119,079			57,750				
+
+
+ PERCENT OF AVERAGE ASSETS:	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 5	PCT	BANK	PG 5	PCT
+    Fiduciary Activities	0.00	0.04	66	0.00	0.03	65	0.00	0.04	65	0.00	0.01	77	0.00	0.01	76	
+    Deposit Service Charges	0.70	0.11	99	0.98	0.11	99	0.55	0.11	98	0.97	0.11	99	1.00	0.11	99	
+    Trading, Vent Cap, Securtz Inc	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+    Inv Banking, Advisory Inc	0.00	0.02	54	0.00	0.02	55	0.00	0.02	53	0.00	0.01	70	0.00	0.01	69	
+    Insurance Comm & Fees	0.00	0.01	63	0.00	0.00	64	0.00	0.00	56	0.00	0.00	59	0.00	0.00	58	
+    Net Servicing Fees	0.00	0.01	48	0.00	0.02	47	0.00	0.02	46	0.00	0.01	59	0.00	0.02	59	
+    Loan & Lease Net Gains/Loss	0.77	0.04	98	0.62	0.04	97	0.81	0.05	97	0.18	0.02	93	0.00	0.04	47	
+    Other Net Gains/Loss	0.00	0.00	13	0.00	0.00	71	0.25	0.00	97	0.13	0.00	98	0.01	0.00	77	
+    Other Non-interest Income	3.18	0.26	99	2.66	0.27	98	3.19	0.27	99	3.15	0.26	99	4.46	0.25	99	
+       Non Interest Income	4.65	0.61	98	4.26	0.61	98	4.81	0.63	98	4.44	0.55	98	5.46	0.56	98	
+
+
+ NON-INTEREST INCOME:																		
+    Fiduciary Activities		0			0			0			0			0				
+    Deposit Service Charges		2,959			2,512			6,576			9,025			3,342				
+    Trading, Vent Cap, Securtz Inc		N/A			N/A			N/A			N/A			N/A				
+    Inv Banking, Advisory Inc		0			0			0			0			0				
+    Insurance Comm & Fees		0			0			0			0			0				
+    Net Servicing Fees		0			0			0			0			0				
+    Loan & Lease Net Gains/Loss		3,230			1,593			9,555			1,687			2				
+    Other Net Gains/Loss		-4			0			2,988			1,219			23				
+    Other Non-Interest Income		13,424			6,815			37,889			29,346			14,944				
+       Non Interest Income		19,609			10,920			57,008			41,277			18,311				
+
+
+ OTHER INCOME & EXPENSE RATIOS:	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 5	PCT	BANK	PG 5	PCT
+    Overhead Less Non-int Inc	5.92	1.83	99	8.59	1.77	99	6.92	1.76	99	8.36	1.89	99	11.77	1.81	99	
+    Efficiency Ratio	83.95	63.17	93	86.08	66.06	93	81.64	64.37	89	83.02	63.81	91	90.40	61.64	97	
+    Avg Persnl Exp Per Empl ($000)	138.80	116.77	77	129.98	113.43	73	110.09	111.84	53	115.32	96.10	81	173.50	92.09	97	
+    Assets Per Employee ($Million)	7.28	8.57	37	6.23	8.42	24	7.52	8.44	42	5.96	7.17	33	6.34	6.90	47	
+
+ 																		
+    Domestic Banking Offices (#)		2			2			2			2			2				
+    Foreign Branches (#)		0			0			0			0			0				
+    Assets Per Domestic Office		873,966			523,262			793,324			467,592			408,624				
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Asset Yields and Funding Costs
+OCC Charter # 0			County: JACKSON			Asset Yields and Funding Costs--Page 3A						7/23/2025 12:03:08 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ YIELD ON OR COST OF:	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 5	PCT	BANK	PG 5	PCT
+    Total Loan & Leases (TE)	13.36	6.24	99	14.47	6.14	99	13.99	6.28	99	14.41	5.82	99	16.87	4.97	99	
+       Loans in Domestic Offices	13.36	6.23	99	14.47	6.13	99	13.99	6.27	99	14.41	5.81	99	16.87	4.96	99	
+          Real Estate	6.64	5.97	81	6.60	5.79	83	6.86	5.95	86	6.26	5.53	83	5.75	4.81	92	
+             Secured by 1-4 Fam Resi Prop	7.66	5.96	92	7.48	5.80	91	7.19	5.95	84	6.63	5.64	83	6.76	4.92	94	
+             All Other Loans Sec Real Estate	6.47	6.01	72	6.44	5.83	75	6.79	5.98	80	6.21	5.52	80	5.61	4.81	87	
+          Commercial & Industrial	9.84	7.22	95	9.51	7.37	92	10.09	7.48	94	9.22	6.79	93	8.96	5.63	96	
+          Individual	12.93	7.60	96	14.85	7.35	97	14.02	7.60	97	15.59	7.10	98	13.96	6.32	98	
+             Credit Card	22.76	10.09	93	24.77	10.98	91	22.99	10.42	93	23.54	9.44	91	31.73	8.77	95	
+          Agricultural	N/A	7.44	N/A	N/A	7.71	N/A	N/A	7.75	N/A	N/A	7.04	N/A	4.49	5.35	16	
+       Loans in Foreign Offices	N/A	9.13	N/A	N/A	8.81	N/A	N/A	9.30	N/A	N/A	5.40	N/A	N/A	5.23	N/A	
+    Total Investment Securities (TE)	4.63	3.05	92	4.34	2.83	89	4.51	2.91	91	4.43	2.54	96	5.87	2.06	99	
+    Total Investment Securities (Book)	4.60	2.94	93	4.27	2.73	90	4.46	2.81	92	4.37	2.41	96	5.78	1.93	99	
+       US Treas & Agency (Excl MBS)	4.57	2.51	93	4.01	2.42	84	4.35	2.56	86	3.65	2.24	87	4.46	1.64	99	
+       Mortgage Backed Securities	4.80	3.06	90	3.43	2.74	75	4.97	2.89	92	3.20	2.52	78	4.90	1.91	99	
+       All Other Securities	3.86	2.99	78	5.83	2.98	94	3.71	2.97	75	7.33	2.56	99	7.52	2.30	99	
+    Interest-Bearing Bank Balances	4.41	4.15	78	5.36	5.02	64	4.85	5.05	23	5.01	4.50	61	3.37	1.32	97	
+    Federal Funds Sold & Resales	N/A	3.53	N/A	N/A	4.38	N/A	N/A	4.56	N/A	N/A	4.70	N/A	N/A	1.45	N/A	
+    Total Interest Bearing Deposits	1.43	2.67	5	0.84	2.77	1	1.43	2.86	4	0.39	1.88	1	0.06	0.51	0	
+       Transaction accounts	3.41	1.58	92	1.71	1.71	52	3.74	1.72	90	1.56	0.97	75	0.78	0.31	90	
+       Other Savings Deposits	0.88	2.02	11	0.89	2.14	12	1.16	2.19	18	0.46	1.38	15	0.04	0.38	2	
+       Time Deposits	0.37	4.02	0	0.27	4.16	0	0.37	4.29	0	0.07	3.01	0	0.05	0.88	0	
+       Foreign Office Deposits	N/A	2.39	N/A	N/A	2.09	N/A	N/A	2.38	N/A	N/A	0.22	N/A	N/A	0.18	N/A	
+
+    Federal Funds Purchased & Repos	N/A	2.41	N/A	N/A	2.76	N/A	N/A	2.96	N/A	N/A	3.34	N/A	N/A	1.34	N/A	
+    Other Borrowed Money	N/A	4.05	N/A	N/A	4.42	N/A	N/A	4.49	N/A	N/A	4.36	N/A	N/A	2.19	N/A	
+    Subord Notes & Debentures	N/A	0.00	N/A	N/A	3.92	N/A	N/A	4.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+    Other Interest Expense	0.00	3.78	5	5.28	4.50	77	5.03	4.62	67	4.28	4.33	41	N/A	2.17	N/A	
+    All Interest-Bearing Funds	1.43	2.73	4	0.95	2.88	1	1.47	2.96	3	0.39	2.01	1	0.06	0.56	0	
+
+    Memo: Interest on Time Dep Over Ins Limit	1.25	4.10	0	3.33	4.27	11	2.82	4.34	5	2.32	3.29	13	0.74	0.98	33	
+
+ PERCENT OF AVERAGE ASSETS:	
+    Total Loan & Leases	51.72	71.11	6	69.08	70.04	45	63.81	70.78	26	71.27	65.65	61	77.61	61.14	84	
+       Loans in Domestic Offices	51.72	70.88	6	69.08	69.79	46	63.81	70.55	27	71.27	65.36	61	77.61	60.95	85	
+          Real Estate	15.47	55.32	2	22.81	53.78	4	19.40	54.86	2	24.81	50.49	5	24.96	46.57	7	
+             Secured by 1-4 Fam Resid Prop	2.21	15.42	6	3.46	14.37	8	3.12	15.24	7	2.96	16.10	5	2.92	14.14	7	
+             All Other Loans Sec Real Estate	13.26	38.52	4	19.35	37.98	7	16.28	38.31	5	21.85	33.04	20	22.03	31.24	24	
+          Commercial & Industrial	2.44	9.04	10	4.45	9.01	23	3.52	8.95	15	3.98	7.47	23	5.04	7.30	36	
+          Individual	19.74	1.51	97	21.53	1.59	96	23.08	1.55	98	18.07	1.73	98	21.30	1.56	98	
+             Credit Card	13.57	0.02	99	19.36	0.02	99	17.35	0.02	99	23.21	0.01	99	25.83	0.01	99	
+          Agricultural	0.00	0.91	30	0.00	0.87	30	0.00	0.92	29	0.00	1.98	24	0.19	1.90	44	
+       Loans in Foreign Offices	N/A	0.77	N/A	N/A	0.57	N/A	N/A	0.66	N/A	N/A	1.00	N/A	N/A	0.69	N/A	
+    Total Investment Securities	8.13	17.79	18	6.76	19.51	13	7.75	18.53	17	6.73	24.03	11	4.56	24.57	8	
+       US Treas & Agency (Excl MBS)	3.25	3.01	63	3.62	3.88	60	3.69	3.49	63	2.54	5.76	36	0.88	5.59	21	
+       Mortgage Backed Securities	3.95	7.49	34	1.63	7.49	21	2.76	7.39	27	2.56	6.97	32	2.00	7.25	28	
+       All Other Securities	0.92	5.42	18	1.51	5.97	25	1.31	5.64	23	1.63	7.95	21	1.68	8.24	21	
+    Interest-Bearing Bank Balances	28.92	5.05	99	17.47	4.46	96	22.33	4.77	98	12.57	4.41	90	7.78	7.23	61	
+    Federal Funds Sold & Resales	0.00	0.13	55	0.00	0.11	56	0.00	0.11	52	0.00	0.44	44	0.00	0.64	43	
+    Total Interest Bearing Deposits	43.91	68.61	1	57.22	66.98	16	53.87	67.68	8	54.66	65.16	13	60.94	65.23	33	
+       Transaction Accounts	12.98	14.18	48	14.29	12.87	56	12.69	13.16	50	5.39	15.07	16	0.77	15.63	2	
+       Other Savings Deposits	13.53	28.99	8	19.48	29.88	20	18.31	29.52	17	24.97	27.44	44	26.68	31.50	37	
+       Time Deposits	17.40	23.01	30	23.45	21.36	61	22.86	22.48	56	24.30	20.14	68	33.49	15.63	93	
+       Foreign Office Deposits	N/A	6.96	N/A	N/A	5.69	N/A	N/A	6.50	N/A	N/A	0.03	N/A	N/A	0.02	N/A	
+
+    Federal Funds Purchased & Repos	0.00	0.30	51	0.00	0.38	48	0.00	0.36	31	0.00	0.33	37	0.00	0.32	41	
+    Other Borrowed Money	0.04	2.50	25	1.46	3.87	30	0.63	3.37	26	0.04	2.86	20	0.00	1.36	24	
+    Subord Notes & Debentures	0.00	0.00	99	0.00	0.00	99	0.00	0.00	99	0.00	0.01	99	0.00	0.01	99	
+    Other Interest Expense Balances	0.04	2.51	25	1.46	3.87	30	0.63	3.37	26	0.04	2.87	20	0.00	1.37	24	
+    All Interest-Bearing Funds	43.95	72.53	1	58.67	72.50	9	54.49	72.64	4	54.70	69.44	6	60.94	67.86	24	
+
+    Time Deposits Over Ins Limit	0.02	6.96	0	0.19	6.09	1	0.08	6.65	0	0.13	5.56	0	0.44	3.71	3	
+
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Balance Sheet $
+OCC Charter # 0			County: JACKSON			Balance Sheet $--Page 4						7/23/2025 12:03:09 PM
+Public Report
+																Percent Change
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		1 Quarter	1 Year
+ Assets:																		
+ Real Estate Loans		268,288			229,556			241,011			238,082			211,940		11.32	16.87	
+    Construction & Development		67,364			58,274			62,933			58,029			56,193		7.04	15.60	
+    Farmland		6,714			7,206			6,927			7,359			8,132		-3.07	-6.83	
+    1-4 Family Residential		34,821			33,491			37,702			32,139			22,282		-7.64	3.97	
+    Multifamily		22,210			31,457			22,307			35,645			21,077		-0.43	-29.40	
+    Non-Farm Non-Residential		137,179			99,128			111,142			104,910			104,256		23.43	38.39	
+    RE Loans in Foreign Offices		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+ Commercial Loans		38,604			42,818			42,281			48,650			37,509		-8.70	-9.84	
+ Individual Loans		493,433			411,922			478,191			395,726			358,908		3.19	19.79	
+ Agricultural Loans		0			0			0			0			0		N/A	N/A	
+ Other Loans & Leases		6,735			233			3,438			9,383			8,201		95.90	2790.56	
+    ACL on LN&LS HFI		6,509			4,655			5,423			4,321			3,060		20.03	39.83	
+    Unearned Income		543			506			571			539			98		-4.90	7.31	
+       Net Loans & Leases		800,008			679,368			758,927			686,982			613,400		5.41	17.76	
+ U.S. Treasury & Agency Securities		124,424			41,406			84,475			47,070			23,456		47.29	200.50	
+ Municipal Securities		11,271			11,280			11,254			11,390			9,708		0.15	-0.08	
+ Foreign Debt Securities		0			0			0			0			0		N/A	N/A	
+ All Other Securities		23,652			9,760			23,415			12,923			13,895		1.01	142.34	
+    HTM Securities Allowance		0			0			0			0			N/A		N/A	N/A	
+       Net Securities		159,347			62,446			119,144			71,383			47,059		33.74	155.18	
+ Interest-Bearing Bank Balances		564,551			224,914			516,131			87,060			56,068		9.38	151.01	
+ Federal Funds Sold		0			0			0			0			0		N/A	N/A	
+ Sec Purch Under Agreemt to Resell		0			0			0			0			0		N/A	N/A	
+ Trading Account Assets		0			0			0			0			0		N/A	N/A	
+    Total Investments		723,898			287,360			635,275			158,443			103,127		13.95	151.91	
+    Total Earning Assets		1,523,906			966,728			1,394,202			845,425			716,527		9.30	57.64	
+
+ Nonint Cash & Due From Banks		14,811			15,488			28,729			27,528			37,046		-48.45	-4.37	
+ Premises, Fix Assts, Cap Leases		8,344			8,585			8,461			8,674			8,978		-1.38	-2.81	
+ Other Real Estate Owned		0			800			0			800			2,294		N/A	-100.00	
+ Dir & Indir Inv RE Ventures		0			0			0			0			0		N/A	N/A	
+ Inv in Unconsolidated Subs		0			0			0			0			0		N/A	N/A	
+ Other Assets		200,871			54,924			155,255			52,757			52,403		29.38	265.73	
+    Total Assets		1,747,932			1,046,525			1,586,647			935,184			817,248		10.17	67.02	
+ Average Assets During Quarter		1,688,049			1,025,836			1,482,291			984,950			821,464		13.88	64.55	
+
+ Liabilities:																		
+ Demand Deposits		1,004,932			413,015			886,551			356,886			220,628		13.35	143.32	
+ All Now & ATS Accounts		0			0			0			0			1,711		N/A	N/A	
+ Money Market Deposit Accounts		37,712			24,718			52,167			9,244			47,821		-27.71	52.57	
+ Other savings Deposits		186,976			175,702			166,396			179,801			182,131		12.37	6.42	
+ Time Deps At Or Below Insurance Limit		306,542			258,329			281,727			216,453			219,058		8.81	18.66	
+ Less: Fully Insured Brokered Deposits		308,437			258,133			338,381			215,279			215,850		-8.85	19.49	
+    Core Deposits		1,227,725			613,631			1,048,460			547,105			455,499		17.10	100.08	
+ Fully Insured Brokered Deposits		308,437			258,133			338,381			215,279			215,850		-8.85	19.49	
+ Time Deps Above Insurance Limit		322			1,829			321			1,816			3,071		0.31	-82.39	
+ Deposits in Foreign Offices		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+    Total Deposits		1,536,484			873,593			1,387,162			764,200			674,420		10.76	75.88	
+ Federal Funds Purchased		0			0			0			0			0		N/A	N/A	
+ Sec Sold Under Agreemt to Repurch		0			0			0			0			0		N/A	N/A	
+ Fed Home Loan Bor Mat < 1 Year		0			0			0			10,483			0		N/A	N/A	
+ Fed Home Loan Bor Mat > 1 Year		655			0			655			0			0		0.00	N/A	
+ Oth Borrowing Mat < 1 Year		0			4,744			0			0			0		N/A	-100.00	
+ Oth Borrowing Mat > 1 Year		0			0			0			0			0		N/A	N/A	
+ Subordinated Notes & Debentures		0			0			0			0			0		N/A	N/A	
+ Other Liabilities		39,864			30,225			34,909			26,286			26,747		14.19	31.89	
+    Total Liabilities		1,577,003			908,562			1,422,726			800,969			701,167		10.84	73.57	
+ Total Bank Capital & Min Int		170,929			137,963			163,921			134,215			116,081		4.28	23.89	
+    Total Liabilities & Capital		1,747,932			1,046,525			1,586,647			935,184			817,248		10.17	67.02	
+
+ Memoranda:																		
+ Officers, Shareholder Loans (#)		1			1			1			1			1				
+ Officers, Shareholder Loans ($)		1,157			952			1,157			950			968		0.00	21.53	
+ Held-to-Maturity Securities		0			0			0			0			0		N/A	N/A	
+ Available-for-Sale Securities		157,377			60,507			117,207			69,420			45,128		34.27	160.10	
+ Non-Interest Bearing Deposits		679,603			220,511			541,436			275,419			217,129		25.52	208.19	
+ Estimate of Uninsured Deposits		446,125			N/A			N/A			N/A			N/A		N/A	N/A	
+ Deposit Accounts > $250M		607,623			393,909			547,524			307,105			211,898		10.98	54.25	
+ All Brokered Deposits		317,031			258,133			349,545			215,279			215,850		-9.30	22.82	
+ Brokered Reciprocal Deposits		2,137			798			55,282			0			0		-96.13	167.79	
+ Listing Service Deposits		0			0			0			0			0		N/A	N/A	
+ LN&LS in Foreign Offices		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+ Loans Held for Sale (HFS)		77,163			45,728			82,918			36,194			347		-6.94	68.74	
+ Loans Held for Investment (HFI)		729,354			638,295			681,432			655,109			616,113		7.03	14.27	
+
+ Allowance for Credit Losses (ACL):																		
+ ACL on LN&LS HFI		6,509			4,655			5,423			4,321			3,061		20.03	39.83	
+ ACL on AFS/HTM Sec		0			0			0			0			N/A		N/A	N/A	
+ ACL on Other Fin Assets		0			0			0			0			N/A		N/A	N/A	
+ ACL on Off Bal Sheet Exp		286			153			292			201			0		-2.05	86.93	
+ Total ACL		6,795			4,808			5,715			4,522			3,061		18.90	41.33	
+    Less: ACL for Purch Cred-Deterior		0			0			0			0			N/A		N/A	N/A	
+    Less: ACL for AFS Securities		0			0			0			0			N/A		N/A	N/A	
+    Less: Allocated Transfer Risk Resv		0			0			0			0			0		N/A	N/A	
+ Total Adjusted ACL		6,795			4,808			5,715			4,522			3,061		18.90	41.33	
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Off Balance Sheet Items
+OCC Charter # 0			County: JACKSON			Off Balance Sheet Items--Page 5						7/23/2025 12:03:10 PM
+Public Report
+																Percent Change
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		1 Quarter	1 Year
+ Outstanding (% of Total Assets)	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 5	PCT	BANK	PG 5	PCT
+    Home Equity (1-4 Family)	0.15	1.94	14	0.22	1.84	18	0.19	1.91	16	0.29	1.47	27	0.66	1.46	38	
+    Credit Card	13.30	0.16	99	10.52	0.16	98	11.55	0.16	99	9.06	0.06	99	10.44	0.06	99	
+    Commercial RE Secured by RE	1.78	4.30	17	3.57	4.57	39	2.32	4.29	23	4.22	3.39	66	3.07	3.98	43	
+       1-4 Fam Residential Const & Land	0.91	0.97	55	1.99	0.99	79	1.09	0.98	61	2.16	1.01	81	1.40	1.24	62	
+       Comml RE, Oth Const & Land	0.87	3.08	14	1.58	3.38	23	1.23	3.06	19	2.06	2.05	53	1.67	2.33	42	
+    Commercial RE Not Secured by RE	0.00	0.01	81	0.00	0.02	82	0.00	0.01	82	0.00	0.00	91	0.00	0.00	91	
+    All Other	38.56	6.72	99	12.79	7.04	85	37.19	6.67	99	6.07	5.75	58	2.50	5.97	19	
+       Total LN&LS Commitments	53.78	14.11	99	27.11	14.86	94	51.24	14.06	99	19.65	11.56	90	16.66	12.39	76	
+    Securities Underwriting	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+
+ Standby Letters of Credit	0.03	0.30	14	0.05	0.29	17	0.03	0.31	12	0.27	0.20	69	0.28	0.20	69	
+    Amount Conveyed to Others	N/A	0.02	N/A	N/A	0.01	N/A	N/A	0.02	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+ Commercial Letters of Credit	0.00	0.00	87	0.00	0.00	89	0.00	0.00	88	0.00	0.00	89	0.00	0.00	89	
+
+ Assets Securitized or Sold w/Rec	0.00	0.36	71	0.00	0.30	72	0.00	0.36	71	0.00	0.38	78	0.00	0.37	78	
+    Amount of Recourse Exposure	N/A	0.04	N/A	N/A	0.03	N/A	N/A	0.04	N/A	N/A	0.01	N/A	N/A	0.02	N/A	
+
+ Credit Derivatives Bank as Guarantor	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.01	N/A	N/A	0.01	N/A	
+ Credit Derivatives Bank as Beneficiary	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+
+ All Oth Off-Balance Sheet Items	0.00	0.81	69	0.00	0.71	70	0.00	0.83	68	0.00	0.62	77	0.00	0.50	78	
+
+ Off-Balance Sheet Items	53.81	16.92	98	27.15	17.50	86	51.27	16.92	98	19.92	14.17	78	16.94	14.86	65	
+
+ Outstanding ($000)																		
+    Home Equity (1-4 Family)		2,553			2,333			2,943			2,741			5,355		-13.25	9.43	
+    Credit Card		232,493			110,145			183,321			84,751			85,288		26.82	111.08	
+    Commercial RE Secured by RE		31,072			37,320			36,732			39,487			25,068		-15.41	-16.74	
+       1-4 Fam Residential Const & Land		15,862			20,823			17,228			20,189			11,446		-7.93	-23.82	
+       Commercial RE, Oth Const & Land		15,210			16,497			19,504			19,298			13,622		-22.02	-7.80	
+    Commercial RE Not Secured by RE		0			0			0			0			0		N/A	N/A	
+    All Other		674,006			133,900			590,080			56,761			20,407		14.22	403.37	
+    Securities Underwriting		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+ Memo: Unused Commit w/mat GT 1 YR		N/A			N/A			34,266			35,406			39,907		N/A	N/A	
+
+ Standby Letters of Credit		443			483			443			2,520			2,298		0.00	-8.28	
+    Amount Conveyed to Others		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+ Commercial Letters of Credit		0			0			0			0			0		N/A	N/A	
+
+ Assets Securitized or Sold w/recourse		0			0			0			0			0		N/A	N/A	
+    Amount of Recourse Exposure		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+
+ Credit Derivatives Bank as Guarantor		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+ Credit Derivatives Bank as Beneficiary		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+
+ All Oth Off-Balance Sheet Items		0			0			0			0			0		N/A	N/A	
+
+ Off-Balance Sheet Items		940,567			284,181			813,519			186,260			138,416		15.62	230.97	
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Derivative Instruments
+OCC Charter # 0			County: JACKSON			Derivative Instruments--Page 5A						7/23/2025 12:03:10 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ Notional Amount ($000)																		
+ Derivative Contracts		0			0			0			0			0				
+    Interest Rate Contracts		0			0			0			0			0				
+    Other Derivative Contracts		0			0			0			0			0				
+       Foreign Exchange Contracts		N/A			N/A			N/A			N/A			N/A				
+       Equity, Comm & Oth Contracts		N/A			N/A			N/A			N/A			N/A				
+
+ Derivatives Position																		
+    Future and Forwards		N/A			N/A			N/A			N/A			N/A				
+    Written Options		N/A			N/A			N/A			N/A			N/A				
+       Exchange Traded		N/A			N/A			N/A			N/A			N/A				
+       Over-the-Counter		N/A			N/A			N/A			N/A			N/A				
+    Purchased Options		N/A			N/A			N/A			N/A			N/A				
+       Exchange Traded		N/A			N/A			N/A			N/A			N/A				
+       Over-the-Counter		N/A			N/A			N/A			N/A			N/A				
+    Swaps		N/A			N/A			N/A			N/A			N/A				
+
+ Held-for-Trading		0			0			0			0			0				
+    Interest Rate Contracts		0			0			0			0			0				
+    Other Derivative Contracts		0			0			0			0			0				
+       Foreign Exchange Contracts		N/A			N/A			N/A			N/A			N/A				
+       Equity, Comm & Oth Contracts		N/A			N/A			N/A			N/A			N/A				
+ Non-Traded		0			0			0			0			0				
+    Interest Rate Contracts		0			0			0			0			0				
+    Other Derivative Contracts		0			0			0			0			0				
+       Foreign Exchange Contracts		N/A			N/A			N/A			N/A			N/A				
+       Equity, Comm & Oth Contracts		N/A			N/A			N/A			N/A			N/A				
+    Memo: Marked-to-Market		N/A			N/A			N/A			N/A			N/A				
+
+ Derivative Contracts (RBC Def)		N/A			N/A			0			0			0				
+    One Year or Less		N/A			N/A			0			0			0				
+    Over 1 Year to 5 Years		N/A			N/A			0			0			0				
+    Over 5 Years		N/A			N/A			0			0			0				
+
+ Gross Negative Fair Value		N/A			N/A			N/A			N/A			N/A				
+ Gross Positive Fair Value		N/A			N/A			N/A			N/A			N/A				
+    Held-for-Trading		N/A			N/A			N/A			N/A			N/A				
+    Non-Traded		N/A			N/A			N/A			N/A			N/A				
+    Memo: Marked-to-Market		N/A			N/A			N/A			N/A			N/A				
+ Current Credit Exposure All Derivatives		N/A			N/A			0			0			0				
+ Credit Losses Off_BS Derivatives		N/A			N/A			N/A			N/A			N/A				
+
+ Past Due Derivatives Instruments:																		
+    Fair Value Carried as Assets		N/A			N/A			N/A			N/A			N/A				
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Derivative Analysis
+OCC Charter # 0			County: JACKSON			Derivative Analysis--Page 5B						7/23/2025 12:03:11 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ Percent of Notional Amounts	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 5	PCT	BANK	PG 5	PCT
+ Interest Rate Contracts	N/A	99.13	N/A	N/A	98.45	N/A	N/A	99.18	N/A	N/A	97.15	N/A	N/A	97.48	N/A	
+ Other Derivative Contracts	N/A	0.01	N/A	N/A	0.03	N/A	N/A	0.01	N/A	N/A	2.85	N/A	N/A	2.52	N/A	
+    Foreign Exchange Contracts	N/A	1.21	N/A	N/A	1.35	N/A	N/A	1.17	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+    Equity, Comm & Oth Contracts	N/A	1.79	N/A	N/A	1.03	N/A	N/A	1.64	N/A	N/A	1.33	N/A	N/A	1.27	N/A	
+
+ Derivatives Position	
+    Futures and Forwards	N/A	13.49	N/A	N/A	12.92	N/A	N/A	12.70	N/A	N/A	17.56	N/A	N/A	23.83	N/A	
+    Written Options	N/A	10.61	N/A	N/A	12.31	N/A	N/A	9.90	N/A	N/A	17.25	N/A	N/A	18.54	N/A	
+       Exchange Traded	N/A	0.16	N/A	N/A	0.09	N/A	N/A	0.28	N/A	N/A	2.67	N/A	N/A	1.27	N/A	
+       Over-the-Counter	N/A	10.43	N/A	N/A	12.21	N/A	N/A	9.60	N/A	N/A	16.75	N/A	N/A	18.26	N/A	
+    Purchased Options	N/A	1.97	N/A	N/A	1.41	N/A	N/A	1.63	N/A	N/A	0.07	N/A	N/A	0.67	N/A	
+       Exchange Traded	N/A	0.07	N/A	N/A	0.03	N/A	N/A	0.10	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+       Over-the-Counter	N/A	1.90	N/A	N/A	1.38	N/A	N/A	1.52	N/A	N/A	0.07	N/A	N/A	0.67	N/A	
+    Swaps	N/A	40.52	N/A	N/A	38.00	N/A	N/A	40.80	N/A	N/A	15.94	N/A	N/A	10.98	N/A	
+
+ Held-for-Trading	N/A	3.58	N/A	N/A	4.32	N/A	N/A	3.43	N/A	N/A	2.27	N/A	N/A	2.30	N/A	
+    Interest Rate Contracts	N/A	3.58	N/A	N/A	3.96	N/A	N/A	3.43	N/A	N/A	2.35	N/A	N/A	2.50	N/A	
+    Other Derivative Contracts	N/A	0.00	N/A	N/A	0.35	N/A	N/A	0.00	N/A	N/A	0.50	N/A	N/A	0.12	N/A	
+       Foreign Exchange Contracts	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+       Equity, Comm & Oth Contracts	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+ Non-Traded	N/A	55.45	N/A	N/A	53.30	N/A	N/A	57.37	N/A	N/A	14.90	N/A	N/A	20.14	N/A	
+    Interest Rate Contracts	N/A	41.00	N/A	N/A	36.98	N/A	N/A	41.03	N/A	N/A	18.24	N/A	N/A	22.38	N/A	
+    Other Derivative Contracts	N/A	0.01	N/A	N/A	0.01	N/A	N/A	0.01	N/A	N/A	2.34	N/A	N/A	2.40	N/A	
+       Foreign Exchange Contracts	N/A	1.21	N/A	N/A	1.35	N/A	N/A	1.17	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+       Equity, Comm & Oth Contracts	N/A	1.79	N/A	N/A	1.03	N/A	N/A	1.64	N/A	N/A	1.33	N/A	N/A	1.27	N/A	
+    Memo: Marked-to-Market	N/A	61.29	N/A	N/A	55.32	N/A	N/A	55.60	N/A	N/A	69.03	N/A	N/A	19.78	N/A	
+
+ Derivative Contracts (RBC Def)	N/A	54.85	N/A	N/A	57.52	N/A	N/A	45.86	N/A	N/A	20.61	N/A	N/A	24.21	N/A	
+    One Year or Less	N/A	16.12	N/A	N/A	13.01	N/A	N/A	10.27	N/A	N/A	6.69	N/A	N/A	10.27	N/A	
+    Over 1 Year to 5 Years	N/A	31.50	N/A	N/A	28.79	N/A	N/A	25.19	N/A	N/A	11.25	N/A	N/A	6.10	N/A	
+    Over 5 Years	N/A	16.81	N/A	N/A	18.61	N/A	N/A	13.96	N/A	N/A	8.54	N/A	N/A	10.49	N/A	
+
+ Gross Negative Fair Value	N/A	0.77	N/A	N/A	1.01	N/A	N/A	0.79	N/A	N/A	0.34	N/A	N/A	0.66	N/A	
+ Gross Positive Fair Value	N/A	1.13	N/A	N/A	1.66	N/A	N/A	1.42	N/A	N/A	1.65	N/A	N/A	2.17	N/A	
+
+ By Tier 1 Capital:	
+    Gross Negative Fair Value (x)	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+    Gross Positive Fair Value (x)	N/A	0.00	N/A	N/A	0.01	N/A	N/A	0.01	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+       Held-for-Trading (x)	0.00	0.00	92	0.00	0.00	92	0.00	0.00	92	0.00	0.01	97	0.00	0.01	97	
+       Non-Traded (x)	0.00	0.20	44	0.00	0.17	47	0.00	0.19	44	0.00	0.02	74	0.00	0.01	76	
+       Non-Traded Marked-to-Mkt(x)	N/A	0.29	N/A	N/A	0.25	N/A	N/A	0.29	N/A	N/A	0.06	N/A	N/A	0.04	N/A	
+ Current Credit Exposure (x)	N/A	0.00	N/A	N/A	0.00	N/A	0.00	0.00	71	0.00	0.00	92	0.00	0.00	93	
+ Credit Losses on Derivatives	N/A	0.01	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.03	N/A	
+
+ Past Due Derivative Instruments:	
+    Fair Value Carried as Assets	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+
+ Other Ratios:	
+ Cur Credit Exposure/Risk WT AST	N/A	0.05	N/A	N/A	0.06	N/A	0.00	0.03	71	0.00	0.00	92	0.00	0.00	93	
+ Credit Losses on Derivatives/CR Allow	N/A	0.09	N/A	N/A	0.00	N/A	N/A	0.01	N/A	N/A	0.06	N/A	N/A	0.52	N/A	
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Balance Sheet %
+OCC Charter # 0			County: JACKSON			Balance Sheet Percentage Composition--Page 6						7/23/2025 12:03:11 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ Percent of Average Assets	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 5	PCT	BANK	PG 5	PCT
+ Loans HFS	4.80	0.08	97	4.13	0.07	98	4.94	0.10	97	1.26	0.03	97	0.15	0.05	83	
+ Loans HFI	42.31	71.20	3	65.27	70.28	30	57.10	70.99	13	69.49	65.81	56	77.44	61.44	84	
+    Less: ACL on LN&LS	0.36	0.85	2	0.45	0.84	5	0.43	0.85	3	0.35	0.84	4	0.31	0.82	3	
+       Net Loans & Leases	46.75	70.72	3	68.95	69.77	45	61.62	70.53	20	70.40	65.23	60	77.27	60.98	85	
+
+ Interest-Bearing Bank Balances	32.41	5.29	99	15.74	4.72	93	21.28	4.80	97	12.91	4.58	90	8.59	7.34	63	
+ Federal Funds Sold & Resales	0.00	0.12	61	0.00	0.09	62	0.00	0.10	58	0.00	0.40	48	0.00	0.59	46	
+ Trading Account Assets	0.00	0.00	91	0.00	0.00	92	0.00	0.00	91	0.00	0.01	98	0.00	0.02	97	
+ Held-to-Maturity Securities	0.00	1.48	52	0.00	1.80	50	0.00	1.59	51	0.00	1.42	60	0.00	1.14	60	
+    HTM Securities Allowance	0.00	0.00	84	0.00	0.00	84	0.00	0.00	83	0.00	0.00	93	N/A	0.00	N/A	
+ Available-for-Sale Securities	8.23	14.09	30	6.56	15.15	22	7.69	14.58	26	6.31	19.41	18	5.00	20.93	13	
+ Marketable Equity Sec at FV	0.12	0.01	91	0.20	0.02	94	0.17	0.01	93	0.21	0.00	97	0.12	0.00	95	
+
+    Total Earning Assets	87.51	93.75	1	91.44	93.73	13	90.76	93.72	9	89.82	93.86	3	90.98	94.01	7	
+
+ Nonint Cash & Due From Banks	1.31	1.08	68	2.17	1.03	94	1.89	1.09	91	3.33	1.38	96	3.88	1.49	96	
+ Premises, Fix Assts & Cap Leases	0.50	1.39	9	0.87	1.36	22	0.74	1.39	16	0.95	1.43	30	1.66	1.40	66	
+ Other Real Estate Owned	0.00	0.02	52	0.08	0.01	89	0.04	0.02	78	0.23	0.01	96	0.31	0.02	96	
+ Dir & Indir Inv RE Ventures	0.00	0.00	93	0.00	0.00	92	0.00	0.00	92	0.00	0.01	97	0.00	0.01	97	
+ Inv in Unconsolidated Subs	0.00	0.01	86	0.00	0.01	84	0.00	0.01	85	0.00	0.00	91	0.00	0.00	90	
+ Other Assets	10.68	3.54	99	5.43	3.64	85	6.58	3.59	94	5.66	3.13	94	3.17	2.86	58	
+    Total Non-Earning Assets	12.49	6.25	98	8.56	6.26	86	9.24	6.29	90	10.18	6.14	96	9.02	5.99	92	
+       Total Assets	100.00	100.00	84	100.00	100.00	84	100.00	100.00	83	100.00	100.00	93	100.00	100.00	99	
+
+ Standby Letters of Credit	0.03	0.31	13	0.15	0.29	36	0.08	0.31	19	0.26	0.20	68	0.21	0.20	62	
+
+ Liabilities	
+ Demand Deposits	56.72	21.07	98	38.85	20.49	89	42.47	20.69	92	34.01	23.12	82	26.54	24.42	57	
+ All NOW & ATS Accounts	0.00	8.06	13	0.00	7.33	13	0.00	7.56	12	0.29	10.98	11	0.18	11.63	8	
+ Money Market Deposit Accounts	2.70	18.47	6	1.71	18.16	4	3.36	18.33	5	4.59	14.72	12	5.72	16.50	13	
+ Other Savings Deposits	10.60	9.64	66	17.94	10.72	79	15.14	10.26	76	20.14	11.96	84	21.09	14.07	80	
+ Time Deps At or Below Insurance Limit	17.64	15.58	62	23.96	14.74	84	23.02	15.34	82	24.19	14.32	87	33.15	11.78	97	
+ Less: Fully Insured Brokered Deposits	19.40	3.35	94	23.89	3.57	96	25.03	3.34	97	24.01	1.52	98	32.55	0.77	99	
+    Core Deposits	68.26	73.74	26	58.57	72.88	11	58.95	73.27	9	59.21	78.22	5	54.14	82.63	1	
+ Fully Insured Brokered Deposits	19.40	3.35	94	23.89	3.57	96	25.03	3.34	97	24.01	1.52	98	32.55	0.77	99	
+ Time Deps Above Insurance Limit	0.02	7.00	0	0.18	6.13	1	0.08	6.67	0	0.18	5.54	1	0.44	3.80	2	
+ Deposits in Foreign Offices	N/A	7.19	N/A	N/A	5.98	N/A	N/A	7.21	N/A	N/A	0.03	N/A	N/A	0.02	N/A	
+    Total Deposits	87.68	85.63	65	82.65	84.33	32	84.07	84.81	38	83.40	86.33	25	87.13	88.00	36	
+
+ Federal Funds Purch & Repos	0.00	0.31	65	0.00	0.42	60	0.00	0.36	57	0.00	0.34	59	0.00	0.34	61	
+ Total Fed Home Loan Borrowings	0.04	2.47	31	0.53	2.69	33	0.37	2.69	29	0.23	2.41	29	0.00	1.39	31	
+ Total Other Borrowings	0.00	0.05	74	0.24	0.82	62	0.25	0.53	64	0.00	0.38	65	0.00	0.02	82	
+    Memo: Sht Ter N Core Funding	7.35	11.79	28	5.83	12.24	16	9.15	12.09	36	9.11	8.62	58	18.04	5.19	97	
+
+ Subordinated Notes & Debentures	0.00	0.00	99	0.00	0.00	99	0.00	0.00	99	0.00	0.01	99	0.00	0.01	99	
+ Other Liabilities	2.24	0.92	96	2.85	0.95	96	2.66	0.95	97	2.95	0.67	98	2.60	0.54	98	
+    Total Liabilities (Incl Mortg)	89.96	90.32	38	86.27	90.61	6	87.34	90.48	10	86.58	91.25	6	89.73	91.16	22	
+
+ Total Bank Capital & Min Int	10.04	9.68	61	13.73	9.38	93	12.66	9.52	89	13.42	8.75	93	10.27	8.84	77	
+    Total Liabilities & Capital	100.00	100.00	99	100.00	100.00	99	100.00	100.00	99	100.00	100.00	99	100.00	100.00	99	
+
+ Memo: All Brokered Deposits	19.99	3.80	94	23.89	4.00	95	25.24	3.75	97	24.01	1.90	98	32.55	1.01	99	
+    Insured Brokered Deposits	19.40	3.35	94	23.89	3.57	96	25.03	3.34	97	24.01	1.52	98	32.55	0.77	99	
+
+ Loans HFS as a % Loans	10.18	0.11	98	5.95	0.11	98	7.96	0.13	98	1.78	0.04	97	0.19	0.09	81	
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Allowance & Loan Mix-a
+OCC Charter # 0			County: JACKSON			Analysis of Loan Allowance and Loan Mix--Page 7						7/23/2025 12:03:12 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ Analysis Ratios	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 5	PCT	BANK	PG 5	PCT
+ Loss Provision to Average Assets	0.42	0.10	93	0.14	0.08	77	0.22	0.11	83	0.21	0.07	88	0.92	0.07	99	
+ Recoveries to Prior Credit Loss	12.90	30.59	34	2.24	42.79	11	4.71	57.51	9	2709.09	120.17	97	4.94	103.92	9	
+
+ Net Loss to Average Total LN&LS	0.31	0.07	89	0.02	0.06	55	0.20	0.09	83	0.32	0.04	93	0.01	0.02	54	
+ Gross Loss to Average Total LN&LS	0.34	0.08	88	0.03	0.08	47	0.22	0.11	80	0.46	0.07	94	0.01	0.05	37	
+ Recoveries to Average Total LN&LS	0.02	0.02	64	0.01	0.02	46	0.02	0.02	57	0.13	0.02	93	0.01	0.03	29	
+
+ ACL on LN&LS HFI to LN&LS HFI	0.89	1.21	13	0.73	1.22	6	0.80	1.20	9	0.66	1.28	4	0.50	1.31	1	
+ ACL on LN&LS HFI to Total LN&LS	0.81	1.20	9	0.68	1.21	4	0.71	1.20	5	0.63	1.28	3	0.50	1.31	1	
+ ACL on LN&LS HFI to Net Losses (X)	2.38	87.86	11	36.37	76.43	53	3.61	59.02	14	2.02	80.61	3	85.51	122.38	66	
+ ACL on LN&LS HFI to Nonaccrual LN&LS (X)	1.44	6.66	28	0.81	8.91	5	1.32	7.34	22	0.74	12.13	5	1.02	13.54	9	
+
+ Earnings Coverage of Net Losses (X)	12.49	146.31	27	166.88	108.66	78	20.74	91.38	40	11.28	131.02	19	400.67	226.96	80	
+
+ Net Losses by Type of LN&LS	
+ Real Estate Loans	-0.02	0.00	8	-0.03	0.00	5	-0.01	0.01	14	0.35	0.00	98	0.00	0.00	34	
+    Construction & Land Development	-0.07	0.00	2	-0.12	-0.01	1	-0.03	0.00	6	0.48	0.00	98	0.00	-0.03	95	
+       1-4 Family Construction	-0.35	0.05	0	-0.39	0.01	0	-0.11	0.00	1	1.13	0.02	99	0.00	-0.01	97	
+       Other Construction & Land	0.00	-0.01	97	0.00	-0.01	98	0.00	0.00	92	0.00	-0.02	96	0.00	-0.03	96	
+    Secured by Farmland	0.00	0.01	97	0.00	-0.02	97	0.00	0.00	93	0.00	0.01	96	0.00	0.00	96	
+    1-4 Family Residential Loans	0.00	0.00	85	0.00	0.00	88	0.00	0.00	69	0.91	0.00	99	-0.02	-0.01	16	
+       Home Equity Loans	0.00	-0.01	95	0.00	-0.01	96	0.00	0.00	85	0.00	0.00	93	0.00	-0.03	95	
+       1-4 Family 1st Lien Loans	0.00	0.00	88	0.00	0.00	90	0.00	0.00	77	1.01	0.00	99	-0.01	0.00	17	
+       1-4 Family Jr Lien Loans	0.00	-0.07	97	0.00	-0.11	97	0.00	-0.01	91	0.00	-0.13	96	-0.42	-0.25	7	
+    Multifamily Loans	0.00	0.03	99	0.00	0.02	99	0.00	0.02	96	0.00	0.09	99	0.00	-0.01	99	
+    Non-Farm Non-Residential Mtg	0.00	0.00	91	0.00	0.00	91	0.00	0.01	73	0.25	0.00	97	0.00	0.00	88	
+       Owner Occupied Nonfarm Nonresidential	0.00	0.00	94	0.00	0.00	94	0.00	0.01	80	1.41	0.00	99	0.00	0.00	91	
+       Other Nonfarm Nonresidential	0.00	0.00	95	0.00	-0.01	95	0.00	0.00	85	0.00	-0.01	95	0.00	-0.02	95	
+    RE Loans in Foreign Offices	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+
+ Agricultural Loans	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.01	N/A	N/A	0.00	N/A	0.00	0.00	92	
+ Commercial and Industrial Loans	0.43	0.11	85	0.43	0.11	86	3.01	0.25	96	3.57	0.11	98	-0.03	0.04	21	
+ Loans to Individuals	0.46	0.59	62	0.00	0.63	35	0.05	0.65	28	0.00	0.33	30	0.01	0.25	37	
+    Credit Card Plans	1.01	2.33	52	0.00	1.87	33	0.12	1.91	21	0.01	1.07	40	0.01	0.58	45	
+    Auto Loans	0.00	0.13	69	0.00	0.11	72	0.00	0.20	52	0.00	0.12	61	0.00	0.06	68	
+ Non-Depository, Other & Muni Loans	0.00	0.29	72	0.00	0.47	70	0.00	0.49	65	0.00	0.42	74	0.00	0.47	73	
+ Loans to Foreign Governments	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+ Lease Financing	N/A	0.03	N/A	N/A	0.03	N/A	N/A	0.07	N/A	N/A	0.02	N/A	N/A	0.00	N/A	
+    Leases to Individuals	N/A	-0.09	N/A	N/A	0.01	N/A	N/A	0.06	N/A	N/A	0.05	N/A	N/A	0.00	N/A	
+    All Other Leases	N/A	0.00	N/A	N/A	0.01	N/A	N/A	0.03	N/A	N/A	0.04	N/A	N/A	0.00	N/A	
+
+ Supplemental:	
+ Loans to Finance Comml Real Estate	0.00	0.63	98	N/A	0.00	N/A	N/A	4.55	N/A	N/A	-0.03	N/A	N/A	-0.06	N/A	
+
+
+ Change: ACL on LN&LS HFI ($000)																		
+ Beginning Balance		5,423			4,321			4,321			3,061			3,011				
+ Gross Credit Losses		738			49			1,644			3,035			33				
+    Memo: Loans HFS Write-down		0			0			0			0			0				
+ Recoveries		53			17			143			894			18				
+    Net Credit Losses		685			32			1,501			2,141			15				
+
+ Provision: Credit Losses		1,771			366			2,603			1,909			3,076				
+ Other Adjustments		0			0			0			1,492			-3,011				
+    ACL on LN&LS HFI		6,509			4,655			5,423			4,321			3,060				
+
+ Average Total Loans & Leases		873,049			708,645			756,866			663,008			620,611				
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Allowance & Loan Mix-b
+OCC Charter # 0			County: JACKSON			Analysis of Loan Allowance and Loan Mix--Page 7A						7/23/2025 12:03:13 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ Loan Mix, % Average Gross LN&LS	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 5	PCT	BANK	PG 5	PCT
+ Real Estate Loans	32.40	79.37	2	33.98	78.59	3	32.38	79.22	2	34.92	78.23	1	32.09	77.63	1	
+    Construction & Development	8.29	8.59	51	8.45	9.18	46	8.27	8.97	47	9.83	8.03	65	7.75	7.99	53	
+       1-4 Family Construction	1.61	1.89	49	2.52	1.99	66	2.19	2.00	60	4.12	2.67	74	4.67	2.75	77	
+       Other Const & Land Development	6.67	6.31	57	5.93	6.84	43	6.08	6.62	48	5.71	5.09	59	3.08	4.97	35	
+    Secured by Farmland	0.87	3.08	47	1.06	3.06	49	0.99	3.10	48	1.13	6.72	33	1.14	6.64	34	
+    1-4 Family Residential	4.61	22.12	6	4.77	21.12	7	4.90	21.92	6	3.93	25.06	3	3.78	24.00	3	
+       Home Equity Loans	0.50	2.17	21	0.35	1.93	19	0.41	2.04	20	0.31	1.77	23	0.29	1.76	23	
+       1-4 Family 1st Lien Loans	4.01	18.73	8	4.33	18.10	9	4.39	18.72	8	3.54	22.05	4	3.39	21.11	4	
+       1-4 Family Jr Lien Loans	0.11	0.54	22	0.10	0.47	23	0.10	0.54	22	0.07	0.57	16	0.09	0.48	18	
+    Multifamily	2.83	5.95	25	4.88	5.56	54	4.12	5.63	42	4.19	3.55	64	2.84	3.46	52	
+    Non-Farm Non-Residential	15.80	34.32	7	14.82	34.39	6	14.09	34.22	5	15.84	29.51	18	16.57	30.24	17	
+       Owner Occupied Non-Farm Non-Residential	3.35	13.38	5	3.16	13.40	5	3.35	13.51	5	2.85	13.49	5	3.23	14.11	6	
+       Other Non-Farm Non-Residential	12.45	20.33	19	11.66	20.37	16	10.74	20.07	14	12.99	15.44	46	13.34	15.57	46	
+    RE Loans in Foreign Offices	N/A	0.03	N/A	N/A	0.02	N/A	N/A	0.03	N/A	N/A	1.44	N/A	N/A	1.01	N/A	
+
+ Financial Institution Loans	0.00	0.00	92	0.00	0.00	94	0.00	0.00	92	0.00	0.06	95	0.00	0.06	95	
+ Agricultural Loans	0.00	1.38	30	0.00	1.39	30	0.00	1.38	29	0.00	3.20	23	0.26	3.20	40	
+ Commercial & Industrial Loans	5.15	12.77	14	6.65	13.11	23	6.09	12.72	19	5.97	11.62	18	6.28	12.19	18	
+ Loans to Individuals	61.81	2.41	98	58.68	2.64	98	61.11	2.49	99	57.76	2.91	99	60.16	2.87	99	
+    Credit Card Loans	28.08	0.03	99	28.61	0.04	99	28.84	0.04	99	32.49	0.02	99	32.95	0.02	99	
+    Auto Loans	0.03	0.53	26	0.05	0.58	30	0.04	0.57	27	0.04	1.03	14	0.03	0.99	12	
+ Municipal Loans	0.00	0.58	33	0.00	0.57	33	0.00	0.56	31	0.00	0.46	38	0.00	0.48	37	
+ Non-Depository and Other	0.65	0.35	78	0.70	0.35	78	0.42	0.34	72	1.35	0.19	91	1.21	0.18	91	
+ Loans to Foreign Governments	N/A	0.02	N/A	N/A	0.03	N/A	N/A	0.03	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+ Lease Financing Receivables	0.00	0.06	78	0.00	0.06	78	0.00	0.06	77	0.00	0.03	82	0.00	0.04	81	
+    Leases to Individuals	N/A	0.09	N/A	N/A	0.08	N/A	N/A	0.09	N/A	N/A	0.07	N/A	N/A	0.08	N/A	
+    All Other Leases	N/A	0.15	N/A	N/A	0.14	N/A	N/A	0.14	N/A	N/A	0.03	N/A	N/A	0.04	N/A	
+
+ Supplemental:	
+ Loans to Finance Comml Real Est	0.04	0.19	66	0.00	0.18	60	0.00	0.19	58	0.00	0.07	77	0.00	0.07	77	
+ Foreign Office Loans & Leases	0.00	0.01	99	0.00	0.01	99	0.00	0.01	99	0.00	0.00	99	0.00	0.00	99	
+
+ Memorandum (% of Avg Tot Loans):	
+    Loans & Lease Commitments	107.68	20.34	99	40.03	21.69	95	99.69	20.17	99	26.63	18.01	85	22.01	20.06	61	
+    Officer, Shareholder Loans	0.13	0.89	27	0.13	0.92	25	0.14	0.90	26	0.14	1.08	21	0.16	1.12	23	
+ Officer, Shareholder Loans to Assets	0.07	0.61	22	0.09	0.62	26	0.07	0.63	24	0.10	0.69	23	0.12	0.68	26	
+
+ Other Real Estate Owned % Assets	
+ Construction & Land Development	0.00	0.00	83	0.00	0.00	83	0.00	0.00	78	0.02	0.00	92	0.00	0.00	83	
+    Farmland	0.00	0.00	97	0.00	0.00	97	0.00	0.00	95	0.00	0.00	96	0.00	0.00	94	
+    1-4 Family	0.00	0.00	75	0.00	0.00	75	0.00	0.00	66	0.00	0.00	75	0.00	0.00	73	
+    Multifamily	0.00	0.00	97	0.00	0.00	98	0.00	0.00	96	0.00	0.00	99	0.00	0.00	99	
+    Non-Farm Non-Residential	0.00	0.01	77	0.08	0.00	95	0.04	0.01	90	0.21	0.00	97	0.31	0.00	98	
+    Foreign Offices	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+
+ Subtotal	0.00	0.02	52	0.08	0.01	89	0.04	0.02	78	0.23	0.01	96	0.31	0.02	96	
+    Direct and Indirect Inv	0.00	0.00	93	0.00	0.00	92	0.00	0.00	92	0.00	0.01	97	0.00	0.01	97	
+       Total	0.00	0.03	49	0.08	0.03	85	0.04	0.03	73	0.23	0.02	95	0.31	0.02	95	
+
+ Asset Servicing % Assets	
+    Mortgage Servicing w/ Recourse	N/A	0.12	N/A	N/A	0.07	N/A	N/A	0.08	N/A	N/A	0.17	N/A	N/A	0.20	N/A	
+    Mortgage Servicing w/o Recourse	N/A	2.53	N/A	N/A	2.41	N/A	N/A	2.12	N/A	N/A	4.01	N/A	N/A	4.39	N/A	
+    Other Financial Assets	N/A	1.08	N/A	N/A	1.27	N/A	N/A	1.11	N/A	N/A	0.32	N/A	N/A	0.32	N/A	
+       Total	0.00	5.57	47	0.00	5.92	46	0.00	5.60	47	0.00	5.01	64	0.00	5.38	64	
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Concentrations of Credit
+OCC Charter # 0			County: JACKSON			Analysis of Concentrations of Credit--Page 7B						7/23/2025 12:03:14 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ Loan & Leases as a % of Tier 1 Capital Plus ACL on LN&LS HFI	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 5	PCT	BANK	PG 5	PCT
+ Real Estate Loans	201.38	502.74	4	224.19	496.69	5	190.06	505.66	3	240.74	462.75	9	255.44	453.92	11	
+    Construction & Development	50.56	53.44	51	56.91	57.18	51	49.63	54.52	48	58.68	47.19	65	67.73	48.02	71	
+       1-4 Family Construction	9.34	12.04	47	16.67	12.51	67	10.20	12.10	50	17.77	14.46	65	37.72	15.77	84	
+       Other Const & Land Development	41.23	39.03	56	40.24	42.54	48	39.43	40.26	50	40.91	28.67	67	30.00	29.58	55	
+    Secured by Farmland	5.04	19.44	45	7.04	18.52	51	5.46	19.10	47	7.44	37.91	35	9.80	36.74	40	
+    1-4 Family Residential	26.14	143.01	7	32.71	136.13	10	29.73	143.37	8	32.50	150.21	7	26.86	141.45	6	
+       Home Equity Loans	3.07	14.14	21	2.70	12.49	22	2.93	13.89	21	2.02	11.00	24	2.25	10.61	27	
+       1-4 Family 1st Lien Loans	22.43	121.11	8	29.35	116.57	11	26.12	121.85	9	29.83	131.72	9	24.18	124.38	8	
+       1-4 Family Jr Lien Loans	0.64	3.49	22	0.65	3.03	24	0.68	3.44	23	0.66	3.76	21	0.42	3.02	19	
+    Multifamily	16.67	38.98	25	30.72	36.54	52	17.59	38.16	26	36.04	20.87	75	25.40	19.89	65	
+    Non-Farm Non-Residential	102.97	218.09	10	96.81	217.60	10	87.64	219.82	7	106.08	173.60	26	125.66	175.70	34	
+       Owner Occupied Non-Farm Non-Residential	20.84	85.01	6	18.27	84.67	6	19.57	86.46	6	25.06	78.75	13	18.93	80.38	9	
+       Other Non-Farm Non-Residential	82.12	129.40	23	78.54	129.00	22	68.07	129.31	16	81.02	91.23	49	106.72	92.00	61	
+    RE Loans in Foreign Offices	N/A	0.14	N/A	N/A	0.11	N/A	N/A	0.16	N/A	N/A	7.39	N/A	N/A	5.50	N/A	
+
+ Financial Institution Loans	0.00	0.01	93	0.00	0.00	94	0.00	0.00	93	0.00	0.29	96	0.00	0.33	96	
+ Agricultural Loans	0.00	8.34	30	0.00	8.13	31	0.00	8.84	31	0.00	18.62	24	0.00	17.55	25	
+ Commercial & Industrial Loans	28.98	80.87	14	41.82	82.28	25	33.34	80.62	18	49.19	67.86	38	45.21	68.44	34	
+ Loans to Individuals	370.37	14.84	99	402.30	16.14	99	377.09	15.12	99	400.15	16.00	99	432.58	15.35	99	
+    Credit Card Loans	162.53	0.19	99	184.41	0.21	99	177.35	0.19	99	207.29	0.10	99	270.38	0.10	99	
+    Auto Loans	0.16	3.14	25	0.34	3.37	31	0.18	3.26	26	0.29	5.68	15	0.19	5.31	13	
+ Municipal Loans	0.00	3.58	34	0.00	3.51	34	0.00	3.62	33	0.00	2.50	40	0.00	2.66	40	
+ Non-Depository and Other	5.06	2.07	81	0.23	2.14	42	2.71	2.13	72	9.49	1.02	93	9.88	0.99	93	
+ Loans to Foreign Governments	N/A	0.13	N/A	N/A	0.12	N/A	N/A	0.13	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+ Lease Financing Receivables	0.00	0.35	78	0.00	0.38	78	0.00	0.33	78	0.00	0.18	83	0.00	0.18	83	
+    Leases to Individuals	N/A	0.36	N/A	N/A	0.31	N/A	N/A	0.35	N/A	N/A	0.37	N/A	N/A	0.49	N/A	
+    All Other Leases	N/A	1.03	N/A	N/A	0.94	N/A	N/A	0.93	N/A	N/A	0.15	N/A	N/A	0.17	N/A	
+
+ Supplemental:	
+ Loans to Finance Commercial Real Estate	0.51	1.20	69	0.00	1.06	61	0.00	1.19	60	0.00	0.32	80	0.00	0.34	80	
+ Foreign Office Loans & Leases	0.00	0.07	99	0.00	0.07	99	0.00	0.07	99	0.00	0.01	99	0.00	0.02	99	
+
+ Commercial Real Estate Loans as a % of Tier 1 Capital Plus ACL on LN&LS HFI	
+ Non-owner OCC Commercial Real Estate	149.86	235.20	16	166.18	235.07	24	135.29	235.86	14	175.74	170.19	53	199.85	170.99	61	
+    Memo: NOO CRE 3-Year Growth Rate	50.59	44.85	63	34.56	60.96	28	29.31	48.61	31	40.82	53.54	44	46.94	53.28	51	
+ Total Commercial Real Estate	170.71	325.05	10	184.45	324.60	13	154.86	327.36	7	200.80	253.59	36	218.79	256.01	41	
+
+ Commercial Real Estate Loans as a % of Total LN&LS:	
+ Construction & Development	8.35	8.51	53	8.52	9.12	47	8.23	8.69	49	8.39	7.97	56	9.12	8.21	60	
+ Non-owner OCC Commercial Real Estate	24.76	37.00	15	24.88	36.99	16	22.45	36.81	12	25.14	28.71	41	26.90	29.16	44	
+ Total Commercial Real Estate	28.20	51.16	8	27.61	51.16	8	25.69	51.15	7	28.73	42.92	23	29.45	43.85	22	
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			PD, Nonacc & Rest Loans-a
+OCC Charter # 0			County: JACKSON			Analysis of Past Due, Nonaccrual & Restructured--Page 8						7/23/2025 12:03:14 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ % of Non-Current LN&LS by Loan Type	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 5	PCT	BANK	PG 5	PCT
+ Real Estate LNS-90+ Days P/D	0.06	0.01	87	0.66	0.01	98	0.00	0.02	62	0.00	0.02	67	0.00	0.01	71	
+    -Nonaccrual	1.32	0.47	86	1.73	0.35	94	1.53	0.43	91	1.67	0.29	94	0.12	0.28	48	
+    -Total	1.38	0.51	85	2.39	0.38	96	1.53	0.47	90	1.67	0.35	93	0.12	0.32	43	
+    -30-89 DAYS P/D	0.07	0.40	18	0.22	0.30	49	0.54	0.31	77	0.26	0.35	52	0.40	0.28	69	
+
+ Const & Land Dev-90+ Days P/D	0.00	0.00	94	0.00	0.00	93	0.00	0.00	93	0.00	0.00	94	0.00	0.06	96	
+    -Nonaccrual	5.23	0.37	94	6.04	0.18	96	5.59	0.34	95	6.07	0.05	98	0.00	0.02	84	
+    -Total	5.23	0.39	94	6.04	0.22	96	5.59	0.36	94	6.07	0.08	98	0.00	0.04	81	
+    -30-89 DAYS P/D	0.00	0.22	59	0.00	0.20	59	0.00	0.17	57	0.72	0.15	88	1.11	0.12	91	
+
+ 1-4 Fam Cons & L Dev-90+ Days P/D	0.00	0.04	97	0.00	0.07	96	0.00	0.05	96	0.00	0.07	97	0.00	0.06	98	
+    -Nonaccrual	28.30	0.18	99	20.62	0.10	98	27.22	0.19	98	20.03	0.01	99	0.00	0.17	95	
+    -Total	28.30	0.22	99	20.62	0.13	98	27.22	0.23	98	20.03	0.03	99	0.00	0.00	94	
+    -30-89 DAYS P/D	0.00	0.16	79	0.00	0.22	78	0.00	0.16	79	2.39	0.11	93	0.92	0.09	90	
+
+ Other Const & Land Dev-90+ Days P/D	0.00	0.02	97	0.00	0.03	95	0.00	0.01	95	0.00	0.07	96	0.00	0.04	97	
+    -Nonaccrual	0.00	0.26	68	0.00	0.10	72	0.00	0.19	70	0.00	0.02	86	0.00	0.02	87	
+    -Total	0.00	0.28	66	0.00	0.12	70	0.00	0.20	68	0.00	0.04	84	0.00	0.03	85	
+    -30-89 DAYS P/D	0.00	0.17	66	0.00	0.11	68	0.00	0.11	64	0.00	0.07	79	1.36	0.05	95	
+
+ Secured by Farmland-90+ Day P/D	0.00	0.00	93	0.00	0.00	94	0.00	0.05	96	0.00	0.05	95	0.00	0.05	95	
+    -Nonaccrual	0.46	0.26	81	0.57	0.23	82	0.49	0.22	84	0.58	0.15	87	0.61	0.17	86	
+    -Total	0.46	0.32	79	0.57	0.26	80	0.49	0.26	82	0.58	0.18	85	0.61	0.20	85	
+    -30-89 DAYS P/D	0.00	0.20	64	0.00	0.15	68	0.00	0.14	66	0.00	0.12	73	0.00	0.07	77	
+
+ 1-4 Family Mtg-90+ Days P/D	0.00	0.02	72	0.00	0.02	68	0.00	0.02	68	0.00	0.03	74	0.00	0.02	76	
+    -Nonaccrual	0.00	0.37	18	0.48	0.29	73	0.37	0.34	60	0.51	0.25	77	0.95	0.26	88	
+    -Total	0.00	0.41	14	0.48	0.35	69	0.37	0.39	56	0.51	0.31	73	0.95	0.31	86	
+    -30-89 DAYS P/D	0.51	0.52	57	0.00	0.42	15	2.72	0.52	98	0.00	0.52	23	0.03	0.44	26	
+
+ Home Equity Loans -90+ Days P/D	0.00	0.00	89	0.00	0.01	89	0.00	0.01	88	0.00	0.00	93	0.00	0.04	95	
+    -Nonaccrual	0.00	0.23	52	0.00	0.21	50	0.00	0.24	52	0.00	0.08	78	0.00	0.06	80	
+    -Total	0.00	0.26	47	0.00	0.25	46	0.00	0.27	46	0.00	0.12	74	0.00	0.09	76	
+    -30-89 DAYS P/D	0.00	0.28	41	0.00	0.27	45	0.00	0.30	41	0.00	0.22	66	0.00	0.16	69	
+
+ 1-4 Family 1st Lien Lns-90+ Days P/D	0.00	0.02	76	0.00	0.02	72	0.00	0.02	72	0.00	0.02	77	0.00	0.02	78	
+    -Nonaccrual	0.00	0.36	22	0.54	0.28	76	0.42	0.32	65	0.56	0.24	79	1.05	0.25	90	
+    -Total	0.00	0.40	18	0.54	0.33	72	0.42	0.37	62	0.56	0.30	75	1.05	0.30	88	
+    -30-89 DAYS P/D	0.60	0.53	63	0.00	0.43	20	3.10	0.54	98	0.00	0.52	28	0.03	0.44	30	
+
+ 1-4 Family Jr Lien Lns-90+ Days P/D	0.00	0.00	94	0.00	0.03	95	0.00	0.00	93	0.00	0.10	97	0.00	0.09	97	
+    -Nonaccrual	0.00	0.26	66	0.00	0.31	66	0.00	0.23	68	0.00	0.10	83	0.00	0.15	81	
+    -Total	0.00	0.30	64	0.00	0.35	63	0.00	0.28	65	0.00	0.13	80	0.00	0.19	79	
+    -30-89 DAYS P/D	0.00	0.30	65	0.00	0.19	68	0.00	0.28	61	0.00	0.16	80	0.00	0.16	80	
+
+ Multifamily Loans-90+ Days P/D	0.00	0.01	99	0.00	0.00	98	0.00	0.01	98	0.00	0.01	99	0.00	0.03	99	
+    -Nonaccrual	0.00	0.03	89	0.00	0.02	90	0.00	0.02	90	0.00	0.15	96	0.00	0.15	96	
+    -Total	0.00	0.04	88	0.00	0.02	89	0.00	0.02	89	0.00	0.16	96	0.00	0.18	96	
+    -30-89 DAYS P/D	0.00	0.03	85	0.00	0.02	88	0.00	0.03	87	0.00	0.35	95	0.00	0.11	96	
+
+ Non-Farm Non-Res Mtg-90+ Days P/D	0.12	0.00	94	1.52	0.00	99	0.00	0.00	88	0.00	0.00	91	0.00	0.00	92	
+    -Nonaccrual	0.00	0.41	33	0.25	0.27	63	0.00	0.35	33	0.24	0.27	70	0.00	0.23	56	
+    -Total	0.12	0.44	46	1.77	0.29	94	0.00	0.39	31	0.24	0.31	66	0.00	0.26	53	
+    -30-89 DAYS P/D	0.00	0.25	34	0.50	0.16	85	0.24	0.16	74	0.19	0.19	70	0.20	0.13	77	
+
+ Own Occ Non-Farm Non-Res-90+ Days P/D	0.59	0.00	98	0.00	0.00	92	0.00	0.00	91	0.00	0.00	93	0.00	0.05	95	
+    -Nonaccrual	0.00	0.36	45	0.00	0.29	43	0.00	0.32	44	0.00	0.25	65	0.00	0.23	66	
+    -Total	0.59	0.40	72	0.00	0.31	41	0.00	0.35	42	0.00	0.30	62	0.00	0.26	63	
+    -30-89 DAYS P/D	0.00	0.26	44	1.61	0.17	95	0.63	0.19	85	0.00	0.20	64	0.00	0.12	67	
+
+ Other Non-Farm Non-Res-90+ Days P/D	0.00	0.02	95	1.88	0.02	99	0.00	0.03	95	0.00	0.04	96	0.00	0.04	96	
+    -Nonaccrual	0.00	0.33	55	0.31	0.19	78	0.00	0.27	57	0.31	0.13	84	0.00	0.10	79	
+    -Total	0.00	0.35	54	2.18	0.20	95	0.00	0.29	56	0.31	0.15	83	0.00	0.12	77	
+    -30-89 DAYS P/D	0.00	0.16	58	0.24	0.10	81	0.13	0.09	77	0.25	0.08	86	0.24	0.06	87	
+
+ RE Lns in Foreign Offices-90+ Days P/D	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+    -Nonaccrual	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+    -Total	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+    -30-89 DAYS P/D	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+
+ Supplemental:	
+ LNS Fin Coml RE-90+ Days P/D	0.00	0.00	99	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.09	N/A	
+    -Nonaccrual	0.00	0.00	94	N/A	0.12	N/A	N/A	0.68	N/A	N/A	0.42	N/A	N/A	0.43	N/A	
+    -Total	0.00	0.00	94	N/A	0.12	N/A	N/A	0.68	N/A	N/A	0.42	N/A	N/A	0.52	N/A	
+    -30-89 DAYS P/D	0.00	0.13	97	N/A	0.14	N/A	N/A	0.01	N/A	N/A	0.18	N/A	N/A	0.04	N/A	
+
+
+ Non-Current LN&LS ($000)																		
+ 90 Days and Over Past Due		10,225			12,099			11,012			9,778			6,795				
+ Total Nonaccrual LN&LS		4,516			5,752			4,097			5,863			2,999				
+    Total Non-Current LN&LS		14,741			17,851			15,109			15,641			9,794				
+    LN&LS 30-89 Days Past Due		26,683			28,733			35,706			42,339			45,941				
+
+ Gtyd LN&LS 90+ Days P/D		0			0			0			0			0				
+ Gtyd LN&LS on Nonaccrual		0			0			0			0			0				
+ Gtyd LN&LS 30-89 Days P/D		0			0			0			0			0				
+
+ Modified LN&LS 90+ Days P/D		0			0			0			0			N/A				
+ Modified LN&LS Nonaccrual		453			0			188			0			N/A				
+ Modified LN&LS 30-89 Days P/D		0			0			0			0			N/A				
+
+ Restructured LN&LS 90+ Days P/D		N/A			N/A			N/A			N/A			0				
+ Restructured LN&LS Nonaccrual		N/A			N/A			N/A			N/A			36				
+ Restructured LN&LS 30-89 Days P/D		N/A			N/A			N/A			N/A			0				
+
+ Current 1-4 Family Modified LN&LS		N/A			N/A			0			0			N/A				
+ Current Other Modified LN&LS		0			0			0			0			N/A				
+    Current Total Modified LN&LS		0			0			0			0			N/A				
+
+ Current 1-4 Family Restru LN&LS		N/A			N/A			N/A			N/A			0				
+ Current Other Restructured LN&LS		N/A			N/A			N/A			N/A			16				
+    Current Total Restructured LN&LS		N/A			N/A			N/A			N/A			16				
+ Loans Secured 1-4 RE in Foreclosure		0			0			0			0			48				
+ Other Real Estate Owned		0			800			0			800			2,294				
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			PD, Nonacc & Rest Loans-b
+OCC Charter # 0			County: JACKSON			Analysis of Past Due, Nonaccrual & Restructured--Page 8A						7/23/2025 12:03:15 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ % of Non-Current LN&LS by Loan Type	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 5	PCT	BANK	PG 5	PCT
+ Financial Institution LNS-90+ Days P/D	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+    -Nonaccrual	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+    -Total	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+    -30-89 DAYS P/D	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	1.37	N/A	
+
+ Coml & Indust LNS-90+ Days P/D	0.00	0.02	75	2.16	0.01	99	1.89	0.02	99	0.46	0.01	95	0.00	0.01	84	
+    -Nonaccrual	2.49	0.61	89	4.11	0.45	95	0.94	0.58	75	3.83	0.32	95	7.20	0.26	98	
+    -Total	2.49	0.70	88	6.27	0.50	97	2.83	0.64	89	4.29	0.38	95	7.20	0.32	98	
+    -30-89 DAYS P/D	0.00	0.36	22	0.00	0.34	24	0.32	0.31	63	0.00	0.32	36	2.66	0.26	96	
+
+ Agricultural LNS-90+ Days P/D	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.04	N/A	N/A	0.01	N/A	
+    -Nonaccrual	N/A	0.08	N/A	N/A	0.07	N/A	N/A	0.08	N/A	N/A	0.03	N/A	N/A	0.03	N/A	
+    -Total	N/A	0.11	N/A	N/A	0.08	N/A	N/A	0.09	N/A	N/A	0.04	N/A	N/A	0.04	N/A	
+    -30-89 DAYS P/D	N/A	0.15	N/A	N/A	0.09	N/A	N/A	0.07	N/A	N/A	0.03	N/A	N/A	0.02	N/A	
+
+ Loans to Individuals-90+ Days P/D	2.04	0.03	98	2.35	0.03	98	2.14	0.04	98	2.41	0.02	99	1.89	0.02	99	
+    -Nonaccrual	0.00	0.14	51	0.01	0.12	56	0.00	0.14	53	0.01	0.11	58	0.01	0.09	62	
+    -Total	2.04	0.22	96	2.35	0.20	96	2.14	0.23	96	2.42	0.17	98	1.90	0.14	97	
+    -30-89 DAYS P/D	5.37	0.56	97	6.85	0.54	99	7.17	0.62	98	10.54	0.60	99	12.29	0.53	99	
+
+ Credit Card Plans-90+ Days P/D	4.56	0.38	96	5.10	0.23	97	4.53	0.34	97	4.65	0.14	99	3.02	0.15	96	
+    -Nonaccrual	0.00	0.01	91	0.00	0.00	92	0.00	0.00	92	0.00	0.00	94	0.00	0.06	96	
+    -Total	4.56	0.52	95	5.10	0.30	97	4.53	0.41	97	4.65	0.20	99	3.02	0.20	96	
+    -30-89 DAYS P/D	6.93	1.18	97	8.65	1.41	97	8.25	1.51	95	10.78	0.78	98	11.93	0.75	99	
+
+ Auto Loans	0.00	0.01	86	0.00	0.00	88	0.00	0.01	85	0.00	0.01	88	0.00	0.00	88	
+    -Nonaccrual	0.00	0.13	64	0.00	0.10	68	0.00	0.13	65	0.00	0.10	70	0.00	0.07	74	
+    -Total	0.00	0.15	56	0.00	0.12	63	0.00	0.17	59	0.00	0.14	65	0.00	0.10	69	
+    -30-89 DAYS P/D	0.00	0.47	42	0.00	0.41	45	0.00	0.52	43	1.72	0.57	83	0.00	0.52	47	
+
+ Non-depository, Other and Muni-90+ Days P/D	0.00	0.00	93	0.00	0.00	94	0.00	0.00	94	0.00	1.63	95	0.00	0.41	95	
+    -Nonaccrual	0.00	0.07	88	0.00	0.04	89	0.00	0.05	88	0.00	0.02	91	0.00	0.02	91	
+    -Total	0.00	0.11	84	0.00	0.07	85	0.00	0.08	85	0.00	0.07	88	0.00	0.06	88	
+    -30-89 DAYS P/D	0.01	0.19	73	0.00	0.25	69	0.00	0.21	68	0.00	0.54	74	0.00	0.32	76	
+
+ Lease Financing-90+ Days P/D	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.03	N/A	N/A	0.07	N/A	
+    -Nonaccrual	N/A	0.17	N/A	N/A	0.08	N/A	N/A	0.16	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+    -Total	N/A	0.21	N/A	N/A	0.12	N/A	N/A	0.21	N/A	N/A	0.00	N/A	N/A	0.01	N/A	
+    -30-89 DAYS P/D	N/A	0.12	N/A	N/A	0.20	N/A	N/A	0.21	N/A	N/A	0.03	N/A	N/A	0.01	N/A	
+
+ Leases to Individuals-90+ Days P/D	N/A	0.00	N/A	N/A	0.03	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+    -Nonaccrual	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+    -Total	N/A	0.00	N/A	N/A	0.03	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+    -30-89 DAYS P/D	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.01	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+
+ All Other Leases-90+ Days P/D	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.13	N/A	N/A	0.00	N/A	
+    -Nonaccrual	N/A	0.11	N/A	N/A	0.08	N/A	N/A	0.11	N/A	N/A	0.18	N/A	N/A	0.00	N/A	
+    -Total	N/A	0.11	N/A	N/A	0.09	N/A	N/A	0.13	N/A	N/A	0.00	N/A	N/A	0.02	N/A	
+    -30-89 DAYS P/D	N/A	0.19	N/A	N/A	0.24	N/A	N/A	0.38	N/A	N/A	0.05	N/A	N/A	0.00	N/A	
+
+ Total LN&LS-90+ Days Past Due	1.27	0.03	99	1.77	0.02	99	1.44	0.03	98	1.41	0.03	99	1.10	0.02	98	
+    -Nonaccrual	0.56	0.50	62	0.84	0.41	82	0.54	0.47	63	0.85	0.32	84	0.49	0.29	74	
+    -Total	1.83	0.60	91	2.61	0.46	98	1.98	0.57	93	2.26	0.38	95	1.59	0.34	92	
+    -30-89 DAYS P/D	3.31	0.48	99	4.20	0.39	99	4.67	0.39	99	6.12	0.38	99	7.45	0.31	99	
+
+ Other Pertinent Ratios:	
+ Non-Cur LN&LS to-ACL on LN&LS HFI	226.47	49.09	96	383.48	37.81	99	278.61	46.74	98	361.98	30.02	99	320.07	26.73	99	
+    -Equity Capital	8.62	4.29	82	12.94	3.49	94	9.22	4.17	84	11.65	2.81	91	8.44	2.67	87	
+ % Total P/D LN&LS-Incl Nonaccrual	5.13	1.12	98	6.81	0.89	99	6.64	1.00	99	8.38	0.85	99	9.04	0.73	99	
+ Non Curr LNS+OREO to LNS+OREO	1.83	0.66	90	2.72	0.51	98	1.98	0.63	92	2.38	0.42	95	1.95	0.39	94	
+ Non Curr LNS+OREO to T1 Cap + ACL on LN&LS HFI	11.06	4.06	90	18.22	3.17	98	11.91	3.96	91	16.62	2.44	97	14.57	2.19	97	
+ Mod+Nonac+RE Acq to Eqcap+ACL on LN&LS HFI	2.55	5.02	39	4.59	3.91	65	2.42	4.83	38	4.81	3.51	69	N/A	0.00	N/A	
+ Non-Curr Modified Debt/Gr LN&LS	0.06	0.03	79	0.00	0.02	59	0.02	0.02	72	0.00	0.02	70	N/A	0.00	N/A	
+ Curr+Non-Curr Modified/GR LN&LS	0.06	0.16	53	0.00	0.11	36	0.02	0.15	42	0.00	0.13	41	N/A	0.00	N/A	
+ Current Modified LN&LS/Total LN&LS	0.00	0.11	40	0.00	0.07	47	0.00	0.10	38	0.00	0.09	49	N/A	0.00	N/A	
+ Rest+Nonac+RE Acq to Eqcap+ACL on LN&LS HFI	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	4.46	3.87	64	
+ Non-Curr Restruct Debt/Gr LN&LS	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	0.01	0.03	65	
+ Curr+Non-Curr Restruct/GR LN&LS	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	0.01	0.21	33	
+ Current Restruct LN&LS/Total LN&LS	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	0.00	0.15	39	
+ Loans Sec 1-4 Fam RE in Forclosure as % Total Loans Sec 1-4 Fam RE	0.00	0.05	60	0.00	0.04	62	0.00	0.04	59	0.00	0.02	77	0.22	0.02	92	
+ Gtyd LN&LS 90+ P/D / LN&LS 90+ P/D	0.00	1.53	89	0.00	0.37	92	0.00	1.24	90	0.00	0.30	93	0.00	0.05	93	
+ Gtyd Nonaccrual LN&LS / Nonaccrual LN&LS	0.00	1.52	77	0.00	1.87	76	0.00	1.29	77	0.00	0.95	88	0.00	1.17	86	
+ Gtyd LN&LS 30-89 P/D / LN&LS 30-89 P/D	0.00	0.57	82	0.00	0.58	84	0.00	0.47	84	0.00	0.02	93	0.00	0.06	92	
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Interest Rate Risk
+OCC Charter # 0			County: JACKSON			Interest Rate Risk Analysis--Page 9						7/23/2025 12:03:16 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ Net Interest Margin Performance	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 5	PCT	BANK	PG 5	PCT
+    Int Inc/AEA (1-Qtr-Ann)	9.64	5.49	98	12.03	5.38	99	10.32	5.61	98	12.52	5.22	99	16.03	4.37	99	
+       YoY Change	-2.38	0.11	0	-1.49	0.68	0	-2.20	0.27	0	-3.50	0.84	0	4.24	0.78	99	
+       QoQ Change	-0.68	-0.12	1	-0.50	0.05	1	-1.16	-0.04	0	0.76	0.18	98	6.93	0.37	99	
+    Int Exp/AEA (1-Qtr- Ann)	0.71	2.07	1	0.60	2.17	1	0.90	2.20	2	0.36	1.80	1	0.04	0.65	0	
+       YoY Change	0.11	-0.11	86	0.54	0.98	5	0.54	0.16	96	0.32	1.13	2	-0.03	0.37	2	
+       QoQ Change	-0.19	-0.13	21	0.24	0.13	86	-0.05	-0.12	73	0.06	0.19	11	0.02	0.27	5	
+    Net Interest Margin (1-Qtr-Ann)	8.94	3.44	99	11.43	3.23	99	9.42	3.43	99	12.16	3.42	99	15.99	3.70	99	
+       YoY Change	-2.49	0.21	0	-2.03	-0.29	0	-2.74	0.11	0	-3.83	-0.29	0	4.27	0.40	99	
+       QoQ Change	-0.48	0.01	1	-0.73	-0.09	1	-1.10	0.08	0	0.70	-0.01	99	6.91	0.10	99	
+
+ ASSETS: Rem Mat/Reprice Date	
+    % of Assets: Short-Term Assets	
+       Securities (Up to 1 Year)	0.40	1.93	22	0.28	2.04	20	0.50	2.00	26	0.55	2.23	27	1.94	1.85	63	
+       Loans (Up to 1 Year)	24.78	23.62	61	14.99	20.73	30	27.11	23.11	69	16.46	17.74	47	17.89	16.78	59	
+       IBB, FFS, and Reverse Repo	32.30	5.92	99	21.49	5.34	97	32.53	5.27	99	9.31	5.41	78	6.86	5.08	70	
+    Short-Term Assets to Total Assets	57.47	32.73	93	36.76	29.46	74	60.15	31.69	93	26.33	26.72	53	26.69	25.33	59	
+
+    % of Assets: Medium-Term Assets	
+       Securities (>1-5 Yrs)	3.07	2.80	64	3.98	3.42	66	3.50	2.87	68	4.79	4.94	57	1.20	5.72	19	
+       Loans (>1-5 Yrs)	20.21	28.98	20	48.98	28.28	95	19.58	29.31	19	55.90	28.81	96	55.32	25.87	97	
+       CMO, REMIC, Strip MBS < 3 Yrs	1.19	0.37	87	0.40	0.31	68	0.78	0.35	79	0.78	0.30	81	0.56	0.28	77	
+    Med-Term Assets to Total Assets	24.47	33.06	21	53.36	32.95	94	23.86	33.46	21	61.47	35.22	97	57.08	33.19	95	
+
+    % of Assets: Long-Term Assets	
+       Securities (> 5 Yrs)	1.78	7.85	16	0.83	8.44	10	1.47	7.97	14	0.96	10.01	13	1.39	11.60	13	
+       Loans (> 5 Yrs)	0.93	15.63	2	0.89	18.20	3	1.25	16.08	3	0.99	17.32	1	1.87	19.01	3	
+       CMO, REMIC, Strip MBS > 3 Yrs	2.56	1.71	71	0.30	1.57	36	1.14	1.59	53	0.34	1.36	47	0.43	1.40	48	
+    Long-Term Assets to Total Assets	5.27	26.77	5	2.02	29.90	1	3.86	27.23	3	2.29	30.76	1	3.69	34.20	2	
+
+ LIABILITIES: Rem Mat/Reprice Date	
+    % of Assets: Short-Term Liabilities	
+       Non-maturity Deposits	70.35	62.11	74	58.62	61.68	36	69.65	61.63	74	58.38	62.31	36	55.34	70.74	12	
+       Time Deposits (Up to 1 Year)	5.45	19.90	5	5.22	18.29	5	5.72	20.11	6	5.06	18.42	6	15.42	11.03	76	
+       Borrowings (Up to 1 Year)	0.00	1.18	40	0.45	2.09	40	0.00	1.32	42	1.12	2.00	50	0.00	1.32	47	
+       FFP/Repos	0.00	0.29	67	0.00	0.41	64	0.00	0.31	67	0.00	0.28	73	0.00	0.41	69	
+       Sub Notes&Debentures (Up to 1 Yr)	0.00	0.00	99	0.00	0.00	99	0.00	0.00	99	0.00	0.00	99	0.00	0.00	99	
+    Short-Term Liabilities to Total Assets	75.80	84.96	8	64.29	84.43	2	75.37	84.92	7	64.56	84.47	3	70.76	84.91	5	
+
+    % of Assets: Medium-Term Liabilities	
+       Time Deposits (> 1 Yr)	12.10	2.65	95	19.64	3.00	97	12.05	2.66	95	18.28	3.81	97	11.76	4.89	90	
+       Borrowings (>1-5 Yrs)	0.04	0.79	52	0.00	1.01	46	0.04	0.88	52	0.00	0.96	54	0.00	0.35	63	
+       Sub Notes & Debentures (>1-5 Yrs)	0.00	0.00	99	0.00	0.00	99	0.00	0.00	99	0.00	0.00	99	0.00	0.00	99	
+    Med-Term Liabilities to Total Assets	12.14	3.76	92	19.64	4.41	96	12.10	3.92	91	18.28	5.09	95	11.76	5.47	87	
+
+    % of Assets: Long-Term Liabilities	
+       Borrowings (> 5 Yrs)	0.00	0.05	76	0.00	0.09	74	0.00	0.06	75	0.00	0.06	80	0.00	0.07	79	
+       Sub Notes & Debentures (> 5 Yrs)	0.00	0.00	99	0.00	0.00	99	0.00	0.00	99	0.00	0.01	99	0.00	0.01	99	
+    Long-Term Liabilities to Total Assets	0.00	0.05	76	0.00	0.09	73	0.00	0.06	75	0.00	0.06	80	0.00	0.07	79	
+
+ Net BS Position to Total Assets	
+    Net Short-Term Position (Up to 1 Yr)	-18.33	-51.49	94	-27.53	-54.38	90	-15.23	-52.58	96	-38.23	-56.97	88	-44.07	-58.87	84	
+    Net Med-Term Position (>1-5 Yrs)	12.33	28.79	8	33.71	28.08	66	11.77	29.07	8	43.19	29.55	83	45.32	27.32	89	
+    Net Long-Term Position (> 5 Yrs)	5.27	26.53	5	2.02	29.54	1	3.86	26.98	3	2.29	30.48	1	3.69	33.91	2	
+
+ Unrealized Appreciation/Depreciation	
+    AFS Sec Unrl App (Dep) to T1 Cap	-0.59	-12.09	90	-1.44	-15.95	88	-1.84	-13.99	85	-0.92	-16.77	89	-1.92	-21.80	88	
+    HTM Sec Unrl App (Dep) to T1 Cap	0.00	-2.78	97	0.00	-3.46	97	0.00	-2.90	98	0.00	-2.43	97	0.00	-3.52	97	
+    AFS/HTM Unrl App (Dep) to T1 Cap	-0.59	-14.25	93	-1.44	-18.69	92	-1.84	-16.38	89	-0.92	-18.62	93	-1.92	-24.26	92	
+    Unrl G/L on HTM in AOCI to T1 Cap	0.00	-0.18	98	0.00	-0.30	98	0.00	-0.19	98	0.00	-0.54	99	0.00	-0.52	99	
+
+    AFS Unrl App (Dep) to AFS Amt Cost	-0.47	-7.81	94	-2.28	-9.45	92	-1.87	-8.93	92	-1.24	-8.22	96	-3.29	-9.47	92	
+    HTM Unrl App (Dep) to HTM Amt Cost	N/A	-6.39	N/A	N/A	-7.22	N/A	N/A	-7.57	N/A	N/A	-4.85	N/A	N/A	-5.08	N/A	
+    AFS/HTM Unrl App (Dep) to Amt Cost	-0.47	-7.97	94	-2.28	-9.52	94	-1.87	-9.08	93	-1.24	-8.08	95	-3.29	-9.31	92	
+
+ Investment Portfolio to Total Assets	
+    AFS FV to Total Assets	9.00	14.02	34	5.78	14.94	19	7.39	14.17	27	7.42	18.51	22	5.52	20.34	15	
+    HTM Amt Cost to Total Assets	0.00	1.46	52	0.00	1.77	50	0.00	1.46	52	0.00	1.34	62	0.00	1.61	60	
+    AFS/HTM to Total Assets	9.00	16.49	24	5.78	17.91	13	7.39	16.66	19	7.42	21.24	17	5.52	23.44	9	
+
+ Subportfolio Unrl App (Dep) to T1 Cap	
+    US Treas & Govt Agencies	-0.14	-1.31	64	-0.41	-2.80	67	-0.58	-1.96	54	0.01	-3.47	97	-0.33	-5.15	79	
+    Municipal Securities	-0.29	-4.52	71	-0.36	-4.66	70	-0.32	-4.54	72	-0.26	-6.11	76	-0.78	-8.30	73	
+    Pass-Through MBS	-0.24	-4.18	79	-0.36	-5.53	78	-0.36	-5.01	79	-0.36	-4.88	71	-0.40	-5.67	72	
+    CMO & REMIC MBS	0.03	-1.32	95	-0.10	-2.33	63	-0.47	-2.08	54	-0.15	-2.15	53	-0.26	-2.45	52	
+    Commercial MBS	0.09	-0.63	98	-0.13	-1.34	50	-0.07	-1.10	50	-0.08	-1.20	41	0.00	-1.30	98	
+    Asset Backed Securities	0.00	0.00	93	0.00	-0.01	93	0.00	0.00	92	0.00	-0.05	96	-0.14	-0.16	8	
+    Structured Financial Products	0.00	-0.04	94	0.00	-0.16	97	0.00	-0.15	95	0.00	-0.16	98	0.00	-0.27	99	
+    Other Domestic Debt Sec	-0.04	-0.50	49	-0.07	-0.90	51	-0.04	-0.58	50	-0.08	-0.94	37	-0.01	-0.91	41	
+    Foreign Debt Securities	0.00	0.00	99	0.00	0.00	99	0.00	0.00	99	0.00	-0.01	99	0.00	0.00	99	
+    Unallocated Port Layer FV Hedge	N/A	-0.01	N/A	N/A	-0.55	N/A	N/A	-0.64	N/A	N/A	1.10	N/A	N/A	0.00	N/A	
+ Tot AFS/HTM Unrl App (Dep) to T1 Cap	-0.59	-14.25	93	-1.44	-18.69	92	-1.84	-16.38	89	-0.92	-18.62	93	-1.92	-24.26	92	
+
+ Subportfolio Unrl App (Dep) to Amt Cost	
+    US Treasury & Agencies	-0.31	-4.58	85	-1.08	-6.43	85	-1.33	-5.53	80	0.01	-5.75	96	-2.48	-7.26	86	
+    Municipal Securities	-3.20	-9.22	83	-3.06	-8.64	83	-3.33	-9.21	83	-2.10	-7.64	85	-6.02	-9.38	71	
+    Pass-Through MBS	-3.84	-9.23	82	-9.66	-11.50	67	-5.44	-11.05	82	-3.74	-9.93	86	-3.38	-10.41	91	
+    CMO & REMIC MBS	0.07	-7.18	91	-6.75	-10.01	66	-2.29	-8.89	82	-4.73	-9.17	74	-2.48	-9.61	90	
+    Commercial MBS	0.58	-6.69	95	-2.13	-9.26	87	-0.45	-8.12	92	-1.00	-8.05	88	N/A	-8.41	N/A	
+    Asset Backed Securities	N/A	-0.64	N/A	N/A	-0.88	N/A	N/A	-0.66	N/A	N/A	-1.07	N/A	-1.94	-2.88	66	
+    Structured Financial Products	N/A	-3.12	N/A	N/A	-5.00	N/A	N/A	-4.10	N/A	N/A	-4.34	N/A	N/A	-6.46	N/A	
+    Other Domestic Debt Sec	-2.52	-5.24	69	-3.78	-9.02	78	-2.48	-6.58	76	-4.04	-9.39	73	-0.21	-8.00	85	
+    Foreign Debt Securities	N/A	-2.83	N/A	N/A	-5.47	N/A	N/A	-3.73	N/A	N/A	-4.80	N/A	N/A	-7.27	N/A	
+ Tot AFS/HTM Unrl App (Dep) to AC	-0.47	-7.97	94	-2.28	-9.52	94	-1.87	-9.08	93	-1.24	-8.08	95	-3.29	-9.31	92	
+
+ Memorandum	
+    Int Rate Cont Not Amt % of Assets	0.00	2.24	42	0.00	1.95	46	0.00	2.17	42	0.00	0.25	73	0.00	0.14	75	
+    Mortgage Servicing (FV) % of Assets	0.00	0.04	63	0.00	0.04	62	0.00	0.04	63	0.00	0.03	74	0.00	0.03	73	
+    Structured Notes % of Assets	0.06	0.04	80	0.09	0.06	80	0.06	0.04	79	0.10	0.13	72	0.00	0.18	69	
+
+ Long Assets Insts w/Options	
+ Mortgage Loans & Pass Thrus	2.14	17.15	3	3.17	16.69	5	2.56	17.30	3	4.06	18.89	5	3.55	18.31	4	
+    Loans & Securities Over 15 Years	0.37	5.76	8	0.31	5.72	9	0.41	5.69	9	0.35	4.77	15	0.43	4.91	17	
+    Loans & Securities 5-15 Years	0.47	3.40	12	0.63	3.83	14	0.52	3.55	13	0.70	4.46	13	0.82	4.89	12	
+
+ Other Loans and Securities	49.03	67.24	6	66.78	68.69	39	50.87	67.93	7	75.60	66.39	78	76.06	67.02	77	
+    Loans & Securities Over 15 Years	0.49	3.00	25	0.30	3.58	16	0.64	3.11	28	0.34	3.94	17	0.38	4.54	17	
+    Loans & Securities 5-15 Years	1.39	10.16	5	0.50	12.12	1	1.16	10.42	4	0.55	12.81	1	1.63	14.84	2	
+ Total Loans & Securities Over 15 Years	0.85	9.49	7	0.60	10.22	5	1.05	9.60	8	0.69	9.84	9	0.81	10.63	9	
+
+ CMO'S Total	3.76	2.20	74	0.69	1.98	41	1.91	2.05	59	1.12	1.76	57	0.99	1.80	53	
+    Avg Life Over 3 Years	2.56	1.71	71	0.30	1.57	36	1.14	1.59	53	0.34	1.36	47	0.43	1.40	48	
+
+ Contractual Mat/Reprice Data	
+ Loans/Securities Over 3 Year	10.21	41.71	2	9.97	47.13	2	9.60	42.38	2	13.75	49.58	1	13.37	53.79	1	
+ Liabilities Over 3 Year	0.04	0.84	15	0.00	1.14	5	0.04	0.92	13	0.00	1.28	5	0.02	1.11	7	
+    Net Over 3 Year Position	10.18	40.36	3	9.97	45.50	3	9.56	41.02	2	13.75	47.62	2	13.36	52.22	1	
+
+ Loans/Securities Over 1 Year	29.75	61.19	4	55.38	64.51	22	27.72	62.23	3	63.76	67.54	32	60.77	68.88	22	
+ Liabilities Over 1 Year	12.14	4.00	91	19.64	4.77	96	12.10	4.15	90	18.28	5.30	94	11.76	5.69	86	
+    Net Over 1 Year Position	17.60	56.47	2	35.74	59.00	9	15.63	57.43	2	45.48	61.33	13	49.00	62.40	15	
+
+ Non-Maturity Deposits	70.35	62.11	74	58.62	61.68	36	69.65	61.63	74	58.38	62.31	36	55.34	70.74	12	
+ Non-Maturity Deps % Long Assets	688.73	163.12	98	588.02	139.22	98	725.70	159.59	98	424.53	133.09	98	413.84	137.64	98	
+    Net Over 3 Year Position	-60.13	-20.06	1	-48.65	-14.24	3	-60.05	-18.95	1	-44.63	-12.47	5	-41.97	-16.74	8	
+
+ As % Tier 1 Capital	
+ Structured Notes	0.77	0.42	81	0.97	0.58	80	0.80	0.44	80	0.99	1.23	72	0.00	1.73	69	
+ Mortgage Servicing (FV)	0.00	0.40	63	0.00	0.42	62	0.00	0.40	63	0.00	0.31	74	0.00	0.35	73	
+    Total	0.77	1.19	63	0.97	1.37	63	0.80	1.22	63	0.99	1.90	60	0.00	2.50	50	
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Liquidity & Funding
+OCC Charter # 0			County: JACKSON			Liquidity & Funding--Page 10						7/23/2025 12:03:18 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ Percent of Total Deposits	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 5	PCT	BANK	PG 5	PCT
+ Individ, Partnerships, and Corp.	96.99	88.81	87	95.11	89.15	77	96.39	88.87	84	96.99	88.31	87	98.90	88.96	93	
+ U.S. Govt, States & Political Sub in U.S.	2.76	9.76	15	4.47	9.45	25	3.42	9.73	18	1.98	10.35	11	0.09	9.79	4	
+ Comml Banks & Other Dep Inst. in U.S.	0.23	0.54	59	0.43	0.52	71	0.19	0.51	59	1.04	0.57	81	1.00	0.50	81	
+ Banks in Foreign Countries	0.00	0.05	98	0.00	0.08	98	0.00	0.08	98	0.00	0.01	99	0.00	0.02	99	
+ Foreign Govts and Official Inst.	0.02	0.00	95	0.00	0.00	98	0.00	0.07	97	0.00	0.04	98	0.00	0.03	99	
+    Total deposits	100.00	100.00	89	100.00	100.00	92	100.00	100.00	88	100.00	100.00	88	100.00	100.00	92	
+
+ Domestic Demand Deposits	65.40	24.84	98	47.28	24.40	89	63.91	24.57	98	46.70	25.95	92	32.71	28.15	64	
+ Domestic Other Transaction Accts	0.00	9.53	14	0.00	8.66	14	0.00	9.18	15	0.00	12.24	10	0.25	13.21	11	
+ Domestic Nontransaction Accts	34.60	63.45	3	52.72	64.72	26	36.09	64.11	3	53.30	59.65	35	67.03	56.33	77	
+ Total Domestic Deposits	100.00	99.90	99	100.00	99.91	99	100.00	99.92	99	100.00	100.00	99	100.00	100.00	99	
+ Deposits in Foreign Offices	0.00	0.10	99	0.00	0.09	99	0.00	0.08	99	0.00	0.00	99	0.00	0.00	99	
+    Total Deposits	100.00	100.00	99	100.00	100.00	99	100.00	100.00	99	100.00	100.00	99	100.00	100.00	99	
+
+ Liquidity/Funding Ratios	
+ Net Non Core Fund Dep $250M	-27.93	8.96	1	4.73	10.91	29	-21.49	10.02	3	18.28	7.24	80	24.01	2.61	94	
+ Core Deposits	70.24	73.93	32	58.64	72.82	11	66.08	73.60	21	58.50	76.03	7	55.74	81.31	2	
+ Short Term Non Core Funding	5.57	11.63	18	5.59	12.26	15	9.31	11.91	40	6.09	10.09	26	15.14	6.57	90	
+ S.T Inv to S.T. Ncore Fund	590.33	87.24	96	392.92	72.89	94	356.18	79.10	93	156.66	108.56	76	49.28	227.42	36	
+ S.T. Asset to S.T. Liabilities	1003.72	109.28	98	637.42	99.79	97	1006.28	104.38	98	401.51	107.56	95	164.42	173.41	58	
+ Net S.T. Liabilities to Assets	-49.27	1.48	0	-30.48	2.70	4	-51.86	2.46	0	-18.64	1.55	9	-9.93	-4.94	32	
+ Net Loans & Leases to Deposits	52.07	82.61	3	77.77	82.95	35	54.71	83.32	3	89.90	78.03	72	90.95	73.79	78	
+ Net LN&LS to Core Deposits	65.16	96.90	6	110.71	97.45	72	72.38	97.86	12	125.57	88.48	90	134.67	80.04	96	
+ Brkr Dep Mat < 1 Yr to Brkr Deps	33.31	51.06	19	20.11	48.25	18	45.35	49.96	29	20.74	37.72	27	56.92	41.63	40	
+ Brokered Deposits to Deposits	20.63	4.49	92	29.55	4.92	95	25.20	4.44	95	28.17	2.65	97	32.01	1.58	98	
+ Listing Service Dep to Deposits	0.00	0.18	73	0.00	0.14	73	0.00	0.16	76	0.00	0.32	73	0.00	0.29	75	
+ List Service and Brkrd Dep to Deps	20.63	4.92	92	29.55	5.26	95	25.20	4.83	94	28.17	3.37	96	32.01	2.20	97	
+ Sec Bor + sec FFP to Tot Bor + FFP	0.00	1.34	78	100.00	16.23	99	0.00	3.07	75	0.00	12.00	63	N/A	2.30	N/A	
+ Recip Brkrd Dep to Tot Brkrd Dep	0.67	7.05	77	0.31	6.62	79	15.82	7.16	80	0.00	4.75	82	0.00	3.98	84	
+
+
+ Total Deposits																		
+ Individ, Partnerships, and Corp.		1,490,284			830,855			1,337,124			741,170			667,023				
+ U.S. Govt, States & Political Sub in U.S.		42,483			39,019			47,395			15,116			620				
+ Comml Banks & Other Dep Inst. in U.S.		3,470			3,719			2,643			7,914			6,777				
+ Banks in Foreign Countries		0			0			0			0			0				
+ Foreign Govts and Official Inst.		247			0			0			0			0				
+    Total Deposits		1,536,484			873,593			1,387,162			764,200			674,420				
+
+ Domestic Demand Deposits		1,004,932			413,015			886,551			356,886			220,628				
+ Domestic Other Transaction Accts		0			0			0			0			1,711				
+ Domestic Nontransaction Accts		531,552			460,578			500,611			407,314			452,081				
+ Total Domestic Deposits		1,536,484			873,593			1,387,162			764,200			674,420				
+ Deposits in Foreign Offices		N/A			N/A			N/A			N/A			N/A				
+    Total Deposits		1,536,484			873,593			1,387,162			764,200			674,420				
+
+ Other Liquidity/Funding Data																		
+ Non Core Liabilities $250M		309,414			264,706			339,357			227,578			218,921				
+ Short Term Non Core Funding		97,325			58,491			147,668			56,946			123,709				
+ Core Deposits		1,227,725			613,631			1,048,460			547,105			455,499				
+ Time Deps $250M & Under Mat < 1 Yr		94,975			52,787			90,474			45,512			125,157				
+ Time Deps $250M & Under Mat > 1 Yr		211,567			205,542			191,253			170,941			93,901				
+ Time Deps over $250M Mat < 1 Yr		322			1,829			321			1,816			841				
+ Time Deps over $250M Mat > 1 Yr		0			0			0			0			2,230				
+ Fed Home Loan Bor Mat < 1 Yr		0			0			0			10,483			0				
+ Fed Home Loan Bor Mat > 1 Yr		655			0			655			0			0				
+ Other Borrowing Mat < 1 Year		0			4,744			0			0			0				
+ Other Borrowing Mat > 1 Year		0			0			0			0			0				
+ Secured Other Borrowings		0			4,744			0			0			0				
+ Federal Funds Purchased		0			0			0			0			0				
+ Secured Fed Funds Purchased		0			0			0			0			0				
+ Listing Service Deposits		0			0			0			0			0				
+ Brokered Deposits		317,031			258,133			349,545			215,279			215,850				
+ Reciprocal Brokered Deposits		2,137			798			55,282			0			0				
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Liquidity & Inv Portfolio
+OCC Charter # 0			County: JACKSON			Liquidity & Investment Portfolio--Page 10A						7/23/2025 12:03:18 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ Percent of Total Assets	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 5	PCT	BANK	PG 5	PCT
+ Short Term Investments	32.87	7.17	98	21.96	6.83	95	33.15	6.69	98	9.54	7.35	69	7.46	6.73	64	
+ Marketable Equity Sec (MES)	0.11	0.01	91	0.19	0.01	94	0.12	0.01	90	0.21	0.00	97	0.24	0.00	97	
+ Net LN&LS & SBLC to Assets	45.79	70.98	3	64.96	70.20	30	47.86	71.33	4	73.73	66.47	65	75.34	64.29	72	
+ Pledged Assets	12.65	40.72	6	10.91	41.52	5	11.48	40.68	5	12.11	34.55	10	9.88	29.70	12	
+
+ Securities Mix	
+ % Total Securities	
+    US Treas & Govt Agencies	35.88	17.54	78	58.93	20.88	88	43.96	18.57	82	51.96	26.33	78	22.31	27.68	49	
+    Municipal Securities	7.07	20.66	29	18.06	21.25	46	9.45	20.92	33	15.96	27.17	32	20.63	26.48	41	
+    Pass-Through Mtg Backed Secs	4.68	24.00	19	5.32	21.89	24	6.35	24.24	23	12.10	17.60	43	19.49	17.82	56	
+    CMO & REMIC Mtg Backed Secs	37.52	10.65	92	2.06	8.46	36	20.59	9.73	79	3.95	6.27	54	17.16	5.90	83	
+    Commercial Mtg Back Secs	12.42	4.66	82	9.55	4.27	77	16.44	4.38	88	10.69	3.03	85	0.00	2.80	50	
+    Asset Backed Securities	0.00	0.60	76	0.00	0.66	77	0.00	0.55	77	0.00	0.27	86	12.24	0.21	97	
+    Structured Financial Products	0.00	0.85	65	0.00	0.63	69	0.00	0.76	66	0.00	0.28	82	0.00	0.21	83	
+    Other Domestic Debt Secs	1.19	3.93	46	2.98	3.73	59	1.59	3.78	51	2.59	2.36	69	4.07	2.34	75	
+    Foreign Debt Securities	0.00	0.00	92	0.00	0.00	93	0.00	0.00	93	0.00	0.00	94	0.00	0.00	93	
+    Inv Mut Fnd & Oth Mktbl	1.24	0.10	93	3.11	0.11	97	1.63	0.11	94	2.75	0.02	98	4.10	0.01	99	
+       Total	100.00	100.00	99	100.00	100.00	99	100.00	100.00	99	100.00	100.00	99	100.00	100.00	99	
+
+ Liquidity/Securities Ratios:	
+ App (Dep) Hi Risk & Struc/T1 Cap	0.00	-0.16	18	-0.01	-0.29	19	0.00	-0.18	20	-0.01	-0.37	27	0.00	-0.60	99	
+ App (Dep) in AFS sec to AFS Sec	-0.47	-7.81	94	-2.28	-9.45	92	-1.87	-8.93	92	-1.24	-8.22	96	-3.29	-9.47	92	
+ App (Dep) in HTM Sec to HTM Sec	N/A	-6.39	N/A	N/A	-7.22	N/A	N/A	-7.57	N/A	N/A	-4.85	N/A	N/A	-5.08	N/A	
+ App (Dep) in HTM Sec to Eqy Cap	0.00	-2.90	97	0.00	-3.70	97	0.00	-3.07	98	0.00	-2.85	97	0.00	-4.50	97	
+ Pledged Securities to Tot Sec	84.98	41.69	90	44.69	45.42	42	92.50	42.17	95	38.27	41.51	42	22.10	31.44	38	
+ Pledged Loans to Total Loans	10.62	45.71	8	12.61	45.60	11	9.41	45.16	8	12.43	33.83	20	11.41	29.98	24	
+ Loans HFS to Total Loans	9.57	0.10	98	6.69	0.11	98	10.85	0.11	98	5.24	0.03	98	0.06	0.03	81	
+
+
+ Short Term Investments		574,536			229,824			525,966			89,209			60,960				
+ Short Term Assets		956,514			378,373			913,654			232,118			207,163				
+ Debt Securities 90+ Days P/D		0			0			0			0			0				
+ Total Non-Current Debt Sec		0			0			0			0			0				
+ Fair Value Structured Notes		973			930			965			929			0				
+ Pledged Securities		135,412			27,907			110,209			27,319			10,400				
+ Pledged Loans & Leases		85,619			86,249			71,890			85,946			70,358				
+ Loans HFS		77,163			45,728			82,918			36,194			347				
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Capital Analysis-a
+OCC Charter # 0			County: JACKSON			Capital Analysis--Page 11						7/23/2025 12:03:19 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ Capital Ratios	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 5	PCT	BANK	PG 5	PCT
+ Percent of Bank Equity:	
+    Net Loans & Leases (x)	4.68	7.37	8	4.92	7.67	9	4.63	7.55	6	5.12	7.52	14	5.28	7.83	13	
+    Subord Notes & Debentures	0.00	0.02	99	0.00	0.01	99	0.00	0.02	99	0.00	0.12	99	0.00	0.15	99	
+    Com RE & Related Ventures	120.06	326.03	5	114.67	342.57	5	106.19	335.06	4	122.00	290.50	12	140.20	311.48	14	
+ Percent of Average Bank Equity:	
+    Net Income	12.05	11.39	58	10.63	10.57	52	15.07	10.87	80	13.17	13.19	53	6.43	13.75	6	
+    Dividends	0.00	3.61	36	0.00	3.06	39	0.00	4.14	16	0.00	5.38	14	0.00	5.03	15	
+    Retained Earnings	12.05	6.90	82	10.63	6.77	77	15.07	6.15	95	13.17	7.15	87	6.43	8.16	32	
+ Other Capital Ratios:	
+    Dividends to Net Operating Income	0.00	31.23	35	0.00	28.39	39	0.00	37.02	15	0.00	39.57	13	0.00	34.38	14	
+    Bank Eq Cap + Min Int to Assets	9.78	9.76	54	13.18	9.38	91	10.33	9.62	67	14.35	9.11	94	14.20	8.48	95	
+ Growth Rates:	
+    Total Equity Capital	23.89	11.14	91	15.14	9.58	81	22.13	8.47	92	15.62	14.01	65	101.05	-11.79	99	
+    Equity Growth Less Asst Growth	-43.13	5.43	0	7.58	3.88	70	-47.53	3.09	0	1.19	8.94	24	90.37	-16.20	99	
+ Intang Assets % Bank Equity	
+    Mortgage Servicing Rights	0.00	0.32	63	0.00	0.36	62	0.00	0.33	63	0.00	0.30	74	0.00	0.37	74	
+    Goodwill	19.81	3.64	95	24.54	3.87	97	20.65	3.70	95	25.23	1.58	98	29.66	1.74	98	
+    All Other Intangibles	6.19	0.43	97	5.39	0.38	97	6.14	0.43	97	4.80	0.16	97	2.50	0.18	94	
+    Total Intangibles	26.00	5.00	96	29.93	5.23	97	26.80	5.11	96	30.03	2.57	98	32.16	2.92	98	
+
+ Leverage Ratio	7.7114	10.40	1	9.9272	10.25	47	8.4411	10.31	7	10.0115	10.50	46	10.1909	10.20	55	
+
+ Standardized Capital Ratios	
+    Com Equity Tier 1 Cap Ratio	26.2691	13.45	98	26.8981	13.35	98	24.2495	13.35	96	24.4396	14.43	94	21.1104	14.36	91	
+    Tier 1 Capital Ratio	26.2691	13.47	97	26.8981	13.38	98	24.2495	13.38	96	24.4396	14.44	94	21.1104	14.39	90	
+    Total Capital Ratio	27.5210	14.56	98	28.1489	14.47	98	25.3911	14.46	96	25.6081	15.55	94	21.9188	15.49	90	
+
+ Adv App Cap Ratios	
+    Com Equity Tier 1 Cap Ratio	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+    Tier 1 Capital Ratio	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+    Total Capital Ratio	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	N/A	0.00	N/A	
+
+
+ End of Period Capital ($000)																		
+    Perpetual Preferred		0			0			0			0			0				
+    + Common Stock		60			60			60			60			60				
+    + Surplus		126,014			116,954			125,186			116,412			114,990				
+    + Retained Earnings		45,419			22,020			40,377			18,404			2,196				
+    + Accum Other Comp Income		-564			-1,071			-1,702			-661			-1,165				
+    + Other Equity Capital Comp		0			0			0			0			0				
+       Total Bank Equity Capital		170,929			137,963			163,921			134,215			116,081				
+          Minority Interest Cons Subs		0			0			0			0			0				
+       Total Bank Capital & Min Int		170,929			137,963			163,921			134,215			116,081				
+
+ Subordinated Notes & Debentures		0			0			0			0			0				
+
+ Changes in Bank Equity ($000)																		
+    Balance at Beginning of Period		163,920			134,215			134,215			116,081			57,736				
+    + Net Income		5,042			3,617			21,973			16,371			2,196				
+    + Sales or Purchase of Capital		0			0			0			0			0				
+    + Merger & Absorptions		0			0			0			0			26,661				
+    + Restate due to Acctg Error&Chg		0			0			0			-741			0				
+    + Trans with Parent		828			542			8,774			1,999			30,653				
+    - Dividends		0			0			0			0			0				
+    + Other Comprehensive Income		1,139			-411			-1,042			505			-1,165				
+       Balance at End of Period		170,929			137,963			163,920			134,215			116,081				
+
+ Intangible Assets																		
+    Mortgage Servicing Rights		0			0			0			0			0				
+    + All Other Intangibles		10,588			7,441			10,071			6,447			2,903				
+    + Goodwill		33,856			33,856			33,856			33,856			34,433				
+       Total Intangibles		44,444			41,297			43,927			40,303			37,336				
+
+ Total Assets for Leverage Ratio:																		
+    Average Total Consolidated Assets		1,688,049			1,025,836			1,482,291			984,950			821,464				
+    Less: Ded from CET1 Cap & add T1C		44,774			41,297			44,235			40,303			37,336				
+    Less: Other Deductions		0			0			0			0			0				
+    Total Assets for Leverage Ratio		1,643,275			984,539			1,438,056			944,647			784,128				
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Capital Analysis-b
+OCC Charter # 0			County: JACKSON			Capital Analysis--Page 11A						7/23/2025 12:03:20 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ Capital Analysis ($000)																		
+ Common Equity Tier 1 Capital: ($000)																		
+ Common Stock Plus Related Surplus		126,074			117,014			125,246			116,472			115,050				
+ Retained Earnings		45,419			22,020			40,377			18,404			2,196				
+ Accum Other Comprehensive Inc (AOCI)		-564			-1,071			-1,702			-661			-1,165				
+ Common Equity T1 Minority Interest		0			0			0			0			0				
+ Common Equity T1 Cap Before Adj/Ded		170,929			137,963			163,921			134,215			116,081				
+
+ Common Equity Tier 1 Capital: Adj/Ded																		
+    Less: Goodwill		33,856			33,856			33,856			33,856			34,433				
+    Less: Intangible Assets		10,588			7,441			10,071			6,447			2,903				
+    Less: DTA (NOL & Tax Credit Only)		330			0			308			0			0				
+    AOCI-Related Adjustments-Opt Out		-564			-1,071			-1,702			-661			-1,165				
+    AOCI-Related Adjustments-No Opt Out		N/A			N/A			N/A			N/A			N/A				
+    Oth Ded (add) CET1 bef threshold ded		0			0			0			0			0				
+    Less: Non-significant Investments		N/A			N/A			N/A			N/A			N/A				
+ Subtotal before Threshold Limits		126,719			97,737			121,388			94,573			79,910				
+    Less: Sig Inv, MSAs, DTA > 10% Limit		N/A			N/A			N/A			N/A			N/A				
+    Less: Sig Inv, MSAs, DTA > 15% Limit		N/A			N/A			N/A			N/A			N/A				
+       Less: Tot Sig Inv, MSAs, DTA  > Limit		0			0			0			0			0				
+    Less: Ded due to insuff T1 and T2 Cap		0			0			0			0			0				
+    Total Adj and Ded for CET1 Capital		0			0			0			0			0				
+ Common Equity Tier 1 Capital		126,719			97,737			121,388			94,573			79,910				
+
+ Additional Tier 1 Capital:																		
+    Additional T1C Inst & Related Surplus		0			0			0			0			0				
+    Non-qualifying Cap Inst sub to phaseout		0			0			0			0			0				
+    Tier 1 Minority Int Not Incl in CET1 Cap		0			0			0			0			0				
+    Additional T1 Cap Before Deductions		0			0			0			0			0				
+    Less: Additional T1 Cap Deductions		0			0			0			0			0				
+ Additional Tier 1 Capital		0			0			0			0			0				
+
+ Tier 1 Capital		126,719			97,737			121,388			94,573			79,910				
+
+ Tier 2 Capital:																		
+    T2 Cap Instruments & Related Surplus		0			0			0			0			0				
+    Non-qualifying Capital Instruments		0			0			0			0			0				
+    Tot Cap Min Int Not Incl in T1 Cap		0			0			0			0			0				
+    Adjusted ACL in Tier 2 Capital		6,039			4,545			5,715			4,522			3,060				
+    Exited Adv App Eligible Cr Reserves		N/A			N/A			N/A			N/A			N/A				
+    Unrealized Gains on AFS Pref Stock		N/A			N/A			N/A			N/A			N/A				
+ Tier 2 Capital Before Deductions		6,039			4,545			5,715			4,522			3,060				
+ Exited Adv App T2C Before Deductions		N/A			N/A			N/A			N/A			N/A				
+ Less: Tier 2 Capital Deductions		0			0			0			0			0				
+
+ Tier 2 Capital - Standardized Approaches		6,039			4,545			5,715			4,522			3,060				
+ Tier 2 Capital - Advanced Approaches		N/A			N/A			N/A			N/A			N/A				
+ Total Capital - Standardized Approaches		132,758			102,282			127,103			99,095			82,970				
+ Total Capital - Advanced Approaches		N/A			N/A			N/A			N/A			N/A				
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Capital Analysis-c
+OCC Charter # 0			County: JACKSON			Capital Analysis--Page 11B						7/23/2025 12:03:20 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ Risk Weighted Assets																		
+ On BS Assets and Securitization Exp																		
+    2% Category		N/A			N/A			0			0			0				
+    4% Category		N/A			N/A			0			0			0				
+    20% Category		N/A			N/A			28,014			10,730			9,929				
+    50% Category		N/A			N/A			21,794			19,538			13,386				
+    100% Category		N/A			N/A			399,361			303,394			305,012				
+    150% Category		N/A			N/A			22,455			23,214			14,374				
+    250% Category		N/A			N/A			9,530			7,435			9,468				
+    300% Category		N/A			N/A			0			0			0				
+    400% Category		N/A			N/A			0			0			0				
+    600% Category		N/A			N/A			0			0			0				
+    1250% Category		N/A			N/A			0			0			0				
+ Other Risk-Weighting App Categories		N/A			N/A			0			0			0				
+ Tot RWA Securitization Exp SSFA Mthd		N/A			N/A			0			0			0				
+ Total RWA Securitization Exp Gross-Up		N/A			N/A			0			0			0				
+ On-Balance Sheet Risk Weighted Assets		N/A			N/A			481,154			364,311			352,168				
+ Memo - 0% Category - $		N/A			N/A			948,274			485,503			389,708				
+
+ Off BS/Oth Items Subj to Risk Weighting																		
+    2% Category		N/A			N/A			0			0			0				
+    4% Category		N/A			N/A			0			0			0				
+    10% Category		N/A			N/A			0			0			0				
+    20% Category		N/A			N/A			0			0			0				
+    50% Category		N/A			N/A			0			0			0				
+    100% Category		N/A			N/A			19,426			22,656			26,364				
+    150% Category		N/A			N/A			0			0			0				
+    625% Category		N/A			N/A			0			0			0				
+    937.5% Category		N/A			N/A			0			0			0				
+    1250% Category		N/A			N/A			0			0			0				
+    1250% Category Securitization Exp		N/A			N/A			0			0			0				
+ Oth Risk-Weighting App Categories		N/A			N/A			0			0			0				
+ Tot RWA Securitization Exp SSFA Mthd		N/A			N/A			0			0			0				
+ Total RWA Securitization Exp Gross-Up		N/A			N/A			0			0			0				
+ Tot Deriv, Off-BS and Oth - Risk Wght		N/A			N/A			19,426			22,656			26,364				
+ Memo - 0% Category - $		N/A			N/A			0			0			0				
+
+ Standardized Market Risk Weighted Assets		0			0			0			0			0				
+
+ Risk-Weighted Asset Before Ded		483,144			363,623			500,580			386,967			378,534				
+ - Excess Adjusted ACL on LN&LS Loss		756			263			0			0			0				
+ - Allocated Transfer Risk Reserve		0			0			0			0			0				
+ Total Risk Weighted Assets		482,388			363,360			500,580			386,967			378,534				
+
+ Current Credit Exposure All Derivatives		N/A			N/A			0			0			0				
+
+ Derivatives Notional Prin Amounts																		
+ OTC Contracts Total		N/A			N/A			0			0			0				
+    Interest Rate		N/A			N/A			0			0			0				
+    All Other		N/A			N/A			0			0			0				
+ Centrally Clreared Contracts Total		N/A			N/A			0			0			0				
+    Interest Rate		N/A			N/A			0			0			0				
+    All Other		N/A			N/A			0			0			0				
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Capital Analysis-d
+OCC Charter # 0			County: JACKSON			Capital Analysis--Page 11C						7/23/2025 12:03:21 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ THIS PAGE IS INTENTIONALLY BLANK BECAUSE IT IS BEING DISCONTINUED.  THE CONTENT PREVIOUSLY DISPLAYED ON THIS PAGE IS PRESENTED ON THE TWO PRECEDING CAPITAL PAGES.  THIS PAGE WILL BE REMOVED AT A LATER DATE.																		
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Income Statement 1-Qtr-Ann
+OCC Charter # 0			County: JACKSON			One Quarter Annualized Income Analysis--Page 12						7/23/2025 12:03:21 PM
+Public Report
+		3/31/2025			12/31/2024			9/30/2024			6/30/2024			3/31/2024		
+ Earnings and Profitability	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT	BANK	PG 4	PCT
+ Percent of Average Assets:	
+    Interest Income (TE)	8.57	5.24	98	9.41	5.36	98	10.72	5.40	98	10.47	5.28	98	11.23	5.12	99	
+    - Interest Expense	0.63	1.97	1	0.82	2.10	2	0.89	2.22	3	0.92	2.16	3	0.56	2.07	1	
+       Net Interest Income (TE)	7.94	3.28	98	8.59	3.26	99	9.83	3.19	99	9.55	3.13	99	10.67	3.07	99	
+    + Noninterest Income	4.65	0.61	98	5.37	0.64	98	4.92	0.63	98	4.44	0.62	98	4.26	0.61	98	
+    - Noninterest Expense	10.57	2.46	99	10.67	2.48	99	12.20	2.42	99	11.63	2.41	99	12.85	2.42	99	
+       Pre-Provision Net Revenue (TE)	2.02	1.45	81	3.30	1.47	95	2.55	1.43	91	2.36	1.38	89	2.08	1.30	85	
+    - Provision: Credit Losses	0.42	0.10	93	0.28	0.13	82	0.15	0.10	71	0.27	0.10	85	0.14	0.08	77	
+    - Provision: Credit Loss Oth Assets	0.00	0.00	22	-0.02	0.00	16	0.05	0.00	93	0.03	0.00	88	-0.02	0.00	18	
+       Pretax Operating Income (TE)	1.60	1.34	69	3.03	1.31	95	2.35	1.30	91	2.07	1.25	86	1.95	1.19	86	
+    + Realized Gains/Losses Sec	0.00	0.00	92	0.00	0.00	90	0.00	0.00	89	0.00	0.00	94	-0.04	0.00	6	
+    + Unrealized Gains / Losses Equity Sec	0.01	0.00	93	-0.02	0.00	6	0.03	0.00	94	0.00	0.00	13	-0.01	0.00	3	
+    Pretax Net Operating Income (TE)	1.61	1.34	70	3.01	1.30	95	2.37	1.30	91	2.07	1.24	87	1.91	1.19	83	
+       Net Operating Income	1.19	1.09	61	2.39	1.06	95	1.87	1.05	88	1.53	1.00	81	1.41	0.97	79	
+    Net Inc Attrib Min Ints	0.00	0.00	98	0.00	0.00	97	0.00	0.00	98	0.00	0.00	97	0.00	0.00	98	
+    Net Income Adjusted Sub S	1.19	1.04	65	2.39	1.01	96	1.87	1.01	91	1.53	0.96	84	1.41	0.93	81	
+       Net Income	1.19	1.09	61	2.39	1.06	95	1.87	1.05	88	1.53	1.00	81	1.41	0.97	79	
+
+ Margin Analysis:	
+ Int Inc (TE) to Avg Earn Assets	9.64	5.49	98	10.32	5.61	98	11.48	5.66	99	10.60	5.54	98	12.03	5.38	99	
+ Int Expense to Avg Earn Assets	0.71	2.07	1	0.90	2.20	2	0.95	2.33	3	0.93	2.26	3	0.60	2.17	1	
+ Net Int Inc-TE to Avg Earn Assets	8.94	3.44	99	9.42	3.43	99	10.52	3.35	99	9.67	3.29	99	11.43	3.23	99	
+
+ Loan & Lease Analysis:	
+ Net Loss to Average Total LN&LS	0.31	0.07	89	0.43	0.11	88	0.06	0.07	65	0.27	0.07	87	0.02	0.06	55	
+ Earnings Coverage of Net Loss (X)	12.49	22.95	46	14.09	25.29	47	63.79	19.60	70	13.13	18.94	46	166.88	14.01	83	
+ ACL on LN&LS HFI to Net Losses (X)	2.38	7.75	35	1.56	14.11	27	11.69	6.57	50	2.51	0.51	32	36.37	5.37	66	
+
+ Capitalization	
+ Cash Dividends to Net Income	0.00	30.28	37	0.00	40.61	32	0.00	26.30	36	0.00	30.51	35	0.00	27.68	40	
+ Retain Earns to Avg Total Equity	12.05	6.89	82	22.52	5.45	98	14.46	7.26	90	12.02	6.65	83	10.63	6.69	77	
+
+ Yield on or Cost of:	
+ Total Loan & Leases (TE)	13.36	6.24	99	13.99	6.38	99	13.81	6.41	99	13.72	6.26	99	14.47	6.14	99	
+    Loans in Domestic Offices	13.36	6.23	99	13.99	6.37	99	13.81	6.40	99	13.72	6.25	99	14.47	6.13	99	
+       Real Estate	6.64	5.97	81	6.49	6.07	72	7.31	6.07	91	7.05	5.92	90	6.60	5.79	83	
+          Secured by 1-4 Fam Resi Prop	7.66	5.96	92	7.06	6.07	80	7.50	6.09	85	6.74	5.91	78	7.48	5.80	91	
+          All Other Loans Sec Real Estate	6.47	6.01	72	6.38	6.10	63	7.27	6.11	88	7.11	5.94	89	6.44	5.83	75	
+       Commercial & Industrial	9.84	7.22	95	10.60	7.50	95	10.30	7.62	93	10.03	7.53	92	9.51	7.37	92	
+       Individual	12.93	7.60	96	13.54	7.70	96	13.53	7.81	95	14.47	7.53	97	14.85	7.35	97	
+          Credit Card	22.76	10.09	93	23.62	9.79	93	22.10	10.80	89	21.43	10.70	89	24.77	10.98	91	
+       Agricultural	N/A	6.69	N/A	N/A	7.09	N/A	N/A	6.95	N/A	N/A	6.96	N/A	N/A	6.86	N/A	
+    Loans in Foreign Offices	N/A	9.13	N/A	N/A	9.33	N/A	N/A	9.60	N/A	N/A	9.45	N/A	N/A	8.81	N/A	
+ Total Investment Securities (TE)	4.63	3.05	92	4.53	2.99	92	4.72	2.96	92	4.36	2.92	89	4.34	2.83	89	
+ Total Investment Securities (Book)	4.60	2.94	93	4.49	2.89	92	4.67	2.86	92	4.30	2.81	90	4.27	2.73	90	
+    US Treas & Agency (Excl MBS)	4.57	2.51	93	4.45	2.55	89	4.64	2.57	88	4.22	2.53	84	4.01	2.42	84	
+    Mortgage Backed Securities	4.80	3.06	90	4.81	2.97	91	5.01	2.92	91	6.52	2.86	98	3.43	2.74	75	
+    All Other Securities	3.86	2.99	78	3.57	3.00	72	3.86	3.04	77	1.58	3.03	5	5.83	2.98	94	
+ Interest-Bearing Bank Balances	4.41	4.15	78	4.80	4.73	49	5.38	5.12	61	4.27	5.34	10	5.36	5.02	64	
+ Federal Funds Sold & Resales	N/A	3.53	N/A	N/A	3.94	N/A	N/A	4.55	N/A	N/A	4.41	N/A	N/A	4.38	N/A	
+
+ Total Interest Bearing Deposits	1.43	2.67	5	1.75	2.86	7	1.51	2.99	4	1.56	2.89	6	0.84	2.77	1	
+    Transaction accounts	3.41	1.58	92	5.43	1.65	98	3.90	1.78	90	3.97	1.76	92	1.71	1.71	52	
+    Other Savings Deposits	0.88	2.02	11	1.29	2.14	23	1.33	2.30	22	1.07	2.24	15	0.89	2.14	12	
+    Time Deposits	0.37	4.02	0	0.39	4.31	0	0.39	4.41	0	0.42	4.31	0	0.27	4.16	0	
+    Foreign Office Deposits	N/A	2.39	N/A	N/A	2.32	N/A	N/A	2.71	N/A	N/A	2.26	N/A	N/A	2.09	N/A	
+
+ Federal Funds Purchased & Repos	N/A	2.41	N/A	N/A	2.26	N/A	N/A	2.86	N/A	N/A	2.63	N/A	N/A	2.76	N/A	
+ Other Borrowed Money	N/A	4.05	N/A	N/A	4.25	N/A	N/A	4.64	N/A	N/A	4.43	N/A	N/A	4.42	N/A	
+ Subord Notes & Debentures	N/A	0.00	N/A	N/A	3.92	N/A	N/A	4.24	N/A	N/A	3.92	N/A	N/A	3.92	N/A	
+ Other Interest Expense	0.00	3.78	5	3.85	4.06	28	5.36	4.53	78	4.60	4.45	47	5.28	4.50	77	
+ All Interest-Bearing Funds	1.43	2.73	4	1.76	2.93	6	1.54	3.08	3	1.59	2.99	5	0.95	2.88	1	
+
+ Memo: Interest on Time Dep Over Ins Limit	1.25	4.10	0	1.25	4.30	2	1.25	4.45	1	2.85	4.38	5	3.33	4.27	11	
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Securitization & Asset Sale-a
+OCC Charter # 0			County: JACKSON			Securitization & Asset Sale Activities--Page 13						7/23/2025 12:03:21 PM
+Public Report
+																Percent Change
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		1 Quarter	1 Year
+ Securitization Activities		0			0			0			0			0		N/A	N/A	
+    1-4 Family Residential Loans		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+    Home Equity Lines		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+    Credit Card Receivables		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+    Auto Loans		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+    Commercial & Industrial Loans		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+    All Other Loans and Leases		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+
+ Unused Liquidity Commitments		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+
+ Sellers Interest in Secs & Loans		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+    Home Equity Lines		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+    Credit Card Receivables		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+    Commercial & Industrial Loans		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+
+ Total Retained Credit Exposure		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+
+ Asset Backed Comml Paper Conduits		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+    CR Exp Spons by Bank & Other		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+    Liquid Comm by Bank & Other		N/A			N/A			N/A			N/A			N/A		N/A	N/A	
+
+
+ Activity % Total Assets																		
+ Securitization Activities		0.00			0.00			0.00			0.00			0.00				
+    1-4 Family Residential Loans		N/A			N/A			N/A			N/A			N/A				
+    Home Equity Lines		N/A			N/A			N/A			N/A			N/A				
+    Credit Card Receivables		N/A			N/A			N/A			N/A			N/A				
+    Auto Loans		N/A			N/A			N/A			N/A			N/A				
+    Commercial & Industrial Loans		N/A			N/A			N/A			N/A			N/A				
+    All Other Loans and Leases		N/A			N/A			N/A			N/A			N/A				
+    Asset Backed Comml Paper Conduits		N/A			N/A			N/A			N/A			N/A				
+    Cr Exp Spons by Bank & Other		N/A			N/A			N/A			N/A			N/A				
+    Liquid Comm by Bank & Other		N/A			N/A			N/A			N/A			N/A				
+
+ Percent of Tot Managed Assets on																		
+ Balance Sheet & Sec Assets																		
+    1-4 Family Residential Loans		3.81			4.49			4.44			4.36			3.31				
+    Home Equity Lines		N/A			N/A			N/A			N/A			N/A				
+    Credit Card Receivables		N/A			N/A			N/A			N/A			N/A				
+    Auto Loans		N/A			N/A			N/A			N/A			N/A				
+    Commercial & Industrial Loans		N/A			N/A			N/A			N/A			N/A				
+    All Other Loans and Leases		N/A			N/A			N/A			N/A			N/A				
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Securitization & Asset Sale-b
+OCC Charter # 0			County: JACKSON			Securitization & Asset Sale Activities--Page 13A						7/23/2025 12:03:22 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ % Tot Securitization Act by Type																		
+ Unused Comm to Provide Liquidity		N/A			N/A			N/A			N/A			N/A				
+ Sellers Int in Secs & LNS % Trust		N/A			N/A			N/A			N/A			N/A				
+    Home Equity Lines		N/A			N/A			N/A			N/A			N/A				
+    Credit Card Receivables		N/A			N/A			N/A			N/A			N/A				
+    Commercial & Industrial Loans		N/A			N/A			N/A			N/A			N/A				
+
+ Percent of Tier 1 Capital																		
+ Total Retained Credit Exposure		N/A			N/A			N/A			N/A			N/A				
+
+ 30-89 Day PD Securitized Assets																		
+    1-4 Family Residential Loans		N/A			N/A			N/A			N/A			N/A				
+    Home Equity Lines		N/A			N/A			N/A			N/A			N/A				
+    Credit Card Receivables		N/A			N/A			N/A			N/A			N/A				
+    Auto Loans		N/A			N/A			N/A			N/A			N/A				
+    Commercial & Industrial Loans		N/A			N/A			N/A			N/A			N/A				
+    All Other Loans and Leases		N/A			N/A			N/A			N/A			N/A				
+       Total 30-89 Day PD Secur Assets		N/A			N/A			N/A			N/A			N/A				
+
+ 90+ Days PD Securitized Assets																		
+    1-4 Family Residential Loans		N/A			N/A			N/A			N/A			N/A				
+    Home Equity Lines		N/A			N/A			N/A			N/A			N/A				
+    Credit Card Receivables		N/A			N/A			N/A			N/A			N/A				
+    Auto Loans		N/A			N/A			N/A			N/A			N/A				
+    Commercial & Industrial Loans		N/A			N/A			N/A			N/A			N/A				
+    All Other Loans and Leases		N/A			N/A			N/A			N/A			N/A				
+       Total 90+ Days PD Secur Assets		N/A			N/A			N/A			N/A			N/A				
+
+ Total Past Due Securitized Assets		N/A			N/A			N/A			N/A			N/A				
+
+ Net Losses Securitized Assets																		
+    1-4 Family Residential Loans		N/A			N/A			N/A			N/A			N/A				
+    Home Equity Lines		N/A			N/A			N/A			N/A			N/A				
+    Credit Card Receivables		N/A			N/A			N/A			N/A			N/A				
+    Auto Loans		N/A			N/A			N/A			N/A			N/A				
+    Commercial & Industrial Loans		N/A			N/A			N/A			N/A			N/A				
+    All Other Loans and Leases		N/A			N/A			N/A			N/A			N/A				
+       Total Net Charge Off Secur Asset		N/A			N/A			N/A			N/A			N/A				
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Securitization & Asset Sale-c
+OCC Charter # 0			County: JACKSON			Securitization & Asset Sale Activities--Page 13B						7/23/2025 12:03:22 PM
+Public Report
+		3/31/2025			3/31/2024			12/31/2024			12/31/2023			12/31/2022		
+ 30-89 Day PD Securitized Assets %																		
+    1-4 Family Residential Loans		N/A			N/A			N/A			N/A			N/A				
+    Home Equity Lines		N/A			N/A			N/A			N/A			N/A				
+    Credit Card Receivables		N/A			N/A			N/A			N/A			N/A				
+    Auto Loans		N/A			N/A			N/A			N/A			N/A				
+    Commercial & Industrial Loans		N/A			N/A			N/A			N/A			N/A				
+    All Other Loans and Leases		N/A			N/A			N/A			N/A			N/A				
+       Total 30-89 Days PD Secur Asset		N/A			N/A			N/A			N/A			N/A				
+
+ 90+ Day PD Securitized Assets %																		
+    1-4 Family Residential Loans		N/A			N/A			N/A			N/A			N/A				
+    Home Equity Lines		N/A			N/A			N/A			N/A			N/A				
+    Credit Card Receivables		N/A			N/A			N/A			N/A			N/A				
+    Auto Loans		N/A			N/A			N/A			N/A			N/A				
+    Commercial & Industrial Loans		N/A			N/A			N/A			N/A			N/A				
+    All Other Loans and Leases		N/A			N/A			N/A			N/A			N/A				
+       Total 90+ Day PD Secur Asset		N/A			N/A			N/A			N/A			N/A				
+
+ Total PD Securitized Asets %		N/A			N/A			N/A			N/A			N/A				
+
+ Net Losses on Securitized Assets%																		
+    1-4 Family Residential Loans		N/A			N/A			N/A			N/A			N/A				
+    Home Equity Lines		N/A			N/A			N/A			N/A			N/A				
+    Credit Card Receivables		N/A			N/A			N/A			N/A			N/A				
+    Auto Loans		N/A			N/A			N/A			N/A			N/A				
+    Commercial & Industrial Loans		N/A			N/A			N/A			N/A			N/A				
+    All Other Loans and Leases		N/A			N/A			N/A			N/A			N/A				
+       Net Losses on Securitized Assets		N/A			N/A			N/A			N/A			N/A				
+
+ 30-89 DAY PD managed assets %																		
+    1-4 Family Residential Loans		N/A			N/A			N/A			N/A			N/A				
+    Home Equity Lines		N/A			N/A			N/A			N/A			N/A				
+    Credit Card Receivables		N/A			N/A			N/A			N/A			N/A				
+    Commercial & Industrial Loans		N/A			N/A			N/A			N/A			N/A				
+    All Other Loans and Leases		N/A			N/A			N/A			N/A			N/A				
+       Total 30-89 Day PD Manage Asset		N/A			N/A			N/A			N/A			N/A				
+
+ 90+ DAY PD MANAGED ASSETS %																		
+    1-4 Family Residential Loans		N/A			N/A			N/A			N/A			N/A				
+    Home Equity Lines		N/A			N/A			N/A			N/A			N/A				
+    Credit Card Receivables		N/A			N/A			N/A			N/A			N/A				
+    Commercial & Industrial Loans		N/A			N/A			N/A			N/A			N/A				
+    All Other Loans and Leases		N/A			N/A			N/A			N/A			N/A				
+       Total 90+ Day PD Manage Asset		N/A			N/A			N/A			N/A			N/A				
+
+ Total Past Due Managed Assets %		N/A			N/A			N/A			N/A			N/A				
+
+ Net Losses on Managed Assets %																		
+    1-4 Family Residential Loans		N/A			N/A			N/A			N/A			N/A				
+    Home Equity Lines		N/A			N/A			N/A			N/A			N/A				
+    Credit Card Receivables		N/A			N/A			N/A			N/A			N/A				
+    Commercial & Industrial Loans		N/A			N/A			N/A			N/A			N/A				
+    All Other Loans and Leases		N/A			N/A			N/A			N/A			N/A				
+       Net Losses on Managed Assets		N/A			N/A			N/A			N/A			N/A				
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Fiduciary Services-a
+OCC Charter # 0			County: JACKSON			Fiduciary & Related Services--Page 1						7/23/2025 12:03:23 PM
+Public Report
+		3/31/2025			12/31/2024			12/31/2023		3/31/2025
+ Total Fiduciary and Related Assets	'($000)'	%Total	%MGD	'($000)'	%Total	%MGD	'($000)'	%Total	%MGD	%Change
+ Personal Trust and Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Employee Benefit DC	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Employee Benefit DB	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Other EB & Retirement-Related	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Corporate Trust and Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Inv Mgmt & Inv Advisory Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Foundation & Endowment Trust & Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Other Fiduciary	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+    Total Fiduciary Assets	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Custody and Safekeeping	N/A	N/A		N/A	N/A		N/A	N/A		N/A
+ Memo: Accts in Foreign Offices	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Memo: IRA, HSA & Other	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+
+ Total Fiduciary and Related Accounts	(#)	%Total	%MGD	(#)	%Total	%MGD	(#)	%Total	%MGD	%Change
+ Personal Trust and Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Employee Benefit DC	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Employee Benefit DB	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Other EB & Retirement-Related	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Corporate Trust and Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Inv Mgmt & Inv Advisory Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Foundation & Endowment Trust & Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Other Fiduciary	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+    Total Number of Accounts	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Custody and Safekeeping	N/A	N/A		N/A	N/A		N/A	N/A		N/A
+ Memo: Accts in Foreign Offices	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Memo: IRA, HSA & Other	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+
+ Fiduciary and Related Services Income	'($000)'	%FID IN	%Change	'($000)'	%FID IN	%Change	'($000)'	%FID IN	%Change
+ Personal Trust and Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Employee Benefit DC	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Employee Benefit DB	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Other EB & Retirement-Related	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Corporate Trust and Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Inv Mgmt & Inv Advisory Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Foundation & Endowment Trust & Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Other Fiduciary	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Custody and Safekeeping	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Other Related Services	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+    Gross Fiduciary and Related Income	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Less: Expenses	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Less:Net Losses	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Plus: Intra-company Credits	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+    Net Fiduciary and Related Income	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Memo: Fiduciary Income - Foreign	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Gross Fiduciary Income % Nonint Inc		N/A			N/A			N/A		
+
+ Fiduciary Income % Fiduciary Assets	Bank		PCT		Bank		PCT		Bank		PCT
+ Personal Trust and Agency	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A		
+ Employee Benefit DC	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A		
+ Employee Benefit DB	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A		
+ Other EB & Retirement-Related	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A		
+ Corporate Trust and Agency	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A		
+ Inv Mgmt & Inv Advisory Agency	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A		
+ Other Fiduciary	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A		
+    Total Fiduciary Assets	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A		
+ Custody and Safekeeping	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A		
+ Memo: Fiduciary Income Foreign	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A		
+
+ Collective/Common Trust Fund Assets	'($000)'	%Total	%Change		'($000)'	%Total	%Change		'($000)'	%Total	%Change
+ Domestic Equity	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ International/Global Equity	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Stock/Bond Blend	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Taxable Bond	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Municipal Bond	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Short Term/Money Market	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Specialty/Other	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+    Total Trust Funds	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+
+ Collective/Common Trust Fund Accounts	(#)	%Total	%Change		(#)	%Total	%Change		(#)	%Total	%Change
+ Domestic Equity	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ International/Global Equity	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Stock/Bond Blend	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Taxable Bond	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Municipal Bond	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Short Term/Money Market	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+ Specialty/Other	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+    Total Trust Funds	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	
+
+
+
+FDIC Certificate # 8283			FRB District/ID_RSSD 10 / 893855			LEAD BANK			KANSAS CITY, MO			Fiduciary Services-b
+OCC Charter # 0			County: JACKSON			Fiduciary & Related Services--Page 1A						7/23/2025 12:03:23 PM
+Public Report
+		3/31/2025				12/31/2024				12/31/2023			
+ Gross Fiduciary Losses - Managed	'($000)'	%Rev		PCT	'($000)'	%Rev		PCT	'($000)'	%Rev		PCT
+ Personal Trust and Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ EB & Retirement Related Trust & Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Inv Mgmt & Inv Advisory Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Other Fiduciary	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+    Total Gross Managed Losses	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+
+ Gross Fiduciary Losses - Non Managed
+ Personal Trust & Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ EB & Retirement Related Trust & Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Inv Mgmt & Inv Advisory Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Other Fiduciary	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+    Total Gross Non Managed Losses	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+
+ Net Fiduciary Losses - ALL
+ Personal Trust and Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ EB & Retirement Related Trust & Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Inv Mgmt & Inv Advisory Agency	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ Other Fiduciary	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+    Total Net Losses	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+
+ Corporate Trust and Agency	'($000)'	#ISS	%Change	'($000)'	#ISS	%Change	'($000)'	#ISS	%Change
+ Corporate and Muni Trusteeships	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+    Issues in Default	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+ All Other Corporate	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A	N/A
+
+ Managed Assets in Fiduciary Accts	'($000)'	%Total	%Change		'($000)'	%Total	%Change		'($000)'	%Total	%Change
+ Noninterest-Bearing Deposits	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A	
+ Interest-Bearing Deposits	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A	
+ U.S. Treasury & Agency	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A	
+ State, County & Municipal	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A	
+ Money Market Mutual Funds	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A	
+ Equity Mutual Funds	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A	
+ Other Mutual Funds	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A	
+ Common & Collective Funds	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A	
+ Other Short-Term Obligations	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A	
+ Other Notes and Bonds	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A	
+ Unregistered Funds & Private Equity	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A	
+ Other Common & Preferred Stocks	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A	
+ Real Estate Mortgages	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A	
+ Real Estate	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A	
+ Miscellaneous Assets	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A	
+    Total Managed Assets	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A	
+
+ Memo: Fiduciary Assets in Advised or Sponsored Mutual Funds	N/A	N/A	N/A		N/A	N/A	N/A		N/A	N/A	N/A	
+
+Peer Group Descriptions for Fiduciary & Related Services:	Peer Number
+
+
