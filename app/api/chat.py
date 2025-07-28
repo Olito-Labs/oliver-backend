@@ -357,6 +357,15 @@ async def chat_streaming(request: ChatRequest):
                     print(f"[DEBUG] Unhandled chunk type: {chunk.type}")
                     if hasattr(chunk, '__dict__'):
                         print(f"[DEBUG] Chunk attributes: {list(chunk.__dict__.keys())}")
+                
+        except Exception as e:
+            error_chunk = {
+                "type": "error",
+                "content": f"Error processing request: {str(e)}",
+                "done": True,
+                "error": str(e)
+            }
+            yield f"data: {json.dumps(error_chunk)}\n\n"
     
     return StreamingResponse(
         generate_stream(),
