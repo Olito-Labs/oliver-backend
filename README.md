@@ -1,17 +1,25 @@
 # Oliver Backend
 
-AI-powered compliance assistant backend using DSPy framework with support for multiple LLM providers.
+AI-powered banking compliance assistant backend using OpenAI Responses API.
 
 ## Features
 
-- 🤖 **DSPy Integration**: Advanced prompting and optimization framework with streaming support
-- 🔄 **Multiple LLM Providers**: Easy switching between OpenAI, Anthropic, and Google
-- 📡 **Real-time Streaming**: Token-level streaming with status updates via DSPy streamify
-- 🧠 **Reasoning Visualization**: Real-time Chain-of-Thought process streaming
-- 📊 **Progress Indicators**: Live status updates during AI processing
-- 🎯 **Compliance Focused**: Specialized modules for regulatory analysis
+- 🤖 **OpenAI Integration**: Powered by OpenAI's latest models with function calling
+- 📡 **Real-time Streaming**: Token-level streaming with Server-Sent Events
+- 🧠 **Reasoning Visualization**: Live Chain-of-Thought process display
+- 🔍 **Web Search Integration**: Current information retrieval via web search tools
+- 🏦 **Banking Focus**: Specialized prompts for regulatory compliance and risk management
+- 💬 **Conversation State**: Maintains context across multi-turn conversations
 - 🚀 **FastAPI**: High-performance, async API framework
 - 🐳 **Docker Ready**: Containerized for easy deployment
+
+## Architecture
+
+This backend uses OpenAI's Responses API for:
+- **Streaming responses** with real-time token delivery
+- **Function calling** for web search and tool usage
+- **Conversation continuity** via `previous_response_id` parameter
+- **Banking-focused system prompts** for compliance assistance
 
 ## Quick Start
 
@@ -19,29 +27,26 @@ AI-powered compliance assistant backend using DSPy framework with support for mu
 
 - Python 3.11+
 - Docker (optional)
-- API keys for your chosen LLM provider
+- OpenAI API key
 
 ### Environment Setup
 
-1. **Clone and navigate to backend:**
-   ```bash
-   cd backend
-   ```
-
-2. **Create environment file:**
+1. **Create environment file:**
    ```bash
    cp .env.example .env
    ```
 
-3. **Configure environment variables:**
+2. **Configure environment variables:**
    ```bash
-   # Set your LLM provider
-   LLM_PROVIDER=openai  # or "anthropic" or "google"
-   
-   # Add your API keys (only need the one you're using)
+   # Required
    OPENAI_API_KEY=your_openai_key_here
-   ANTHROPIC_API_KEY=your_anthropic_key_here
-   GOOGLE_API_KEY=your_google_key_here
+   
+   # Optional (defaults shown)
+   OPENAI_MODEL=gpt-4.1
+   MAX_TOKENS=2048
+   TEMPERATURE=0.7
+   FRONTEND_URL=http://localhost:3000
+   PORT=8000
    ```
 
 ### Running with Docker (Recommended)
@@ -71,247 +76,137 @@ uvicorn app.main:app --reload --port 8000
 
 ### Chat Endpoints
 
-- **POST** `/api/chat/stream` - Streaming chat responses
+- **POST** `/api/chat/stream` - Streaming chat with real-time tokens
 - **POST** `/api/chat` - Non-streaming chat responses
 
-### Provider Management
+### System Endpoints
 
-- **GET** `/api/provider/info` - Get current LLM provider info
-- **POST** `/api/provider/switch` - Switch LLM provider
-
-### Health Check
-
+- **GET** `/api/provider/info` - Get OpenAI provider information
 - **GET** `/api/health` - Health check and system status
 - **GET** `/api/` - Root endpoint
 
 ## Usage Examples
 
-### Basic Chat Request
+### Streaming Chat Request
 
-```python
-import httpx
-import json
-
-async def chat_example():
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            "http://localhost:8000/api/chat",
-            json={
-                "messages": [
-                    {
-                        "id": "1",
-                        "content": "What are the key components of a BSA/AML compliance program?",
-                        "sender": "user",
-                        "timestamp": "2024-01-01T00:00:00Z"
-                    }
-                ],
-                "analysis_type": "compliance"
-            }
-        )
-        return response.json()
+```bash
+curl -X POST "http://localhost:8000/api/chat/stream" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [
+      {
+        "id": "1",
+        "content": "What are the key BSA/AML requirements for community banks?",
+        "sender": "user",
+        "timestamp": "2024-01-01T00:00:00Z"
+      }
+    ],
+    "analysis_type": "compliance",
+    "stream": true
+  }'
 ```
 
-### Streaming Chat
+### Non-streaming Chat Request
 
-```python
-import httpx
-import json
-
-async def streaming_chat():
-    async with httpx.AsyncClient() as client:
-        async with client.stream(
-            "POST",
-            "http://localhost:8000/api/chat/stream",
-            json={
-                "messages": [
-                    {
-                        "id": "1", 
-                        "content": "Help me create an MRA remediation plan",
-                        "sender": "user",
-                        "timestamp": "2024-01-01T00:00:00Z"
-                    }
-                ],
-                "analysis_type": "compliance"
-            }
-        ) as response:
-            async for line in response.aiter_lines():
-                if line.startswith("data: "):
-                    data = json.loads(line[6:])
-                    print(data)
+```bash
+curl -X POST "http://localhost:8000/api/chat" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [
+      {
+        "id": "1", 
+        "content": "Help me understand CECL implementation requirements",
+        "sender": "user",
+        "timestamp": "2024-01-01T00:00:00Z"
+      }
+    ],
+    "analysis_type": "compliance"
+  }'
 ```
 
-### Switch LLM Provider
+## Streaming Response Format
 
-```python
-async def switch_provider():
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            "http://localhost:8000/api/provider/switch",
-            json={
-                "provider": "anthropic",
-                "api_key": "your_anthropic_key"
-            }
-        )
-        return response.json()
+The streaming endpoint returns Server-Sent Events with the following event types:
+
+```typescript
+// Content tokens (main response)
+{ "type": "content", "content": "token", "done": false }
+
+// Reasoning/thinking process  
+{ "type": "reasoning", "content": "💭 Searching for current regulations...", "done": false }
+
+// Status updates
+{ "type": "status", "content": "🔍 Executing web search...", "done": false }
+
+// Completion with metadata
+{ "type": "done", "content": "", "done": true, "metadata": {...} }
 ```
 
-## Configuration
+## Banking Compliance Focus
 
-### Environment Variables
+Oliver is specialized for banking institutions and provides:
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `LLM_PROVIDER` | LLM provider to use | `openai` |
-| `OPENAI_API_KEY` | OpenAI API key | - |
-| `ANTHROPIC_API_KEY` | Anthropic API key | - |
-| `GOOGLE_API_KEY` | Google API key | - |
-| `OPENAI_MODEL` | OpenAI model name | `gpt-4` |
-| `ANTHROPIC_MODEL` | Anthropic model name | `claude-3-sonnet-20240229` |
-| `GOOGLE_MODEL` | Google model name | `gemini-1.5-pro` |
-| `MAX_TOKENS` | Maximum tokens per response | `2000` |
-| `TEMPERATURE` | Model temperature | `0.7` |
-| `FRONTEND_URL` | Frontend URL for CORS | `http://localhost:3000` |
-| `PORT` | Server port | `8000` |
+- **Institution validation** (charter type, asset size, regulators)
+- **Workflow classification** (MRA remediation, exam prep, compliance reviews)
+- **Current regulatory research** via web search integration
+- **Evidence-based responses** with source citations
 
-### Switching Providers
-
-You can switch between LLM providers in three ways:
-
-1. **Environment Variable**: Set `LLM_PROVIDER` to `openai`, `anthropic`, or `google`
-2. **API Call**: Use the `/api/provider/switch` endpoint
-3. **Runtime**: Call `llm_manager.switch_provider()` in Python code
+Supported analysis types:
+- `general` - General banking compliance questions
+- `compliance` - Specific regulatory compliance analysis  
+- `document` - Document review and analysis
 
 ## Development
+
+### Testing
+
+```bash
+# Test OpenAI integration
+python test_openai_migration.py
+
+# Check system health
+curl http://localhost:8000/api/health
+```
 
 ### Project Structure
 
 ```
-backend/
+oliver-backend/
 ├── app/
-│   ├── __init__.py
-│   ├── main.py              # FastAPI application
-│   ├── config.py            # Configuration management
-│   ├── llm_providers.py     # LLM provider management
-│   ├── api/                 # API routes
-│   │   ├── chat.py
-│   │   └── health.py
-│   ├── dspy_modules/        # DSPy components
-│   │   ├── signatures.py
-│   │   └── modules.py
-│   └── models/              # Pydantic models
-│       └── api.py
-├── requirements.txt
-├── Dockerfile
-├── docker-compose.yml
-└── README.md
+│   ├── api/
+│   │   ├── chat.py          # Main chat endpoints
+│   │   └── health.py        # Health checks
+│   ├── models/
+│   │   └── api.py           # Pydantic models
+│   ├── config.py            # Configuration
+│   ├── llm_providers.py     # OpenAI client management
+│   └── main.py              # FastAPI application
+├── requirements.txt         # Dependencies
+├── Dockerfile              # Container configuration
+├── docker-compose.yml     # Development setup
+└── test_openai_migration.py # Integration tests
 ```
-
-### Adding New DSPy Modules
-
-1. **Create a signature in `app/dspy_modules/signatures.py`:**
-   ```python
-   class YourSignature(dspy.Signature):
-       """Description of what this module does."""
-       input_field = dspy.InputField(desc="Input description")
-       output_field = dspy.OutputField(desc="Output description")
-   ```
-
-2. **Create a module in `app/dspy_modules/modules.py`:**
-   ```python
-   class YourModule(dspy.Module):
-       def __init__(self):
-           super().__init__()
-           self.predictor = dspy.ChainOfThought(YourSignature)
-       
-       def forward(self, input_data):
-           return self.predictor(input_field=input_data)
-   ```
-
-3. **Use in API endpoints:**
-   ```python
-   from app.dspy_modules.modules import YourModule
-   module = YourModule()
-   result = module(input_data="your input")
-   ```
 
 ## Deployment
 
-### Production with Docker
+### Railway Deployment
 
-```bash
-# Build production image
-docker build -t oliver-backend .
+This backend is configured for Railway deployment:
 
-# Run container
-docker run -p 8000:8000 \
-  -e LLM_PROVIDER=openai \
-  -e OPENAI_API_KEY=your_key \
-  oliver-backend
-```
+1. **Set environment variables** in Railway dashboard:
+   - `OPENAI_API_KEY`
+   - `OPENAI_MODEL` (optional, defaults to gpt-4.1)
+   - `FRONTEND_URL` (your frontend domain)
+
+2. **Deploy** from this repository - Railway will automatically use the Dockerfile
 
 ### Health Monitoring
 
 The `/api/health` endpoint provides:
-- Service status
-- Current LLM provider information
-- System timestamp
-- API version
-
-### Testing Streaming
-
-Test the DSPy streaming implementation:
-
-```bash
-# Run streaming tests
-python test_streaming.py
-
-# Test debug endpoint
-curl -X POST http://localhost:8000/api/chat/stream/debug \
-  -H "Content-Type: application/json" \
-  -d '{"messages": [{"content": "Test streaming", "sender": "user"}], "analysis_type": "general"}'
-```
-
-For detailed streaming documentation, see [STREAMING_IMPLEMENTATION.md](STREAMING_IMPLEMENTATION.md).
-
-## Troubleshooting
-
-### Common Issues
-
-1. **LLM Provider Initialization Failed**
-   - Check that your API key is correct
-   - Verify the provider name is one of: `openai`, `anthropic`, `google`
-   - Ensure you have credits/quota in your LLM provider account
-
-2. **CORS Errors**
-   - Update `FRONTEND_URL` in environment variables
-   - Check that your frontend URL is in the CORS allow list
-
-3. **Streaming Not Working**
-   - Ensure your client supports Server-Sent Events
-   - Check that proxy/load balancer doesn't buffer responses
-
-4. **Import Errors**
-   - Make sure all dependencies are installed: `pip install -r requirements.txt`
-   - Check Python version is 3.11+
-
-### Logs
-
-```bash
-# View logs with Docker Compose
-docker-compose logs -f backend
-
-# View logs with Docker
-docker logs -f <container_name>
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+- OpenAI client connectivity status
+- Provider configuration details
+- System timestamp and version
 
 ## License
 
-This project is licensed under the MIT License. 
+MIT License - see LICENSE file for details. 
