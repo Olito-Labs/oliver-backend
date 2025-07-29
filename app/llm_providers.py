@@ -29,12 +29,21 @@ class OpenAIManager:
     
     def get_current_provider_info(self) -> Dict[str, Any]:
         """Get current provider information."""
-        return {
+        info = {
             "provider": "openai",
             "model": settings.OPENAI_MODEL,
-            "max_tokens": settings.MAX_TOKENS,
-            "temperature": settings.TEMPERATURE
+            "max_tokens": settings.MAX_TOKENS
         }
+        
+        # Only include temperature for models that support it (not o3)
+        if not settings.OPENAI_MODEL.startswith("o3"):
+            info["temperature"] = settings.TEMPERATURE
+        else:
+            info["reasoning_effort"] = "medium"
+            info["reasoning_summary"] = "detailed"
+            info["note"] = "o3 models use reasoning effort instead of temperature"
+        
+        return info
     
     def get_web_search_tool_name(self) -> str:
         """Get correct web search tool name based on model."""
