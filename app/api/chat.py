@@ -227,7 +227,7 @@ async def chat_streaming(request: ChatRequest):
                     yield f"data: {json.dumps({'type': 'status', 'content': '🧠 Thinking about the best approach...', 'done': False})}\n\n"
                 
                 elif chunk.type == "response.output_item.added":
-                    # New output item (function call or text) started
+                    # New output item (function call, web search call, or text) started
                     print(f"[DEBUG] Output item added: {getattr(chunk, 'item', 'unknown')}")
                     if hasattr(chunk, 'item'):
                         if hasattr(chunk.item, 'type') and chunk.item.type == "function_call":
@@ -251,6 +251,15 @@ async def chat_streaming(request: ChatRequest):
                                 reasoning_msg = f"💭 I'm going to use {tool_name} to help answer your question..."
                                 reasoning_messages.append(reasoning_msg)
                                 yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
+                        
+                        elif hasattr(chunk.item, 'type') and chunk.item.type == "web_search_call":
+                            # Handle web search call output items
+                            search_id = getattr(chunk.item, 'id', 'unknown')
+                            print(f"[DEBUG] Web search call started: {search_id}")
+                            reasoning_msg = '🌐 Initiating web search...'
+                            reasoning_messages.append(reasoning_msg)
+                            yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
+                        
                         else:
                             yield f"data: {json.dumps({'type': 'status', 'content': '📝 Preparing my response...', 'done': False})}\n\n"
                 
@@ -351,6 +360,22 @@ async def chat_streaming(request: ChatRequest):
                     }
                     yield f"data: {json.dumps({'type': 'done', 'content': '', 'done': True, 'metadata': completion_metadata})}\n\n"
                     break
+                
+                # Handle web search specific events
+                elif chunk.type == "response.web_search_call.in_progress":
+                    reasoning_msg = '🌐 Executing web search...'
+                    reasoning_messages.append(reasoning_msg)
+                    yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
+                
+                elif chunk.type == "response.web_search_call.searching":
+                    reasoning_msg = '🔍 Searching the web for current information...'
+                    reasoning_messages.append(reasoning_msg)
+                    yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
+                
+                elif chunk.type == "response.web_search_call.completed":
+                    reasoning_msg = '✅ Web search completed, analyzing results...'
+                    reasoning_messages.append(reasoning_msg)
+                    yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
                 
                 else:
                     # Log any unhandled chunk types
