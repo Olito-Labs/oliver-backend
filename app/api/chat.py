@@ -189,8 +189,15 @@ async def chat_streaming(request: ChatRequest):
                 "tools": tools,
                 "stream": True,
                 "store": True,
-                "text": {"format": {"type": "text"}},
-                "reasoning": {}
+                "text": {
+                    "format": {
+                        "type": "text"
+                    }
+                },
+                "reasoning": {
+                    "effort": "medium",
+                    "summary": "detailed"
+                }
             }
             
             # Critical: Include previous_response_id for conversation state
@@ -377,12 +384,37 @@ async def chat_streaming(request: ChatRequest):
                     reasoning_messages.append(reasoning_msg)
                     yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
                 
+                # Handle o3 detailed reasoning events
+                elif chunk.type == "response.reasoning.started":
+                    reasoning_msg = '🧠 Starting detailed reasoning process...'
+                    reasoning_messages.append(reasoning_msg)
+                    yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
+                
+                elif chunk.type == "response.reasoning.delta":
+                    # Stream detailed reasoning content from o3
+                    if hasattr(chunk, 'delta') and chunk.delta:
+                        reasoning_content = f"🤔 {chunk.delta}"
+                        reasoning_messages.append(reasoning_content)
+                        yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_content, 'done': False})}\n\n"
+                
+                elif chunk.type == "response.reasoning.completed":
+                    # Final reasoning summary from o3
+                    reasoning_msg = '✅ Reasoning analysis complete'
+                    if hasattr(chunk, 'reasoning') and chunk.reasoning:
+                        # If we have a complete reasoning summary, include it
+                        detailed_reasoning = f"📋 Reasoning Summary: {chunk.reasoning}"
+                        reasoning_messages.append(detailed_reasoning)
+                        yield f"data: {json.dumps({'type': 'reasoning', 'content': detailed_reasoning, 'done': False})}\n\n"
+                    else:
+                        reasoning_messages.append(reasoning_msg)
+                        yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
+                
                 else:
                     # Log any unhandled chunk types
                     print(f"[DEBUG] Unhandled chunk type: {chunk.type}")
                     if hasattr(chunk, '__dict__'):
                         print(f"[DEBUG] Chunk attributes: {list(chunk.__dict__.keys())}")
-                
+                 
         except Exception as e:
             error_chunk = {
                 "type": "error",
@@ -391,7 +423,7 @@ async def chat_streaming(request: ChatRequest):
                 "error": str(e)
             }
             yield f"data: {json.dumps(error_chunk)}\n\n"
-    
+     
     return StreamingResponse(
         generate_stream(),
         media_type="text/event-stream",
@@ -407,6 +439,4 @@ async def chat_streaming(request: ChatRequest):
 @router.get("/provider/info")
 async def get_provider_info():
     """Get current provider information."""
-    return openai_manager.get_current_provider_info()
-
-# Remove the provider switch endpoint since we're focusing on OpenAI only 
+    return openai_manager.get_current_provider_info() 

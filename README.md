@@ -42,7 +42,7 @@ This backend uses OpenAI's Responses API for:
    OPENAI_API_KEY=your_openai_key_here
    
    # Optional (defaults shown)
-   OPENAI_MODEL=gpt-4.1
+   OPENAI_MODEL=o3
    MAX_TOKENS=2048
    TEMPERATURE=0.7
    FRONTEND_URL=http://localhost:3000
@@ -195,7 +195,7 @@ This backend is configured for Railway deployment:
 
 1. **Set environment variables** in Railway dashboard:
    - `OPENAI_API_KEY`
-   - `OPENAI_MODEL` (optional, defaults to gpt-4.1)
+   - `OPENAI_MODEL` (optional, defaults to o3)
    - `FRONTEND_URL` (your frontend domain)
 
 2. **Deploy** from this repository - Railway will automatically use the Dockerfile
@@ -209,4 +209,4 @@ The `/api/health` endpoint provides:
 
 ## License
 
-MIT License - see LICENSE file for details. 
+MIT License - see LICENSE file for details.

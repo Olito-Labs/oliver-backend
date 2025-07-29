@@ -38,8 +38,8 @@ class OpenAIManager:
     
     def get_web_search_tool_name(self) -> str:
         """Get correct web search tool name based on model."""
-        # For GPT-4.1, always use web_search_preview as per OpenAI documentation
-        if settings.OPENAI_MODEL.startswith("gpt-4.1"):
+        # For o3 and GPT-4.1, always use web_search_preview as per OpenAI documentation
+        if settings.OPENAI_MODEL.startswith("o3") or settings.OPENAI_MODEL.startswith("gpt-4.1"):
             return "web_search_preview"
         # For other models, check if it's a preview variant
         return "web_search_preview" if settings.OPENAI_MODEL.endswith("-preview") else "web_search"
