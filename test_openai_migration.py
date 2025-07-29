@@ -9,6 +9,29 @@ import json
 from app.llm_providers import openai_manager
 from app.config import settings
 
+def get_test_params(**kwargs):
+    """Get test parameters compatible with the current model."""
+    base_params = {
+        "max_output_tokens": kwargs.get("max_output_tokens", 100),
+        "stream": kwargs.get("stream", False),
+        "store": kwargs.get("store", True)
+    }
+    
+    # Add model-specific parameters
+    if settings.OPENAI_MODEL.startswith("o3"):
+        # o3 models don't support temperature
+        if "reasoning" not in kwargs:
+            base_params["reasoning"] = {"effort": "low", "summary": "brief"}
+    else:
+        # Other models support temperature
+        base_params["temperature"] = kwargs.get("temperature", 0.7)
+        if "reasoning" not in kwargs:
+            base_params["reasoning"] = {}
+    
+    # Override with any explicitly provided kwargs
+    base_params.update(kwargs)
+    return base_params
+
 async def test_openai_client():
     """Test basic OpenAI client initialization."""
     print("🔍 Testing OpenAI client initialization...")
@@ -29,6 +52,7 @@ async def test_simple_response():
     try:
         client = openai_manager.get_client()
         
+        test_params = get_test_params(max_output_tokens=100, stream=False)
         response = client.responses.create(
             model=settings.OPENAI_MODEL,
             input=[{
@@ -36,10 +60,7 @@ async def test_simple_response():
                 "content": [{"type": "input_text", "text": "Hello, can you help me with a quick test?"}]
             }],
             instructions="You are Oliver, a helpful AI assistant. Respond briefly and professionally.",
-            max_output_tokens=100,
-            temperature=0.7,
-            stream=False,
-            store=True
+            **test_params
         )
         
         if response.output and len(response.output) > 0:
@@ -66,6 +87,7 @@ async def test_conversation_state(first_response_id):
     try:
         client = openai_manager.get_client()
         
+        test_params = get_test_params(max_output_tokens=100, stream=False)
         response = client.responses.create(
             model=settings.OPENAI_MODEL,
             input=[{
@@ -74,10 +96,7 @@ async def test_conversation_state(first_response_id):
             }],
             instructions="You are Oliver, a helpful AI assistant. Refer to the previous conversation context.",
             previous_response_id=first_response_id,  # Critical: Use conversation state
-            max_output_tokens=100,
-            temperature=0.7,
-            stream=False,
-            store=True
+            **test_params
         )
         
         if response.output and len(response.output) > 0:
@@ -100,6 +119,7 @@ async def test_streaming():
     try:
         client = openai_manager.get_client()
         
+        test_params = get_test_params(max_output_tokens=100, stream=True)
         stream = client.responses.create(
             model=settings.OPENAI_MODEL,
             input=[{
@@ -107,10 +127,7 @@ async def test_streaming():
                 "content": [{"type": "input_text", "text": "Tell me about banking compliance in one sentence."}]
             }],
             instructions="You are Oliver, a banking compliance expert. Be concise.",
-            max_output_tokens=100,
-            temperature=0.7,
-            stream=True,
-            store=True
+            **test_params
         )
         
         chunks_received = 0
@@ -147,6 +164,7 @@ async def test_web_search_tool():
         web_search_tool_name = openai_manager.get_web_search_tool_name()
         print(f"🔍 Using web search tool: {web_search_tool_name}")
         
+        test_params = get_test_params(max_output_tokens=200, stream=False)
         response = client.responses.create(
             model=settings.OPENAI_MODEL,
             input=[{
@@ -159,10 +177,7 @@ async def test_web_search_tool():
                 "user_location": {"type": "approximate", "country": "US"},
                 "search_context_size": "medium"
             }],
-            max_output_tokens=200,
-            temperature=0.7,
-            stream=False,
-            store=True
+            **test_params
         )
         
         if response.output and len(response.output) > 0:
