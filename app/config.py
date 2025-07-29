@@ -9,7 +9,7 @@ class Settings:
     
     # OpenAI Configuration
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
-    OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4.1")
+    OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "o3")
     
     # Model Settings
     MAX_TOKENS: int = int(os.getenv("MAX_TOKENS", "2048"))
