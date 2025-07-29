@@ -2,6 +2,31 @@
 
 AI-powered banking compliance assistant backend using OpenAI Responses API.
 
+## o3 Model Considerations
+
+When using the o3 model, note the following important differences:
+
+### ❌ **Unsupported Parameters**
+- `temperature` - Not supported (use reasoning effort instead)
+- `top_p` - Not supported (sampling parameters don't apply)
+- Other sampling parameters - Not compatible with reasoning models
+
+### ✅ **o3-Specific Features**
+- `reasoning.effort`: `"low"`, `"medium"`, `"high"` - Controls reasoning depth
+- `reasoning.summary`: `"detailed"` - Provides reasoning explanations
+- Enhanced chain-of-thought capabilities
+
+### ⚠️ **Known Limitations**
+- **Reasoning summaries may be empty**: In ~90% of API responses, the reasoning summary field may be empty despite requesting `"summary": "detailed"`. This is a known OpenAI API issue.
+- **Different cost structure**: o3 uses reasoning tokens in addition to input/output tokens
+
+### 🔧 **Automatic Parameter Handling**
+The backend automatically adjusts API parameters based on the model:
+```python
+# For o3 models: Uses reasoning.effort instead of temperature
+# For other models: Uses standard temperature parameter
+```
+
 ## Features
 
 - 🤖 **OpenAI Integration**: Powered by OpenAI's latest models with function calling

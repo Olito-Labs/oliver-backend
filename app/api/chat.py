@@ -151,6 +151,53 @@ async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing chat: {str(e)}")
 
+def _build_model_specific_params(openai_messages, system_prompt, tools):
+    """Build request parameters specific to the model type.
+    
+    o3 models have different parameter support:
+    - ❌ temperature, top_p (sampling parameters not supported)
+    - ✅ reasoning.effort and reasoning.summary (o3-specific)
+    - ⚠️  reasoning summary may be empty in ~90% of responses (known issue)
+    
+    Other models (GPT-4.1, etc.):
+    - ✅ temperature, top_p (standard sampling parameters)
+    - ⚠️  reasoning parameter may not be supported
+    """
+    
+    # Base parameters that work for all models
+    base_params = {
+        "model": settings.OPENAI_MODEL,
+        "input": openai_messages,
+        "instructions": system_prompt,
+        "max_output_tokens": settings.MAX_TOKENS,
+        "tools": tools,
+        "stream": True,
+        "store": True,
+        "text": {
+            "format": {
+                "type": "text"
+            }
+        }
+    }
+    
+    # o3 model specific parameters
+    if settings.OPENAI_MODEL.startswith("o3"):
+        # o3 doesn't support temperature, top_p or other sampling parameters
+        # but supports reasoning configuration
+        base_params["reasoning"] = {
+            "effort": "medium",
+            "summary": "detailed"
+        }
+        print(f"[DEBUG] Using o3 model parameters (no temperature/top_p)")
+    else:
+        # For other models (GPT-4.1, etc.), include sampling parameters
+        base_params["temperature"] = settings.TEMPERATURE
+        # Note: reasoning parameter may not be supported by older models
+        base_params["reasoning"] = {}
+        print(f"[DEBUG] Using standard model parameters (with temperature={settings.TEMPERATURE})")
+    
+    return base_params
+
 @router.post("/chat/stream")
 async def chat_streaming(request: ChatRequest):
     """Streaming chat endpoint with function calling and chain of thought display."""
@@ -158,47 +205,31 @@ async def chat_streaming(request: ChatRequest):
         try:
             client = openai_manager.get_client()
             if not client:
-                raise Exception("OpenAI client not initialized")
+                raise HTTPException(status_code=500, detail="OpenAI client not initialized")
             
-            # Convert messages to OpenAI format
+            # Convert ChatMessage list to OpenAI format
             openai_messages = _convert_messages_to_openai_format(request.messages)
             
-            # Create system prompt based on analysis type
+            # Create system prompt
             system_prompt = _create_oliver_system_prompt(request.analysis_type)
             
-            # Prepare tools - include web search for research capabilities
+            # Get the appropriate web search tool name
             web_search_tool_name = openai_manager.get_web_search_tool_name()
+            
+            # Build tools array
             tools = [
                 {
                     "type": web_search_tool_name,
                     "user_location": {
-                        "type": "approximate",
+                        "type": "approximate", 
                         "country": "US"
                     },
                     "search_context_size": "medium"
                 }
             ]
             
-            # Build request parameters
-            request_params = {
-                "model": settings.OPENAI_MODEL,
-                "input": openai_messages,
-                "instructions": system_prompt,
-                "max_output_tokens": settings.MAX_TOKENS,
-                "temperature": settings.TEMPERATURE,
-                "tools": tools,
-                "stream": True,
-                "store": True,
-                "text": {
-                    "format": {
-                        "type": "text"
-                    }
-                },
-                "reasoning": {
-                    "effort": "medium",
-                    "summary": "detailed"
-                }
-            }
+            # Build model-specific request parameters
+            request_params = _build_model_specific_params(openai_messages, system_prompt, tools)
             
             # Critical: Include previous_response_id for conversation state
             if request.previous_response_id:
