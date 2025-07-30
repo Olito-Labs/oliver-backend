@@ -316,8 +316,13 @@ async def chat_streaming(request: ChatRequest):
                     if hasattr(chunk, 'delta'):
                         token_text = chunk.delta
                         accumulated_text += token_text
-                        # Send each token immediately as it arrives
-                        yield f"data: {json.dumps({'type': 'content', 'content': token_text, 'done': False})}\n\n"
+                        
+                        # Open canvas on first content token if not already opened
+                        if len(accumulated_text) <= len(token_text):  # First token
+                            yield f"data: {json.dumps({'type': 'canvas_ready', 'content': '', 'done': False})}\n\n"
+                        
+                        # Send final content to canvas instead of chat
+                        yield f"data: {json.dumps({'type': 'canvas_content', 'content': token_text, 'done': False})}\n\n"
                 
                 elif chunk.type == "response.output_item.done":
                     # Output item complete
