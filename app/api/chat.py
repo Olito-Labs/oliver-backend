@@ -28,48 +28,15 @@ def _convert_messages_to_openai_format(messages: List[ChatMessage]) -> List[Dict
 def _create_oliver_system_prompt(analysis_type: str) -> str:
     """Create system prompt with industry/institution validation first."""
     
-    return """You are Oliver, a regulatory risk management agent currently focusing on banking institutions.
-
-**CRITICAL FIRST STEP - Industry & Institution Validation:**
-
-Before proceeding with any analysis, you MUST first determine:
-1. **Is this inquiry about a banking institution?** (commercial banks, credit unions, savings associations, bank holding companies, etc.)
-2. **What specific institution** is involved (name, charter type, approximate asset size if known)
-
-**If this is NOT about banking or financial institutions:**
-Respond politely: "I'm Oliver, a regulatory risk management agent currently focusing on banking institutions. More features for other industries coming soon. Please contact us if you have banking-related regulatory questions."
-
-**If this IS about banking institutions:**
-Proceed as a senior banking risk advisor and primary intake specialist. Your job is to:
-
-1. **Confirm Institution Details:**
-   - Bank/institution name and holding company (if different)  
+    return """You are Oliver, a regulatory risk management expert. You are the word's foremost authority on how to deal with regulatory risk in a bottum-up, first principles, fit-for-purpose, and evidence-based manner.
+Given an institution's name, confirm the institution's details. For instance, if it's a bank, search and provide accurate results for the following at the very least:
+   - Bank/institution name and holding company (if different)
    - Charter type (national, state member, state non-member, credit union, etc.)
    - Asset size tier and latest figures (cite source: "e.g., $47bn assets, 2024 Q1 Call Report")
    - Primary regulators (Fed, OCC, FDIC, CFPB, state, etc.)
 
-2. **Understand the Risk/Compliance Issue:**
-   - The specific problem, deadline, or objective  
-   - Any counterparties or FinTech partners involved
-   - Regulatory context or examination findings (if applicable)
 
-3. **Classify the Workflow:**
-   - Marketing Material Compliance Review
-   - Examination Preparation  
-   - MRA / Enforcement Action Remediation
-   - Change Management Governance
-   - New Law/Regulation Impact Analysis
-   - Proposed Rulemaking Comment Analysis
-   - Board Reporting / Risk Dashboard Preparation
-   - Third-Party (FinTech) Risk Assessment
-   - Other
-
-4. **Confirm & Hand Off:**
-   - Summarize institution details, issue, and recommended workflow
-   - Ask for confirmation before proceeding
-   - Once confirmed: "Context locked. Handing you to the [workflow-name] module now."
-
-**Style:** Professional, evidence-based, concise. Always cite data sources. Use full paragraphs, not bullet lists. Stop and wait for confirmation before proceeding past intake."""
+**Style:** Professional, evidence-based, concise. Always cite data sources. Write in bullet lists."""
     
 
 
@@ -280,23 +247,22 @@ async def chat_streaming(request: ChatRequest):
                                 'id': getattr(chunk.item, 'id', 'unknown')
                             }
                             
-                            # Accumulate reasoning for final metadata AND send real-time reasoning
+                            # Only show essential reasoning for tool use
                             if tool_name in ['web_search', 'web_search_preview']:
-                                reasoning_msg = '💭 I need to search for current information to provide you with accurate details...'
+                                # Just indicate we're using search, details will come later
+                                reasoning_msg = '🔍 Researching current information...'
                                 reasoning_messages.append(reasoning_msg)
                                 yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
                             else:
-                                reasoning_msg = f"💭 I'm going to use {tool_name} to help answer your question..."
+                                reasoning_msg = f"🔧 Using {tool_name}..."
                                 reasoning_messages.append(reasoning_msg)
                                 yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
                         
                         elif hasattr(chunk.item, 'type') and chunk.item.type == "web_search_call":
-                            # Handle web search call output items
+                            # Handle web search call output items - no additional message needed
                             search_id = getattr(chunk.item, 'id', 'unknown')
                             print(f"[DEBUG] Web search call started: {search_id}")
-                            reasoning_msg = '🌐 Initiating web search...'
-                            reasoning_messages.append(reasoning_msg)
-                            yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
+                            # Skip the redundant "Initiating web search" message
                         
                         else:
                             yield f"data: {json.dumps({'type': 'status', 'content': '📝 Preparing my response...', 'done': False})}\n\n"
@@ -313,10 +279,7 @@ async def chat_streaming(request: ChatRequest):
                         
                         if call_id and hasattr(chunk, 'delta'):
                             function_calls[call_id]['arguments'] += chunk.delta
-                            # Show progress of building the search query
-                            reasoning_msg = '🔍 Building search query...'
-                            reasoning_messages.append(reasoning_msg)
-                            yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
+                            # Skip the verbose "Building search query" messages
                 
                 elif chunk.type == "response.function_call_arguments.done":
                     # Function call arguments complete - execute the function
@@ -329,22 +292,14 @@ async def chat_streaming(request: ChatRequest):
                                 args = json.loads(call_data['arguments'])
                                 tool_name = call_data['name']
                                 
-                                # Chain of thought: Show what we're searching for
+                                # Show what we're searching for - this is the valuable information!
                                 if tool_name in ['web_search', 'web_search_preview'] and 'query' in args:
                                     search_query = args['query']
                                     search_msg = f'🔍 Searching for: "{search_query}"'
                                     reasoning_messages.append(search_msg)
                                     yield f"data: {json.dumps({'type': 'reasoning', 'content': search_msg, 'done': False})}\n\n"
-                                    yield f"data: {json.dumps({'type': 'status', 'content': '⚡ Executing search...', 'done': False})}\n\n"
                                 
-                                # Add reasoning for result processing
-                                processing_msg = '📊 Found relevant information, analyzing results...'
-                                reasoning_messages.append(processing_msg)
-                                yield f"data: {json.dumps({'type': 'reasoning', 'content': processing_msg, 'done': False})}\n\n"
-                                
-                                integration_msg = '🧩 Incorporating search results into my response...'
-                                reasoning_messages.append(integration_msg)
-                                yield f"data: {json.dumps({'type': 'reasoning', 'content': integration_msg, 'done': False})}\n\n"
+                                # Skip verbose processing messages - let the user focus on the actual response
                                 
                             except json.JSONDecodeError as e:
                                 print(f"[DEBUG] Error parsing function arguments: {e}")
@@ -399,19 +354,10 @@ async def chat_streaming(request: ChatRequest):
                     yield f"data: {json.dumps({'type': 'done', 'content': '', 'done': True, 'metadata': completion_metadata})}\n\n"
                     break
                 
-                # Handle web search specific events
-                elif chunk.type == "response.web_search_call.in_progress":
-                    reasoning_msg = '🌐 Executing web search...'
-                    reasoning_messages.append(reasoning_msg)
-                    yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
-                
-                elif chunk.type == "response.web_search_call.searching":
-                    reasoning_msg = '🔍 Searching the web for current information...'
-                    reasoning_messages.append(reasoning_msg)
-                    yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
-                
+                # Handle web search specific events - simplified
                 elif chunk.type == "response.web_search_call.completed":
-                    reasoning_msg = '✅ Web search completed, analyzing results...'
+                    # Only show completion, skip the progress messages
+                    reasoning_msg = '✅ Search completed'
                     reasoning_messages.append(reasoning_msg)
                     yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
                 

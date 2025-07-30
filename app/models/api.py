@@ -67,7 +67,10 @@ class ProviderInfo(BaseModel):
     provider: str
     model: str
     max_tokens: int
-    temperature: float
+    temperature: Optional[float] = None
+    reasoning_effort: Optional[str] = None
+    reasoning_summary: Optional[str] = None
+    note: Optional[str] = None
 
 class HealthResponse(BaseModel):
     """Health check response."""
