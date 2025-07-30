@@ -9,7 +9,7 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_MODEL=o3
       - MAX_TOKENS=2000
-      - TEMPERATURE=0.7
+      - REASONING_EFFORT=medium
       - FRONTEND_URL=http://localhost:3000
       - PORT=8000
     volumes:
