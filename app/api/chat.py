@@ -35,6 +35,8 @@ Given an institution's name, confirm the institution's details. For instance, if
    - Asset size tier and latest figures (cite source: "e.g., $47bn assets, 2024 Q1 Call Report")
    - Primary regulators (Fed, OCC, FDIC, CFPB, state, etc.)
 
+   Provide a summary of the institution's details in a bullet list format.
+
 
 **Style:** Professional, evidence-based, concise. Always cite data sources. Write in bullet lists."""
     
@@ -212,6 +214,7 @@ async def chat_streaming(request: ChatRequest):
             accumulated_text = ""
             function_calls = {}  # Track function calls by call_id
             reasoning_messages = []  # Accumulate reasoning for metadata
+            current_reasoning_buffer = ""  # Buffer for accumulating reasoning deltas
             
             for chunk in stream:
                 # Debug: Log all chunk types we receive
@@ -337,6 +340,13 @@ async def chat_streaming(request: ChatRequest):
                                 yield f"data: {json.dumps({'type': 'content', 'content': missing_content, 'done': False})}\n\n"
                 
                 elif chunk.type == "response.completed":
+                    # Flush any final reasoning buffer content
+                    if current_reasoning_buffer.strip():
+                        reasoning_content = current_reasoning_buffer.strip()
+                        reasoning_messages.append(reasoning_content)
+                        yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_content, 'done': False})}\n\n"
+                        current_reasoning_buffer = ""
+                    
                     # Send completion signal with conversation state AND accumulated reasoning
                     print(f"[DEBUG] Response completed. Final accumulated text length: {len(accumulated_text)}")
                     print(f"[DEBUG] Accumulated reasoning messages: {len(reasoning_messages)}")
@@ -361,34 +371,76 @@ async def chat_streaming(request: ChatRequest):
                     reasoning_messages.append(reasoning_msg)
                     yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
                 
-                # Handle o3 detailed reasoning events
+                # Handle o3 detailed reasoning events - enhanced to capture all reasoning content
                 elif chunk.type == "response.reasoning.started":
-                    reasoning_msg = '🧠 Starting detailed reasoning process...'
+                    reasoning_msg = '🧠 Analyzing your request...'
                     reasoning_messages.append(reasoning_msg)
                     yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
                 
                 elif chunk.type == "response.reasoning.delta":
-                    # Stream detailed reasoning content from o3
+                    # Stream detailed reasoning content from o3 - accumulate and send in meaningful chunks
                     if hasattr(chunk, 'delta') and chunk.delta:
-                        reasoning_content = f"🤔 {chunk.delta}"
-                        reasoning_messages.append(reasoning_content)
-                        yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_content, 'done': False})}\n\n"
+                        current_reasoning_buffer += chunk.delta
+                        
+                        # Send reasoning when we hit sentence boundaries or reach reasonable length
+                        if (current_reasoning_buffer.endswith(('.', '!', '?', '\n\n')) or 
+                            len(current_reasoning_buffer) > 100):
+                            
+                            reasoning_content = current_reasoning_buffer.strip()
+                            if reasoning_content:
+                                reasoning_messages.append(reasoning_content)
+                                yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_content, 'done': False})}\n\n"
+                                current_reasoning_buffer = ""
+                
+                elif chunk.type == "response.reasoning_summary_text.delta":
+                    # Handle reasoning summary text deltas - accumulate similarly
+                    if hasattr(chunk, 'delta') and chunk.delta:
+                        current_reasoning_buffer += chunk.delta
+                        
+                        # Send when we have complete thoughts
+                        if (current_reasoning_buffer.endswith(('.', '!', '?', '\n\n')) or 
+                            len(current_reasoning_buffer) > 100):
+                            
+                            reasoning_content = current_reasoning_buffer.strip()
+                            if reasoning_content:
+                                reasoning_messages.append(reasoning_content)
+                                yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_content, 'done': False})}\n\n"
+                                current_reasoning_buffer = ""
                 
                 elif chunk.type == "response.reasoning.completed":
+                    # Flush any remaining reasoning buffer content first
+                    if current_reasoning_buffer.strip():
+                        reasoning_content = current_reasoning_buffer.strip()
+                        reasoning_messages.append(reasoning_content)
+                        yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_content, 'done': False})}\n\n"
+                        current_reasoning_buffer = ""
+                    
                     # Final reasoning summary from o3
-                    reasoning_msg = '✅ Reasoning analysis complete'
-                    if hasattr(chunk, 'reasoning') and chunk.reasoning:
-                        # If we have a complete reasoning summary, include it
-                        detailed_reasoning = f"📋 Reasoning Summary: {chunk.reasoning}"
+                    if hasattr(chunk, 'reasoning') and chunk.reasoning and chunk.reasoning.strip():
+                        # Stream the complete reasoning summary
+                        detailed_reasoning = chunk.reasoning.strip()
                         reasoning_messages.append(detailed_reasoning)
                         yield f"data: {json.dumps({'type': 'reasoning', 'content': detailed_reasoning, 'done': False})}\n\n"
-                    else:
-                        reasoning_messages.append(reasoning_msg)
-                        yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
+                    
+                elif chunk.type == "response.reasoning_summary_text.done":
+                    # Reasoning summary text completed
+                    if hasattr(chunk, 'text') and chunk.text and chunk.text.strip():
+                        reasoning_summary = chunk.text.strip()
+                        reasoning_messages.append(reasoning_summary)
+                        yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_summary, 'done': False})}\n\n"
                 
                 else:
-                    # Log any unhandled chunk types
+                    # Log any unhandled chunk types - especially reasoning-related ones
                     print(f"[DEBUG] Unhandled chunk type: {chunk.type}")
+                    if 'reasoning' in chunk.type.lower():
+                        print(f"[REASONING] Missed reasoning event: {chunk.type}")
+                        if hasattr(chunk, '__dict__'):
+                            print(f"[REASONING] Attributes: {list(chunk.__dict__.keys())}")
+                            for attr in ['delta', 'text', 'reasoning', 'content']:
+                                if hasattr(chunk, attr):
+                                    value = getattr(chunk, attr)
+                                    if value:
+                                        print(f"[REASONING] {attr}: {value}")
                     if hasattr(chunk, '__dict__'):
                         print(f"[DEBUG] Chunk attributes: {list(chunk.__dict__.keys())}")
                  
