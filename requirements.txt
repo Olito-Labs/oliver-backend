@@ -6,3 +6,4 @@ sse-starlette==2.2.0
 openai>=1.68.2
 python-multipart==0.0.12
 httpx>=0.23.0,<0.28.0
+supabase>=2.3.0
