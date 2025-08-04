@@ -11,12 +11,12 @@ async def get_current_user(authorization: Optional[str] = Header(None)):
         # Extract token (we'll validate this properly later)
         token = authorization[7:]
         return {
-            "uid": "demo-user-123",  # Mock user ID
+            "uid": "550e8400-e29b-41d4-a716-446655440000",  # Valid UUID for mock user
             "email": "demo@example.com"
         }
     else:
         # For immediate testing, allow unauthenticated access
         return {
-            "uid": "demo-user-123",
+            "uid": "550e8400-e29b-41d4-a716-446655440000",  # Valid UUID for mock user
             "email": "demo@example.com"
         }
