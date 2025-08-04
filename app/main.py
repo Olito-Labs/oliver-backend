@@ -1,5 +1,7 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from contextlib import asynccontextmanager
 import logging
 
@@ -12,6 +14,21 @@ from app.api.studies import router as studies_router
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Middleware to ensure HTTPS redirects
+class HTTPSRedirectMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        
+        # If this is a redirect, ensure it uses HTTPS
+        if response.status_code in (301, 302, 307, 308) and "location" in response.headers:
+            location = response.headers["location"]
+            if location.startswith("http://"):
+                # Replace http:// with https://
+                response.headers["location"] = location.replace("http://", "https://", 1)
+                logger.info(f"Fixed redirect to use HTTPS: {response.headers['location']}")
+                
+        return response
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -45,6 +62,9 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Add HTTPS redirect middleware first
+app.add_middleware(HTTPSRedirectMiddleware)
+
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
@@ -53,6 +73,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://localhost:3001",
         "https://localhost:3000",  # HTTPS support
+        "https://oliver-frontend-zeta.vercel.app",  # Production frontend
     ],
     allow_credentials=True,
     allow_methods=["*"],
