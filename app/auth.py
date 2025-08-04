@@ -17,7 +17,7 @@ async def get_supabase_jwt_key():
             # Get the JWT secret from Supabase project
             supabase_url = settings.SUPABASE_URL
             project_ref = supabase_url.split('//')[1].split('.')[0]
-            jwks_url = f"https://{project_ref}.supabase.co/.well-known/jwks.json"
+            jwks_url = f"https://{project_ref}.supabase.co/auth/v1/.well-known/jwks.json"
             
             async with httpx.AsyncClient() as client:
                 response = await client.get(jwks_url)
