@@ -61,48 +61,77 @@ async def upload_document(
         file_path = f"{user['uid']}/{study_id}/{unique_filename}"
         
         # Upload to Supabase Storage
-        upload_result = supabase.storage.from_('mra-documents').upload(
-            file_path, 
-            file_content,
-            {
-                'content-type': file.content_type,
-                'x-upsert': 'true'  # Allow overwrite if needed
-            }
-        )
-        
-        if upload_result.error:
+        try:
+            upload_result = supabase.storage.from_('mra-documents').upload(
+                file_path, 
+                file_content,
+                {
+                    'content-type': file.content_type,
+                    'x-upsert': 'true'  # Allow overwrite if needed
+                }
+            )
+            print(f"Upload result: {upload_result}")
+        except Exception as upload_error:
+            print(f"Upload error: {upload_error}")
             raise HTTPException(
                 status_code=500,
-                detail=f"Failed to upload file: {upload_result.error.message}"
+                detail=f"Failed to upload file: {str(upload_error)}"
             )
         
         # Get public URL for the uploaded file
-        url_result = supabase.storage.from_('mra-documents').get_public_url(file_path)
+        try:
+            url_result = supabase.storage.from_('mra-documents').get_public_url(file_path)
+            print(f"URL result: {url_result}")
+        except Exception as url_error:
+            print(f"URL error: {url_error}")
+            # Continue without public URL if this fails
+            url_result = {'publicURL': ''}
         
         # Create document record in database
+        # Handle different URL result formats
+        upload_url = ''
+        if hasattr(url_result, 'publicURL'):
+            upload_url = url_result.publicURL
+        elif isinstance(url_result, dict):
+            upload_url = url_result.get('publicURL', '')
+        elif isinstance(url_result, str):
+            upload_url = url_result
+        
         document_data = {
             'id': str(uuid.uuid4()),
             'filename': file.filename or 'uploaded_document.pdf',
             'file_size': len(file_content),
             'file_type': file.content_type,
             'file_path': file_path,
-            'upload_url': url_result['publicURL'] if 'publicURL' in url_result else '',
+            'upload_url': upload_url,
             'study_id': study_id,
             'user_id': user['uid'],
             'processing_status': 'uploaded'
         }
         
         # Insert into documents table
-        result = supabase.table('documents').insert(document_data).execute()
-        
-        if not result.data:
+        try:
+            result = supabase.table('documents').insert(document_data).execute()
+            print(f"Database insert result: {result}")
+            
+            if not result.data:
+                raise Exception("No data returned from database insert")
+            
+            document = result.data[0]
+            print(f"Document created successfully: {document['id']}")
+            
+            return {"document": document}
+            
+        except Exception as db_error:
+            print(f"Database error: {db_error}")
             # Cleanup: delete uploaded file if database insert failed
-            supabase.storage.from_('mra-documents').remove([file_path])
-            raise HTTPException(status_code=500, detail="Failed to create document record")
-        
-        document = result.data[0]
-        
-        return {"document": document}
+            try:
+                supabase.storage.from_('mra-documents').remove([file_path])
+                print(f"Cleaned up uploaded file: {file_path}")
+            except Exception as cleanup_error:
+                print(f"Failed to cleanup file: {cleanup_error}")
+            
+            raise HTTPException(status_code=500, detail=f"Failed to create document record: {str(db_error)}")
         
     except HTTPException:
         raise
