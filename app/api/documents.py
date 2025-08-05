@@ -98,6 +98,8 @@ class DocumentResponse(BaseModel):
     user_id: str
     created_at: str
     processing_status: str
+    analysis_results: Optional[Dict[str, Any]] = None  # OpenAI analysis results
+    error_message: Optional[str] = None  # Error message if analysis failed
 
 class DocumentAnalysisRequest(BaseModel):
     analysis_type: str = "mra-intake"
