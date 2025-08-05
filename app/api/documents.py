@@ -43,22 +43,23 @@ async def upload_document(
                 detail=f"File type {file.content_type} not supported. Please upload PDF, DOC, or DOCX files."
             )
         
+        # Read file content once
+        file_content = await file.read()
+        print(f"File read: {file.filename}, size: {len(file_content)} bytes, type: {file.content_type}")
+        
         # Validate file size (50MB limit)
         max_size = 50 * 1024 * 1024  # 50MB
-        file_content = await file.read()
         if len(file_content) > max_size:
             raise HTTPException(
                 status_code=400,
                 detail="File size exceeds 50MB limit"
             )
         
-        # Reset file pointer
-        await file.seek(0)
-        
         # Generate unique file path: user_id/study_id/filename
         file_extension = os.path.splitext(file.filename)[1] if file.filename else '.pdf'
         unique_filename = f"{uuid.uuid4()}{file_extension}"
         file_path = f"{user['uid']}/{study_id}/{unique_filename}"
+        print(f"Upload path: {file_path}")
         
         # Upload to Supabase Storage
         try:
