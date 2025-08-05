@@ -166,11 +166,13 @@ Return the analysis in the exact JSON format specified, ensuring all findings ar
             input=user_prompt,  # Document text input
             instructions=system_prompt,  # System/developer instructions
             max_output_tokens=8000,  # Token limit for reasoning + response
-            temperature=0.1,  # Low temperature for consistency
             text={
                 "format": {"type": "json_object"}  # Structured JSON output
             },
-            reasoning={},  # Enable reasoning for o3 model
+            reasoning={
+                "effort": "medium",  # Reasoning effort: low, medium, high
+                "summary": "detailed"  # Optional: include reasoning summary
+            },
             store=True,  # Store for potential debugging
             stream=False  # Synchronous response
         )
