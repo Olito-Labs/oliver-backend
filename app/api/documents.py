@@ -130,34 +130,57 @@ async def analyze_mra_document_with_o3(document_text: str) -> MRAAnalysisResult:
     if not client:
         raise Exception("OpenAI client not available")
     
-    # Create specialized MRA analysis prompt
+    # Create specialized MRA analysis prompt with exact JSON schema
     system_prompt = """You are a regulatory compliance expert specializing in analyzing Matter Requiring Attention (MRA) documents from bank examinations.
 
 Your task is to extract structured information from MRA documents, identifying regulatory findings with high precision.
 
-Extract the following information for each finding:
-1. Type: Categorize as 'BSA/AML', 'Lending', 'Operations', 'Capital', 'Management', 'IT', or 'Other'
-2. Severity: Classify as 'Matter Requiring Attention', 'Deficiency', 'Violation', or 'Recommendation'
-3. Description: Clear, concise summary of the finding
-4. Regulatory Citation: Specific regulation or guidance cited (if any)
-5. Deadline: Any response deadline mentioned (format as YYYY-MM-DD if possible)
-6. Response Required: Whether a formal response is required (true/false)
-7. Extracted Text: Exact quote from the document
-8. Confidence: Your confidence level in this extraction (0.0-1.0)
+CRITICAL: You MUST return a valid JSON object that exactly matches this schema:
 
-Also provide:
-- Overall summary of the document
-- List of critical deadlines
-- Your overall confidence in the analysis
+{
+  "summary": "Brief summary of the document and findings",
+  "findings": [
+    {
+      "id": "finding-1", 
+      "type": "BSA/AML|Lending|Operations|Capital|Management|IT|Other",
+      "severity": "Matter Requiring Attention|Deficiency|Violation|Recommendation", 
+      "description": "Clear summary of the finding",
+      "regulatory_citation": "Specific regulation cited or null",
+      "deadline": "YYYY-MM-DD format or null",
+      "response_required": true/false,
+      "extracted_text": "Exact quote from document",
+      "confidence": 0.85
+    }
+  ],
+  "total_findings": 5,
+  "critical_deadlines": ["2025-06-30", "2025-12-31"],
+  "processing_time_ms": 2500,
+  "confidence": 0.87
+}
 
-Be precise and conservative in your extractions. Only extract findings that are clearly stated in the document."""
+FIELD REQUIREMENTS:
+- id: Generate unique IDs like "finding-1", "finding-2", etc.
+- type: Must be one of the exact values listed
+- severity: Must be one of the exact values listed  
+- description: Clear, professional summary
+- regulatory_citation: Include if cited, otherwise null
+- deadline: YYYY-MM-DD format if mentioned, otherwise null
+- response_required: true if response needed, false otherwise
+- extracted_text: Direct quote supporting the finding
+- confidence: Your confidence (0.0-1.0) in this specific finding
+- total_findings: Count of findings array length
+- critical_deadlines: List of all deadlines within 90 days
+- processing_time_ms: Always set to 2500 (will be calculated server-side)
+- confidence: Overall confidence in entire analysis
 
-    user_prompt = f"""Please analyze this MRA document and extract all regulatory findings:
+Be precise and conservative. Only extract findings clearly stated in the document."""
+
+    user_prompt = f"""Analyze this MRA document and extract all regulatory findings. Return ONLY valid JSON matching the exact schema provided:
 
 DOCUMENT TEXT:
 {document_text}
 
-Return the analysis in the exact JSON format specified, ensuring all findings are accurately extracted with appropriate confidence scores."""
+RESPONSE FORMAT: Valid JSON object only, no additional text or explanation."""
 
     try:
         # Use OpenAI Responses API for o3 reasoning model
@@ -212,11 +235,13 @@ Return the analysis in the exact JSON format specified, ensuring all findings ar
         # Parse the JSON response
         import json
         analysis_data = json.loads(response_content)
-        analysis_result = MRAAnalysisResult(**analysis_data)
         
-        # Calculate processing time
+        # Calculate actual processing time and override model's value
         processing_time = (datetime.now() - start_time).total_seconds() * 1000
-        analysis_result.processing_time_ms = int(processing_time)
+        analysis_data['processing_time_ms'] = int(processing_time)
+        
+        # Create the result object
+        analysis_result = MRAAnalysisResult(**analysis_data)
         
         # Generate unique IDs for findings if not provided
         for i, finding in enumerate(analysis_result.findings):
