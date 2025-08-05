@@ -160,20 +160,34 @@ DOCUMENT TEXT:
 Return the analysis in the exact JSON format specified, ensuring all findings are accurately extracted with appropriate confidence scores."""
 
     try:
-        # Use OpenAI o3 with structured output
-        response = client.chat.completions.create(
+        # Use OpenAI Responses API for o3 reasoning model
+        response = client.responses.create(
             model="o3",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ],
-            response_format={"type": "json_object"},
+            input=user_prompt,  # Document text input
+            instructions=system_prompt,  # System/developer instructions
+            max_output_tokens=8000,  # Token limit for reasoning + response
             temperature=0.1,  # Low temperature for consistency
-            max_completion_tokens=8000  # Higher limit for o3 reasoning + response tokens
+            text={
+                "format": {"type": "json_object"}  # Structured JSON output
+            },
+            reasoning={},  # Enable reasoning for o3 model
+            store=True,  # Store for potential debugging
+            stream=False  # Synchronous response
         )
         
-        # Parse the JSON response manually
-        response_content = response.choices[0].message.content
+        # Parse the response from Responses API format
+        response_content = ""
+        if response.output and len(response.output) > 0:
+            message_output = response.output[0]
+            if hasattr(message_output, 'content') and len(message_output.content) > 0:
+                content_item = message_output.content[0]
+                if hasattr(content_item, 'text'):
+                    response_content = content_item.text
+        
+        if not response_content:
+            raise Exception("No response content received from OpenAI - check response format")
+        
+        # Parse the JSON response
         import json
         analysis_data = json.loads(response_content)
         analysis_result = MRAAnalysisResult(**analysis_data)
