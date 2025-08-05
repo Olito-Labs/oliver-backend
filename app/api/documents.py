@@ -169,7 +169,7 @@ Return the analysis in the exact JSON format specified, ensuring all findings ar
             ],
             response_format={"type": "json_object"},
             temperature=0.1,  # Low temperature for consistency
-            max_tokens=4000
+            max_completion_tokens=8000  # Higher limit for o3 reasoning + response tokens
         )
         
         # Parse the JSON response manually
