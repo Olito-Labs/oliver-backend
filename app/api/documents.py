@@ -180,13 +180,33 @@ Return the analysis in the exact JSON format specified, ensuring all findings ar
         # Parse the response from Responses API format
         response_content = ""
         if response.output and len(response.output) > 0:
-            message_output = response.output[0]
-            if hasattr(message_output, 'content') and len(message_output.content) > 0:
-                content_item = message_output.content[0]
-                if hasattr(content_item, 'text'):
-                    response_content = content_item.text
+            # Iterate through output items to find message content
+            for output_item in response.output:
+                # Look for message type output items
+                if hasattr(output_item, 'type') and output_item.type == 'message':
+                    if hasattr(output_item, 'content') and len(output_item.content) > 0:
+                        for content_item in output_item.content:
+                            if hasattr(content_item, 'type') and content_item.type == 'output_text':
+                                if hasattr(content_item, 'text'):
+                                    response_content = content_item.text
+                                    break
+                    if response_content:
+                        break
+        
+        # Fallback: Check if SDK provides convenience properties
+        if not response_content and hasattr(response, 'output_text'):
+            response_content = response.output_text
         
         if not response_content:
+            # Log the response structure for debugging
+            print(f"DEBUG: No content found. Response structure:")
+            print(f"  - output length: {len(response.output) if response.output else 'None'}")
+            if response.output:
+                for i, item in enumerate(response.output):
+                    print(f"  - output[{i}]: type={getattr(item, 'type', 'unknown')}")
+                    if hasattr(item, 'content'):
+                        for j, content in enumerate(item.content):
+                            print(f"    - content[{j}]: type={getattr(content, 'type', 'unknown')}")
             raise Exception("No response content received from OpenAI - check response format")
         
         # Parse the JSON response
