@@ -76,12 +76,15 @@ async def _analyze_exam_document_with_o3(document_text: str) -> Dict[str, Any]:
 
     system_prompt = (
         "You are Oliver, assisting with bank regulatory examination preparation. "
-        "Given source documents (e.g., first-day letters, scoping memos), produce a concise JSON with: "
+        "Given source documents (e.g., first-day letters, scoping memos), produce a concise json with: "
         "checklist: [ {id, title, description, category, due_date?, priority, owner?} ], "
         "requests: [ {id, request_code?, description, due_date?, owner?} ], "
-        "summary: short text, total_items, critical_dates[]. Return valid JSON only."
+        "summary: short text, total_items, critical_dates[]. Respond in valid json only."
     )
-    user_prompt = f"Analyze the following document for examination prep and extract checklist and requests as JSON.\n\n{document_text}"
+    user_prompt = (
+        "Analyze the following document for examination prep and extract checklist and requests as json.\n\n"
+        f"{document_text}\n\nRespond in valid json."
+    )
 
     response = client.responses.create(
         model="o3",
@@ -451,10 +454,12 @@ async def ingest_first_day_letter(payload: Dict[str, Any], user=Depends(get_curr
 
     system_prompt = (
         "Extract distinct information requests (RFI) from the First Day Letter. "
-        "For each, return JSON fields: title, description, category (use OCC taxonomy), "
-        "request_code if present, regulatory_deadline if present (ISO), priority (0-3)."
+        "For each, return json fields: title, description, category (use OCC taxonomy), "
+        "request_code if present, regulatory_deadline if present (ISO), priority (0-3). "
+        "Respond in valid json only."
     )
-    user_prompt = text[:200000]
+    # Ensure the input contains the word 'json' to satisfy Responses API when using text.format json_object
+    user_prompt = (text[:200000] or "") + "\n\nReturn the result as valid json."
 
     resp = client.responses.create(
         model="o3",
