@@ -520,3 +520,52 @@ async def ingest_first_day_letter(payload: Dict[str, Any], user=Depends(get_curr
 
     return {"created": len(inserted), "requests": inserted}
 
+
+# ============================
+# Exam Studies (isolated lane)
+# ============================
+
+@router.post("/studies/")
+async def create_exam_study(payload: Dict[str, Any], user=Depends(get_current_user)):
+    """Create a dedicated Examination Prep study in exam_studies."""
+    title = payload.get('title') or 'Examination Prep'
+    study_row = {
+        'user_id': user['uid'],
+        'title': title,
+        'description': payload.get('description'),
+        'workflow_type': 'examination-prep',
+        'status': 'active',
+        'current_step': payload.get('current_step', 0),
+        'workflow_status': payload.get('workflow_status', 'not_started'),
+        'workflow_data': payload.get('workflow_data') or {}
+    }
+    res = supabase.table('exam_studies').insert(study_row).execute()
+    if not res.data:
+        raise HTTPException(status_code=500, detail="Failed to create exam study")
+    return {"study": res.data[0]}
+
+
+@router.get("/studies/")
+async def list_exam_studies(user=Depends(get_current_user)):
+    res = supabase.table('exam_studies').select('*').eq('user_id', user['uid']).order('last_message_at', desc=True).limit(100).execute()
+    return {"studies": res.data or []}
+
+
+@router.get("/studies/{study_id}")
+async def get_exam_study(study_id: str, user=Depends(get_current_user)):
+    res = supabase.table('exam_studies').select('*').eq('id', study_id).eq('user_id', user['uid']).single().execute()
+    if not res.data:
+        raise HTTPException(status_code=404, detail="Study not found")
+    return {"study": res.data}
+
+
+@router.patch("/studies/{study_id}")
+async def update_exam_study(study_id: str, payload: Dict[str, Any], user=Depends(get_current_user)):
+    allowed = {k: v for k, v in payload.items() if k in ['title','description','current_step','workflow_status','workflow_data']}
+    if not allowed:
+        return {"study": (supabase.table('exam_studies').select('*').eq('id', study_id).eq('user_id', user['uid']).single().execute().data)}
+    res = supabase.table('exam_studies').update(allowed).eq('id', study_id).eq('user_id', user['uid']).execute()
+    if not res.data:
+        raise HTTPException(status_code=404, detail="Study not found")
+    return {"study": res.data[0]}
+
