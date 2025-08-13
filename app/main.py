@@ -74,12 +74,14 @@ app.add_middleware(
         settings.FRONTEND_URL,
         "http://localhost:3000",
         "http://localhost:3001",
-        "https://localhost:3000",  # HTTPS support
-        "https://oliver-frontend-zeta.vercel.app",  # Production frontend
+        "https://localhost:3000",
+        "https://oliver-frontend-zeta.vercel.app",
     ],
+    allow_origin_regex=r"https://.*vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Include routers
