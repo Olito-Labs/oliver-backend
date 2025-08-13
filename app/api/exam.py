@@ -467,7 +467,7 @@ async def ingest_first_day_letter(payload: Dict[str, Any], user=Depends(get_curr
         instructions=system_prompt,
         max_output_tokens=8000,
         text={"format": {"type": "json_object"}},
-        reasoning={"effort": "medium", "summary": "concise"},
+        reasoning={"effort": "medium", "summary": "detailed"},
         store=True,
         stream=False,
     )
