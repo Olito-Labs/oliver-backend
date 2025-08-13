@@ -11,6 +11,7 @@ from app.api.chat import router as chat_router
 from app.api.health import router as health_router
 from app.api.studies import router as studies_router
 from app.api.documents import router as documents_router
+from app.api.exam import router as exam_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -86,6 +87,7 @@ app.include_router(health_router)
 app.include_router(chat_router)
 app.include_router(studies_router)
 app.include_router(documents_router)
+app.include_router(exam_router)
 
 # Exception handlers
 @app.exception_handler(ValueError)
