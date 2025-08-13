@@ -454,9 +454,14 @@ async def ingest_first_day_letter(payload: Dict[str, Any], user=Depends(get_curr
 
     system_prompt = (
         "Extract distinct information requests (RFI) from the First Day Letter. "
-        "For each, return json fields: title, description, category (use OCC taxonomy), "
+        "For each, return json fields: title, description, category, "
         "request_code if present, regulatory_deadline if present (ISO), priority (0-3). "
-        "Respond in valid json only."
+        "For category, use ONLY these exact values: "
+        "'Credit Risk', 'Interest Rate Risk', 'Liquidity Risk', 'Price Risk', "
+        "'Operational Risk', 'Compliance Risk', 'Strategic Risk', "
+        "'Governance/Management Oversight', 'IT/Cybersecurity', 'BSA/AML', "
+        "'Capital Adequacy/Financial Reporting', 'Asset Management/Trust'. "
+        "If unsure, use 'Operational Risk'. Respond in valid json only."
     )
     # Ensure the input contains the word 'json' to satisfy Responses API when using text.format json_object
     user_prompt = (text[:200000] or "") + "\n\nReturn the result as valid json."
@@ -498,6 +503,45 @@ async def ingest_first_day_letter(payload: Dict[str, Any], user=Depends(get_curr
     if not isinstance(rfis, list):
         rfis = []
 
+    # Valid enum values from database
+    VALID_CATEGORIES = {
+        'Credit Risk', 'Interest Rate Risk', 'Liquidity Risk', 'Price Risk',
+        'Operational Risk', 'Compliance Risk', 'Strategic Risk',
+        'Governance/Management Oversight', 'IT/Cybersecurity', 'BSA/AML',
+        'Capital Adequacy/Financial Reporting', 'Asset Management/Trust'
+    }
+    
+    # Category mapping for common variations
+    CATEGORY_MAPPING = {
+        'Corporate Governance': 'Governance/Management Oversight',
+        'Governance': 'Governance/Management Oversight',
+        'Management': 'Governance/Management Oversight',
+        'Technology Risk': 'IT/Cybersecurity',
+        'Cyber Risk': 'IT/Cybersecurity',
+        'Technology': 'IT/Cybersecurity',
+        'Market Risk': 'Price Risk',
+        'Legal Risk': 'Compliance Risk',
+        'Reputation Risk': 'Operational Risk',
+        'Reputational Risk': 'Operational Risk',
+        'Model Risk': 'Operational Risk'
+    }
+    
+    def normalize_category(category: str) -> str:
+        """Normalize category to valid enum value."""
+        if not category:
+            return 'Operational Risk'
+        
+        # Check if already valid
+        if category in VALID_CATEGORIES:
+            return category
+            
+        # Check mapping
+        if category in CATEGORY_MAPPING:
+            return CATEGORY_MAPPING[category]
+            
+        # Fallback
+        return 'Operational Risk'
+
     # Insert rows
     rows = []
     for r in rfis:
@@ -506,7 +550,7 @@ async def ingest_first_day_letter(payload: Dict[str, Any], user=Depends(get_curr
             'study_id': study_id,
             'title': r.get('title') or (r.get('description') or '')[:120] or 'Request',
             'description': r.get('description') or '',
-            'category': r.get('category') or 'Operational Risk',
+            'category': normalize_category(r.get('category')),
             'status': 'not_started',
             'source': 'fdl',
             'request_code': r.get('request_code'),
