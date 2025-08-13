@@ -239,3 +239,281 @@ async def analyze_exam_document(document_id: str, user=Depends(get_current_user)
         raise HTTPException(status_code=500, detail=f"Error analyzing document: {str(e)}")
 
 
+# ============================
+# Requests & FDL Ingestion
+# ============================
+
+class ExamRequest(BaseModel):
+    id: Optional[str] = None
+    study_id: str
+    user_id: Optional[str] = None
+    title: str
+    description: Optional[str] = None
+    category: str
+    status: Optional[str] = 'not_started'
+    source: Optional[str] = 'ad_hoc'
+    request_code: Optional[str] = None
+    priority: Optional[int] = 0
+    regulatory_deadline: Optional[datetime] = None
+    internal_due_date: Optional[datetime] = None
+    owner: Optional[str] = None
+    reviewer: Optional[str] = None
+
+
+@router.get("/requests/study/{study_id}")
+async def list_requests(study_id: str, user=Depends(get_current_user)):
+    result = supabase.table('exam_requests').select("*") \
+        .eq('study_id', study_id).eq('user_id', user['uid']) \
+        .order('internal_due_date', desc=True).execute()
+    return {"requests": result.data or []}
+
+
+@router.post("/requests")
+async def create_request(payload: Dict[str, Any], user=Depends(get_current_user)):
+    payload['user_id'] = user['uid']
+    result = supabase.table('exam_requests').insert(payload).execute()
+    if not result.data:
+        raise HTTPException(status_code=500, detail="Failed to create request")
+    return {"request": result.data[0]}
+
+
+@router.patch("/requests/{request_id}")
+async def update_request(request_id: str, payload: Dict[str, Any], user=Depends(get_current_user)):
+    result = supabase.table('exam_requests').update(payload) \
+        .eq('id', request_id).eq('user_id', user['uid']).execute()
+    if not result.data:
+        raise HTTPException(status_code=404, detail="Request not found")
+    return {"request": result.data[0]}
+
+
+@router.delete("/requests/{request_id}")
+async def delete_request(request_id: str, user=Depends(get_current_user)):
+    # Ensure ownership via filter
+    result = supabase.table('exam_requests').delete() \
+        .eq('id', request_id).eq('user_id', user['uid']).execute()
+    if result.data is None:
+        raise HTTPException(status_code=404, detail="Request not found")
+    return {"message": "Request deleted"}
+
+
+@router.post("/requests/{request_id}/documents")
+async def link_document_to_request(request_id: str, payload: Dict[str, Any], user=Depends(get_current_user)):
+    document_id = payload.get('document_id')
+    if not document_id:
+        raise HTTPException(status_code=400, detail="document_id is required")
+
+    # Verify request ownership
+    req = supabase.table('exam_requests').select('id') \
+        .eq('id', request_id).eq('user_id', user['uid']).single().execute()
+    if not req.data:
+        raise HTTPException(status_code=404, detail="Request not found")
+
+    # Verify document ownership
+    doc = supabase.table('exam_documents').select('id') \
+        .eq('id', document_id).eq('user_id', user['uid']).single().execute()
+    if not doc.data:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    result = supabase.table('exam_request_documents').insert({
+        'request_id': request_id,
+        'document_id': document_id
+    }).execute()
+    if not result.data:
+        raise HTTPException(status_code=500, detail="Failed to link document")
+    return {"link": result.data[0]}
+
+
+@router.get("/requests/{request_id}/documents")
+async def list_request_documents(request_id: str, user=Depends(get_current_user)):
+    # Ownership via join
+    sql = (
+        "select d.* from exam_request_documents rd "
+        "join exam_requests r on r.id = rd.request_id "
+        "join exam_documents d on d.id = rd.document_id "
+        "where rd.request_id = :rid and r.user_id = :uid"
+    )
+    # Supabase Python client lacks bind parameters for RPC-free raw SQL; use two-step listing
+    # 1) list links for this request (RLS ensures user)
+    links = supabase.table('exam_request_documents').select('*').eq('request_id', request_id).execute()
+    doc_ids = [l['document_id'] for l in (links.data or [])]
+    if not doc_ids:
+        return {"documents": []}
+    docs = supabase.table('exam_documents').select('*').in_('id', doc_ids).execute()
+    return {"documents": docs.data or []}
+
+
+@router.post("/requests/{request_id}/validate")
+async def validate_request(request_id: str, user=Depends(get_current_user)):
+    # Get request
+    req = supabase.table('exam_requests').select('*').eq('id', request_id).eq('user_id', user['uid']).single().execute()
+    if not req.data:
+        raise HTTPException(status_code=404, detail="Request not found")
+
+    # Get linked documents
+    links = supabase.table('exam_request_documents').select('*').eq('request_id', request_id).execute()
+    doc_ids = [l['document_id'] for l in (links.data or [])]
+    docs = []
+    if doc_ids:
+        docs_result = supabase.table('exam_documents').select('*').in_('id', doc_ids).execute()
+        docs = docs_result.data or []
+
+    # Build context text (filenames + any analysis summaries)
+    context_items = []
+    for d in docs:
+        ctx = f"Document: {d.get('filename','')}\n"
+        if d.get('analysis_results'):
+            ctx += f"Prior analysis summary: {str(d['analysis_results'])[:800]}\n"
+        context_items.append(ctx)
+    context_text = "\n\n".join(context_items) or "No linked evidence yet."
+
+    client = openai_manager.get_client()
+    if not client:
+        raise HTTPException(status_code=500, detail="OpenAI client not available")
+
+    system_prompt = (
+        "You are Oliver, validating examination evidence against a specific request. "
+        "Return JSON with: gaps:[{issue,why_it_matters,missing_elements}], "
+        "sufficiency:'insufficient|partial|sufficient', suggestions:[string], draft_narrative:string."
+    )
+    user_prompt = (
+        f"Request:\n{req.data.get('title','')}\n{req.data.get('description','')}\n\n"
+        f"Linked Evidence Context:\n{context_text}"
+    )
+
+    response = client.responses.create(
+        model="o3",
+        input=user_prompt,
+        instructions=system_prompt,
+        max_output_tokens=6000,
+        text={"format": {"type": "json_object"}},
+        reasoning={"effort": "medium", "summary": "detailed"},
+        store=True,
+        stream=False,
+    )
+
+    content = ""
+    if response.output:
+        for item in response.output:
+            if getattr(item, 'type', '') == 'message' and getattr(item, 'content', None):
+                for c in item.content:
+                    if getattr(c, 'type', '') == 'output_text' and getattr(c, 'text', None):
+                        content = c.text
+                        break
+            if content:
+                break
+    if not content and hasattr(response, 'output_text'):
+        content = response.output_text
+    if not content:
+        raise HTTPException(status_code=500, detail="No response content from OpenAI")
+
+    import json as _json
+    try:
+        data = _json.loads(content)
+    except Exception:
+        data = {"sufficiency": "partial", "gaps": [], "suggestions": [content[:800]], "draft_narrative": ""}
+
+    return {"validation": data}
+
+
+@router.post("/fdl/ingest")
+async def ingest_first_day_letter(payload: Dict[str, Any], user=Depends(get_current_user)):
+    document_id = payload.get('document_id')
+    study_id = payload.get('study_id')
+    if not document_id or not study_id:
+        raise HTTPException(status_code=400, detail="document_id and study_id are required")
+
+    # Load document
+    doc_result = supabase.table('exam_documents').select('*').eq('id', document_id).eq('user_id', user['uid']).single().execute()
+    if not doc_result.data:
+        raise HTTPException(status_code=404, detail="Document not found")
+    document = doc_result.data
+
+    # Download and extract text
+    file_bytes = supabase.storage.from_('exam-documents').download(document['file_path'])
+    with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(document['filename'])[1]) as tmpf:
+        tmpf.write(file_bytes)
+        tmp_path = tmpf.name
+    try:
+        text = _extract_text(tmp_path, document['file_type'])
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except Exception:
+            pass
+
+    # Analyze to extract requests
+    client = openai_manager.get_client()
+    if not client:
+        raise HTTPException(status_code=500, detail="OpenAI client not available")
+
+    system_prompt = (
+        "Extract distinct information requests (RFI) from the First Day Letter. "
+        "For each, return JSON fields: title, description, category (use OCC taxonomy), "
+        "request_code if present, regulatory_deadline if present (ISO), priority (0-3)."
+    )
+    user_prompt = text[:200000]
+
+    resp = client.responses.create(
+        model="o3",
+        input=user_prompt,
+        instructions=system_prompt,
+        max_output_tokens=8000,
+        text={"format": {"type": "json_object"}},
+        reasoning={"effort": "medium", "summary": "concise"},
+        store=True,
+        stream=False,
+    )
+
+    content = ""
+    if resp.output:
+        for item in resp.output:
+            if getattr(item, 'type', '') == 'message' and getattr(item, 'content', None):
+                for c in item.content:
+                    if getattr(c, 'type', '') == 'output_text' and getattr(c, 'text', None):
+                        content = c.text
+                        break
+            if content:
+                break
+    if not content and hasattr(resp, 'output_text'):
+        content = resp.output_text
+    if not content:
+        raise HTTPException(status_code=500, detail="No extraction from OpenAI")
+
+    import json as _json
+    try:
+        parsed = _json.loads(content)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to parse extraction JSON: {str(e)}")
+
+    # Normalize to list
+    rfis = parsed.get('requests') if isinstance(parsed, dict) else parsed
+    if not isinstance(rfis, list):
+        rfis = []
+
+    # Insert rows
+    rows = []
+    for r in rfis:
+        row = {
+            'user_id': user['uid'],
+            'study_id': study_id,
+            'title': r.get('title') or (r.get('description') or '')[:120] or 'Request',
+            'description': r.get('description') or '',
+            'category': r.get('category') or 'Operational Risk',
+            'status': 'not_started',
+            'source': 'fdl',
+            'request_code': r.get('request_code'),
+            'priority': r.get('priority') if isinstance(r.get('priority'), int) else 0,
+            'regulatory_deadline': r.get('regulatory_deadline'),
+            'internal_due_date': None,
+            'owner': None,
+            'reviewer': None
+        }
+        rows.append(row)
+
+    inserted = []
+    if rows:
+        res = supabase.table('exam_requests').insert(rows).execute()
+        inserted = res.data or []
+
+    return {"created": len(inserted), "requests": inserted}
+
