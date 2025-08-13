@@ -141,7 +141,8 @@ async def upload_exam_document(
         # Public URL
         try:
             url_result = supabase.storage.from_('exam-documents').get_public_url(file_path)
-        except Exception:
+        except Exception as url_ex:
+            print(f"[exam] URL error: {url_ex}")
             url_result = {'publicURL': ''}
         upload_url = ''
         if hasattr(url_result, 'publicURL'):
@@ -168,7 +169,8 @@ async def upload_exam_document(
             raise Exception("No data returned from database insert")
         return {"document": result.data[0]}
 
-    except HTTPException:
+    except HTTPException as he:
+        print(f"[exam] HTTPException during upload: {he}")
         raise
     except Exception as e:
         # Best-effort cleanup
@@ -176,6 +178,7 @@ async def upload_exam_document(
             supabase.storage.from_('exam-documents').remove([file_path])
         except Exception:
             pass
+        print(f"[exam] Upload failed: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to create exam document record: {str(e)}")
 
 
