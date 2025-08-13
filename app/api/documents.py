@@ -342,9 +342,9 @@ async def upload_document(
             'processing_status': 'uploaded'
         }
         
-        # Insert into documents table
+        # Insert into MRA documents table
         try:
-            result = supabase.table('documents').insert(document_data).execute()
+            result = supabase.table('mra_documents').insert(document_data).execute()
             print(f"Database insert result: {result}")
             
             if not result.data:
@@ -375,7 +375,7 @@ async def upload_document(
 async def get_document(document_id: str, user=Depends(get_current_user)):
     """Get a specific document"""
     try:
-        result = supabase.table('documents')\
+        result = supabase.table('mra_documents')\
             .select("*")\
             .eq('id', document_id)\
             .eq('user_id', user['uid'])\
@@ -396,7 +396,7 @@ async def get_document(document_id: str, user=Depends(get_current_user)):
 async def get_study_documents(study_id: str, user=Depends(get_current_user)):
     """Get all documents for a study"""
     try:
-        result = supabase.table('documents')\
+        result = supabase.table('mra_documents')\
             .select("*")\
             .eq('study_id', study_id)\
             .eq('user_id', user['uid'])\
@@ -413,7 +413,7 @@ async def delete_document(document_id: str, user=Depends(get_current_user)):
     """Delete a document and its file from storage"""
     try:
         # Get document info first
-        result = supabase.table('documents')\
+        result = supabase.table('mra_documents')\
             .select("*")\
             .eq('id', document_id)\
             .eq('user_id', user['uid'])\
@@ -430,7 +430,7 @@ async def delete_document(document_id: str, user=Depends(get_current_user)):
             supabase.storage.from_('mra-documents').remove([document['file_path']])
         
         # Delete from database
-        supabase.table('documents')\
+        supabase.table('mra_documents')\
             .delete()\
             .eq('id', document_id)\
             .eq('user_id', user['uid'])\
@@ -452,7 +452,7 @@ async def analyze_document(
     """Analyze an uploaded document using OpenAI o3"""
     try:
         # Get document info
-        doc_result = supabase.table('documents')\
+        doc_result = supabase.table('mra_documents')\
             .select("*")\
             .eq('id', document_id)\
             .eq('user_id', user['uid'])\
@@ -465,7 +465,7 @@ async def analyze_document(
         document = doc_result.data
         
         # Update processing status to analyzing
-        supabase.table('documents')\
+        supabase.table('mra_documents')\
             .update({'processing_status': 'analyzing'})\
             .eq('id', document_id)\
             .execute()
@@ -497,7 +497,7 @@ async def analyze_document(
                 analysis_data = analysis_result.model_dump()
                 
                 # Update document with analysis results
-                supabase.table('documents')\
+                supabase.table('mra_documents')\
                     .update({
                         'processing_status': 'completed',
                         'analysis_results': analysis_data
@@ -525,7 +525,7 @@ async def analyze_document(
         except Exception as analysis_error:
             # Update status to failed
             error_message = str(analysis_error)
-            supabase.table('documents')\
+            supabase.table('mra_documents')\
                 .update({
                     'processing_status': 'failed',
                     'error_message': error_message
@@ -541,7 +541,7 @@ async def analyze_document(
     except Exception as e:
         # Update status to failed if not already done
         try:
-            supabase.table('documents')\
+            supabase.table('mra_documents')\
                 .update({
                     'processing_status': 'failed',
                     'error_message': str(e)
