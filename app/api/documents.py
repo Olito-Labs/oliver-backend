@@ -10,6 +10,7 @@ from datetime import datetime
 from app.supabase_client import supabase
 from app.auth import get_current_user
 from app.llm_providers import openai_manager
+from app.config import settings
 
 # Document processing imports
 import fitz  # PyMuPDF
@@ -124,8 +125,8 @@ class MRAAnalysisResult(BaseModel):
     processing_time_ms: int
     confidence: float
 
-async def analyze_mra_document_with_o3(document_text: str) -> MRAAnalysisResult:
-    """Analyze MRA document using OpenAI o3 with structured output"""
+async def analyze_mra_document_with_ai(document_text: str) -> MRAAnalysisResult:
+    """Analyze MRA document using OpenAI (GPT-5/o3) with structured output"""
     start_time = datetime.now()
     
     client = openai_manager.get_client()
@@ -185,22 +186,30 @@ DOCUMENT TEXT:
 RESPONSE FORMAT: Valid JSON object only, no additional text or explanation."""
 
     try:
-        # Use OpenAI Responses API for o3 reasoning model
-        response = client.responses.create(
-            model="o3",
-            input=user_prompt,  # Document text input
-            instructions=system_prompt,  # System/developer instructions
-            max_output_tokens=8000,  # Token limit for reasoning + response
-            text={
+        # Build parameters based on model type for MRA document analysis
+        request_params = {
+            "model": settings.OPENAI_MODEL,
+            "input": user_prompt,  # Document text input
+            "instructions": system_prompt,  # System/developer instructions
+            "max_output_tokens": 8000,  # Token limit for reasoning + response
+            "text": {
                 "format": {"type": "json_object"}  # Structured JSON output
             },
-            reasoning={
-                "effort": "medium",  # Reasoning effort: low, medium, high
-                "summary": "detailed"  # Optional: include reasoning summary
-            },
-            store=True,  # Store for potential debugging
-            stream=False  # Synchronous response
-        )
+            "store": True,  # Store for potential debugging
+            "stream": False  # Synchronous response
+        }
+        
+        # Add model-specific parameters
+        if settings.OPENAI_MODEL.startswith("gpt-5"):
+            request_params["reasoning"] = {"effort": "medium"}  # Thorough MRA analysis
+            request_params["text"]["verbosity"] = "high"  # Detailed structured output
+        elif settings.OPENAI_MODEL.startswith("o3"):
+            request_params["reasoning"] = {"effort": "medium", "summary": "detailed"}
+        else:
+            request_params["temperature"] = 0.7  # Consistent extraction for other models
+        
+        # Use OpenAI Responses API with model-specific configuration
+        response = client.responses.create(**request_params)
         
         # Parse the response from Responses API format
         response_content = ""
@@ -449,7 +458,7 @@ async def analyze_document(
     request: DocumentAnalysisRequest,
     user=Depends(get_current_user)
 ):
-    """Analyze an uploaded document using OpenAI o3"""
+    """Analyze an uploaded document using OpenAI (GPT-5/o3)"""
     try:
         # Get document info
         doc_result = supabase.table('mra_documents')\
@@ -489,9 +498,9 @@ async def analyze_document(
                 
                 print(f"Extracted {len(document_text)} characters from document")
                 
-                # Analyze document with OpenAI o3
-                print("Starting OpenAI o3 analysis...")
-                analysis_result = await analyze_mra_document_with_o3(document_text)
+                # Analyze document with OpenAI (GPT-5/o3)
+                print(f"Starting OpenAI {settings.OPENAI_MODEL} analysis...")
+                analysis_result = await analyze_mra_document_with_ai(document_text)
                 
                 # Convert to dict for database storage
                 analysis_data = analysis_result.model_dump()
