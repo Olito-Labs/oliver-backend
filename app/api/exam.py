@@ -9,6 +9,7 @@ from datetime import datetime
 from app.supabase_client import supabase
 from app.auth import get_current_user
 from app.llm_providers import openai_manager
+from app.config import settings
 
 # Optional PDF/DOCX parsing
 import fitz  # PyMuPDF
@@ -86,16 +87,27 @@ async def _analyze_exam_document_with_o3(document_text: str) -> Dict[str, Any]:
         f"{document_text}\n\nRespond in valid json."
     )
 
-    response = client.responses.create(
-        model="o3",
-        input=user_prompt,
-        instructions=system_prompt,
-        max_output_tokens=6000,
-        text={"format": {"type": "json_object"}},
-        reasoning={"effort": "medium", "summary": "detailed"},
-        store=True,
-        stream=False,
-    )
+    # Build parameters based on model type
+    request_params = {
+        "model": settings.OPENAI_MODEL,
+        "input": user_prompt,
+        "instructions": system_prompt,
+        "max_output_tokens": 6000,
+        "text": {"format": {"type": "json_object"}},
+        "store": True,
+        "stream": False,
+    }
+    
+    # Add model-specific parameters
+    if settings.OPENAI_MODEL.startswith("gpt-5"):
+        request_params["reasoning"] = {"effort": "medium"}  # Thorough analysis for documents
+        request_params["text"]["verbosity"] = "high"  # Detailed extraction results
+    elif settings.OPENAI_MODEL.startswith("o3"):
+        request_params["reasoning"] = {"effort": "medium", "summary": "detailed"}
+    else:
+        request_params["temperature"] = 0.7  # Consistent extraction for other models
+    
+    response = client.responses.create(**request_params)
 
     content = ""
     if response.output:
@@ -386,16 +398,27 @@ async def validate_request(request_id: str, user=Depends(get_current_user)):
         f"Linked Evidence Context:\n{context_text}"
     )
 
-    response = client.responses.create(
-        model="o3",
-        input=user_prompt,
-        instructions=system_prompt,
-        max_output_tokens=6000,
-        text={"format": {"type": "json_object"}},
-        reasoning={"effort": "medium", "summary": "detailed"},
-        store=True,
-        stream=False,
-    )
+    # Build parameters based on model type for validation
+    request_params = {
+        "model": settings.OPENAI_MODEL,
+        "input": user_prompt,
+        "instructions": system_prompt,
+        "max_output_tokens": 6000,
+        "text": {"format": {"type": "json_object"}},
+        "store": True,
+        "stream": False,
+    }
+    
+    # Add model-specific parameters
+    if settings.OPENAI_MODEL.startswith("gpt-5"):
+        request_params["reasoning"] = {"effort": "medium"}  # Careful validation analysis
+        request_params["text"]["verbosity"] = "medium"  # Balanced validation detail
+    elif settings.OPENAI_MODEL.startswith("o3"):
+        request_params["reasoning"] = {"effort": "medium", "summary": "detailed"}
+    else:
+        request_params["temperature"] = 0.7  # Consistent validation for other models
+    
+    response = client.responses.create(**request_params)
 
     content = ""
     if response.output:
@@ -466,16 +489,27 @@ async def ingest_first_day_letter(payload: Dict[str, Any], user=Depends(get_curr
     # Ensure the input contains the word 'json' to satisfy Responses API when using text.format json_object
     user_prompt = (text[:200000] or "") + "\n\nReturn the result as valid json."
 
-    resp = client.responses.create(
-        model="o3",
-        input=user_prompt,
-        instructions=system_prompt,
-        max_output_tokens=8000,
-        text={"format": {"type": "json_object"}},
-        reasoning={"effort": "medium", "summary": "detailed"},
-        store=True,
-        stream=False,
-    )
+    # Build parameters based on model type for FDL ingestion
+    request_params = {
+        "model": settings.OPENAI_MODEL,
+        "input": user_prompt,
+        "instructions": system_prompt,
+        "max_output_tokens": 8000,
+        "text": {"format": {"type": "json_object"}},
+        "store": True,
+        "stream": False,
+    }
+    
+    # Add model-specific parameters
+    if settings.OPENAI_MODEL.startswith("gpt-5"):
+        request_params["reasoning"] = {"effort": "medium"}  # Thorough FDL analysis
+        request_params["text"]["verbosity"] = "high"  # Detailed request extraction
+    elif settings.OPENAI_MODEL.startswith("o3"):
+        request_params["reasoning"] = {"effort": "medium", "summary": "detailed"}
+    else:
+        request_params["temperature"] = 0.7  # Consistent extraction for other models
+    
+    resp = client.responses.create(**request_params)
 
     content = ""
     if resp.output:
