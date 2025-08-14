@@ -69,19 +69,9 @@ async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
             }
         ]
         
-        # Build request parameters
-        request_params = {
-            "model": settings.OPENAI_MODEL,
-            "input": openai_messages,
-            "instructions": system_prompt,
-            "max_output_tokens": settings.MAX_TOKENS,
-            "temperature": settings.TEMPERATURE,
-            "tools": tools,
-            "stream": False,
-            "store": True,
-            "text": {"format": {"type": "text"}},
-            "reasoning": {}
-        }
+        # Build request parameters using model-specific configuration
+        request_params = _build_model_specific_params(openai_messages, system_prompt, tools, request.analysis_type)
+        request_params["stream"] = False  # Override for non-streaming
         
         # Critical: Include previous_response_id for conversation state
         if request.previous_response_id:
@@ -120,13 +110,18 @@ async def chat_non_streaming(request: ChatRequest) -> ChatResponse:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing chat: {str(e)}")
 
-def _build_model_specific_params(openai_messages, system_prompt, tools):
+def _build_model_specific_params(openai_messages, system_prompt, tools, analysis_type="compliance"):
     """Build request parameters specific to the model type.
     
-    o3 models have different parameter support:
+    GPT-5 models support:
+    - ✅ reasoning.effort (minimal, low, medium, high)
+    - ✅ text.verbosity (low, medium, high) 
+    - ✅ custom tools and allowed_tools
     - ❌ temperature, top_p (sampling parameters not supported)
-    - ✅ reasoning.effort and reasoning.summary (o3-specific)
-    - ⚠️  reasoning summary may be empty in ~90% of responses (known issue)
+    
+    o3 models support:
+    - ✅ reasoning.effort and reasoning.summary
+    - ❌ temperature, top_p
     
     Other models (GPT-4.1, etc.):
     - ✅ temperature, top_p (standard sampling parameters)
@@ -149,23 +144,66 @@ def _build_model_specific_params(openai_messages, system_prompt, tools):
         }
     }
     
-    # o3 model specific parameters
-    if settings.OPENAI_MODEL.startswith("o3"):
-        # o3 doesn't support temperature, top_p or other sampling parameters
-        # but supports reasoning configuration
+    # GPT-5 model specific parameters
+    if settings.OPENAI_MODEL.startswith("gpt-5"):
+        # GPT-5 supports reasoning effort and verbosity control
+        reasoning_effort = _get_reasoning_effort_for_task(analysis_type)
+        verbosity = _get_verbosity_for_task(analysis_type)
+        
+        base_params["reasoning"] = {
+            "effort": reasoning_effort
+        }
+        base_params["text"]["verbosity"] = verbosity
+        
+        print(f"[DEBUG] Using GPT-5 parameters: reasoning={reasoning_effort}, verbosity={verbosity}")
+        
+    # o3 model specific parameters (legacy support)
+    elif settings.OPENAI_MODEL.startswith("o3"):
         base_params["reasoning"] = {
             "effort": "medium",
             "summary": "detailed"
         }
-        print(f"[DEBUG] Using o3 model parameters (no temperature/top_p)")
+        print(f"[DEBUG] Using o3 model parameters (legacy)")
+        
     else:
         # For other models (GPT-4.1, etc.), include sampling parameters
         base_params["temperature"] = settings.TEMPERATURE
-        # Note: reasoning parameter may not be supported by older models
         base_params["reasoning"] = {}
         print(f"[DEBUG] Using standard model parameters (with temperature={settings.TEMPERATURE})")
     
     return base_params
+
+def _get_reasoning_effort_for_task(analysis_type: str) -> str:
+    """Get optimal reasoning effort based on analysis type for GPT-5."""
+    # For Oliver's compliance use cases:
+    if analysis_type == "examination":
+        # Examination prep needs thorough analysis
+        return "medium"
+    elif analysis_type == "compliance":
+        # Compliance queries need careful reasoning
+        return "medium"
+    elif analysis_type == "document":
+        # Document analysis benefits from detailed reasoning
+        return "medium"
+    else:
+        # General queries can use minimal for faster response
+        return "minimal"
+
+def _get_verbosity_for_task(analysis_type: str) -> str:
+    """Get optimal verbosity based on analysis type for GPT-5."""
+    # For Oliver's compliance use cases:
+    if analysis_type == "examination":
+        # Examination prep needs detailed explanations
+        return "high"
+    elif analysis_type == "compliance":
+        # Compliance queries need thorough explanations
+        return "medium"
+    elif analysis_type == "document":
+        # Document analysis needs comprehensive output
+        return "high"
+    else:
+        # General queries can be more concise
+        return "medium"
 
 @router.post("/chat/stream")
 async def chat_streaming(request: ChatRequest):
@@ -198,7 +236,7 @@ async def chat_streaming(request: ChatRequest):
             ]
             
             # Build model-specific request parameters
-            request_params = _build_model_specific_params(openai_messages, system_prompt, tools)
+            request_params = _build_model_specific_params(openai_messages, system_prompt, tools, request.analysis_type)
             
             # Critical: Include previous_response_id for conversation state
             if request.previous_response_id:
@@ -376,7 +414,7 @@ async def chat_streaming(request: ChatRequest):
                     reasoning_messages.append(reasoning_msg)
                     yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
                 
-                # Handle o3 detailed reasoning events - enhanced to capture all reasoning content
+                # Handle reasoning events for GPT-5 and o3 - enhanced to capture all reasoning content
                 elif chunk.type == "response.reasoning.started":
                     reasoning_msg = '🧠 Analyzing your request...'
                     reasoning_messages.append(reasoning_msg)
@@ -437,8 +475,30 @@ async def chat_streaming(request: ChatRequest):
                 else:
                     # Log any unhandled chunk types - especially reasoning-related ones
                     print(f"[DEBUG] Unhandled chunk type: {chunk.type}")
-                    if 'reasoning' in chunk.type.lower():
+                    
+                    # Handle GPT-5 specific streaming events that might be new
+                    if 'preamble' in chunk.type.lower():
+                        # GPT-5 preambles - explanations before tool calls
+                        if hasattr(chunk, 'delta') and chunk.delta:
+                            reasoning_msg = f"🎯 {chunk.delta}"
+                            reasoning_messages.append(reasoning_msg)
+                            yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_msg, 'done': False})}\n\n"
+                    
+                    elif 'reasoning' in chunk.type.lower():
                         print(f"[REASONING] Missed reasoning event: {chunk.type}")
+                        # Try to extract reasoning content from any reasoning-related event
+                        reasoning_content = None
+                        if hasattr(chunk, 'delta') and chunk.delta:
+                            reasoning_content = chunk.delta
+                        elif hasattr(chunk, 'text') and chunk.text:
+                            reasoning_content = chunk.text
+                        elif hasattr(chunk, 'content') and chunk.content:
+                            reasoning_content = chunk.content
+                        
+                        if reasoning_content and reasoning_content.strip():
+                            reasoning_messages.append(reasoning_content.strip())
+                            yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning_content.strip(), 'done': False})}\n\n"
+                        
                         if hasattr(chunk, '__dict__'):
                             print(f"[REASONING] Attributes: {list(chunk.__dict__.keys())}")
                             for attr in ['delta', 'text', 'reasoning', 'content']:
@@ -446,6 +506,7 @@ async def chat_streaming(request: ChatRequest):
                                     value = getattr(chunk, attr)
                                     if value:
                                         print(f"[REASONING] {attr}: {value}")
+                    
                     if hasattr(chunk, '__dict__'):
                         print(f"[DEBUG] Chunk attributes: {list(chunk.__dict__.keys())}")
                  
