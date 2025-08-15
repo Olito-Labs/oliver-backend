@@ -395,7 +395,8 @@ async def validate_request(request_id: str, user=Depends(get_current_user)):
     )
     user_prompt = (
         f"Request:\n{req.data.get('title','')}\n{req.data.get('description','')}\n\n"
-        f"Linked Evidence Context:\n{context_text}"
+        f"Linked Evidence Context:\n{context_text}\n\n"
+        f"Please provide your validation analysis in JSON format."
     )
 
     # Build parameters based on model type for validation
