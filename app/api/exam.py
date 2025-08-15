@@ -491,7 +491,53 @@ async def validate_request(request_id: str, user=Depends(get_current_user)):
     except Exception:
         data = {"sufficiency": "partial", "gaps": [], "suggestions": [content[:800]], "draft_narrative": ""}
 
+    # Save validation results to database for persistence
+    try:
+        from datetime import datetime
+        validation_update = {
+            'validation_results': data,
+            'last_validated_at': datetime.utcnow().isoformat()
+        }
+        
+        # Update the exam_requests table with validation results
+        update_result = supabase.table('exam_requests').update(validation_update).eq('id', request_id).eq('user_id', user['uid']).execute()
+        
+        if update_result.data:
+            print(f"✅ [validation] Saved validation results to database for request {request_id}")
+        else:
+            print(f"⚠️ [validation] Failed to save validation results to database for request {request_id}")
+            
+    except Exception as db_error:
+        # Don't fail the request if database save fails
+        print(f"❌ [validation] Database save error for request {request_id}: {db_error}")
+
     return {"validation": data}
+
+
+@router.get("/requests/{request_id}/validation")
+async def get_request_validation(request_id: str, user=Depends(get_current_user)):
+    """Get stored validation results for a specific request"""
+    try:
+        # Get request with validation results
+        req = supabase.table('exam_requests').select('validation_results, last_validated_at').eq('id', request_id).eq('user_id', user['uid']).single().execute()
+        
+        if not req.data:
+            raise HTTPException(status_code=404, detail="Request not found")
+        
+        validation_results = req.data.get('validation_results')
+        last_validated_at = req.data.get('last_validated_at')
+        
+        if validation_results:
+            return {
+                "validation": validation_results,
+                "last_validated_at": last_validated_at
+            }
+        else:
+            return {"validation": None, "last_validated_at": None}
+            
+    except Exception as e:
+        print(f"❌ [validation] Error retrieving validation for request {request_id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve validation results")
 
 
 @router.post("/fdl/ingest")
