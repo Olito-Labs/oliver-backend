@@ -375,34 +375,83 @@ async def validate_request(request_id: str, user=Depends(get_current_user)):
         docs_result = supabase.table('exam_documents').select('*').in_('id', doc_ids).execute()
         docs = docs_result.data or []
 
-    # Build context text (filenames + any analysis summaries)
-    context_items = []
-    for d in docs:
-        ctx = f"Document: {d.get('filename','')}\n"
-        if d.get('analysis_results'):
-            ctx += f"Prior analysis summary: {str(d['analysis_results'])[:800]}\n"
-        context_items.append(ctx)
-    context_text = "\n\n".join(context_items) or "No linked evidence yet."
-
     client = openai_manager.get_client()
     if not client:
         raise HTTPException(status_code=500, detail="OpenAI client not available")
 
     system_prompt = (
         "You are Oliver, validating examination evidence against a specific request. "
+        "Analyze the provided evidence documents thoroughly, including any visual elements, "
+        "tables, charts, or diagrams that may contain relevant information. "
         "Return JSON with: gaps:[{issue,why_it_matters,missing_elements}], "
         "sufficiency:'insufficient|partial|sufficient', suggestions:[string], draft_narrative:string."
     )
-    user_prompt = (
-        f"Request:\n{req.data.get('title','')}\n{req.data.get('description','')}\n\n"
-        f"Linked Evidence Context:\n{context_text}\n\n"
-        f"Please provide your validation analysis in JSON format."
-    )
+    
+    # Prepare content array for GPT-5 with actual document files
+    content_items = [
+        {
+            "type": "input_text",
+            "text": f"Examination Request to Validate:\n\nTitle: {req.data.get('title','')}\nDescription: {req.data.get('description','')}\n\nPlease analyze the evidence documents below and provide your validation analysis in JSON format.",
+        }
+    ]
+    
+    # Add each linked document as a file input to GPT-5
+    import base64
+    for doc in docs:
+        try:
+            # Download the document file
+            file_bytes = supabase.storage.from_('exam-documents').download(doc['file_path'])
+            
+            # Process PDF and DOCX files directly, others as text context
+            if doc.get('file_type') == 'application/pdf':
+                base64_pdf = base64.b64encode(file_bytes).decode('utf-8')
+                content_items.append({
+                    "type": "input_file",
+                    "filename": doc['filename'],
+                    "file_data": f"data:application/pdf;base64,{base64_pdf}",
+                })
+            elif doc.get('file_type') in ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword']:
+                # For DOCX files, send as base64 too (GPT-5 can handle various document types)
+                base64_docx = base64.b64encode(file_bytes).decode('utf-8')
+                mime_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                content_items.append({
+                    "type": "input_file",
+                    "filename": doc['filename'],
+                    "file_data": f"data:{mime_type};base64,{base64_docx}",
+                })
+            else:
+                # For other file types, include filename and any existing analysis
+                doc_context = f"Document: {doc.get('filename', '')} (type: {doc.get('file_type', 'unknown')})"
+                if doc.get('analysis_results'):
+                    doc_context += f"\nPrevious analysis: {str(doc['analysis_results'])[:800]}"
+                content_items.append({
+                    "type": "input_text", 
+                    "text": doc_context
+                })
+        except Exception as e:
+            print(f"[validation] Error loading document {doc.get('filename', doc.get('id'))}: {e}")
+            # Fallback to filename and analysis if file can't be loaded
+            content_items.append({
+                "type": "input_text",
+                "text": f"Document: {doc.get('filename', '')} (file unavailable)"
+            })
+    
+    # If no documents are linked, add that information
+    if not docs:
+        content_items.append({
+            "type": "input_text",
+            "text": "No evidence documents have been linked to this request yet."
+        })
 
-    # Build parameters based on model type for validation
+    # Build parameters for Responses API with document inputs
     request_params = {
         "model": settings.OPENAI_MODEL,
-        "input": user_prompt,
+        "input": [
+            {
+                "role": "user",
+                "content": content_items,
+            },
+        ],
         "instructions": system_prompt,
         "max_output_tokens": 6000,
         "text": {"format": {"type": "json_object"}},
@@ -458,27 +507,18 @@ async def ingest_first_day_letter(payload: Dict[str, Any], user=Depends(get_curr
         raise HTTPException(status_code=404, detail="Document not found")
     document = doc_result.data
 
-    # Download and extract text
+    # Download PDF file bytes for direct GPT-5 processing
     file_bytes = supabase.storage.from_('exam-documents').download(document['file_path'])
-    with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(document['filename'])[1]) as tmpf:
-        tmpf.write(file_bytes)
-        tmp_path = tmpf.name
-    try:
-        text = _extract_text(tmp_path, document['file_type'])
-    finally:
-        try:
-            os.unlink(tmp_path)
-        except Exception:
-            pass
-
-    # Analyze to extract requests
+    
+    # Analyze to extract requests using GPT-5 with direct PDF input
     client = openai_manager.get_client()
     if not client:
         raise HTTPException(status_code=500, detail="OpenAI client not available")
 
     system_prompt = (
-        "Extract distinct information requests (RFI) from the First Day Letter. "
-        "For each, return json fields: title, description, category, "
+        "Extract distinct information requests (RFI) from the First Day Letter PDF. "
+        "Analyze both the text content and any visual elements like tables, charts, or diagrams. "
+        "For each request, return json fields: title, description, category, "
         "request_code if present, regulatory_deadline if present (ISO), priority (0-3). "
         "For category, use ONLY these exact values: "
         "'Credit Risk', 'Interest Rate Risk', 'Liquidity Risk', 'Price Risk', "
@@ -487,13 +527,30 @@ async def ingest_first_day_letter(payload: Dict[str, Any], user=Depends(get_curr
         "'Capital Adequacy/Financial Reporting', 'Asset Management/Trust'. "
         "If unsure, use 'Operational Risk'. Respond in valid json only."
     )
-    # Ensure the input contains the word 'json' to satisfy Responses API when using text.format json_object
-    user_prompt = (text[:200000] or "") + "\n\nReturn the result as valid json."
-
-    # Build parameters based on model type for FDL ingestion
+    
+    # Prepare PDF for GPT-5 using Base64 encoding (as per OpenAI documentation)
+    import base64
+    base64_pdf = base64.b64encode(file_bytes).decode('utf-8')
+    
+    # Build parameters for Responses API with PDF input
     request_params = {
         "model": settings.OPENAI_MODEL,
-        "input": user_prompt,
+        "input": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "input_file",
+                        "filename": document['filename'],
+                        "file_data": f"data:application/pdf;base64,{base64_pdf}",
+                    },
+                    {
+                        "type": "input_text",
+                        "text": "Analyze this First Day Letter PDF and extract all examination requests. Return the result as valid json.",
+                    },
+                ],
+            },
+        ],
         "instructions": system_prompt,
         "max_output_tokens": 8000,
         "text": {"format": {"type": "json_object"}},
