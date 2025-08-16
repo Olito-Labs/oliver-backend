@@ -83,5 +83,111 @@ class OpenAIManager:
         else:
             return None
 
+    def build_responses_params(
+        self, 
+        input_data, 
+        instructions: str, 
+        analysis_type: str = "general",
+        output_format: str = "json_object",
+        max_tokens: int = 6000,
+        tools: list = None,
+        stream: bool = False
+    ) -> Dict[str, Any]:
+        """
+        Build standardized parameters for OpenAI Responses API calls.
+        
+        This centralizes all model-specific parameter logic to ensure consistency
+        across all API modules (chat, exam, documents, presentations, etc.).
+        """
+        # Base parameters that work for all models
+        base_params = {
+            "model": settings.OPENAI_MODEL,
+            "input": input_data,
+            "instructions": instructions,
+            "max_output_tokens": max_tokens,
+            "store": True,
+            "stream": stream,
+            "text": {
+                "format": {"type": output_format}
+            }
+        }
+        
+        # Add tools if provided
+        if tools:
+            base_params["tools"] = tools
+        
+        # GPT-5 model specific parameters
+        if settings.OPENAI_MODEL.startswith("gpt-5"):
+            reasoning_effort = self._get_reasoning_effort_for_task(analysis_type)
+            verbosity = self._get_verbosity_for_task(analysis_type)
+            
+            base_params["reasoning"] = {"effort": reasoning_effort}
+            base_params["text"]["verbosity"] = verbosity
+            
+            print(f"[DEBUG] Using GPT-5 parameters: reasoning={reasoning_effort}, verbosity={verbosity}")
+            
+        # o3 model specific parameters (legacy support)
+        elif settings.OPENAI_MODEL.startswith("o3"):
+            base_params["reasoning"] = {
+                "effort": "medium",
+                "summary": "detailed"
+            }
+            print(f"[DEBUG] Using o3 model parameters (legacy)")
+            
+        else:
+            # For other models (GPT-4.1, etc.), include sampling parameters
+            base_params["temperature"] = settings.TEMPERATURE
+            base_params["reasoning"] = {}
+            print(f"[DEBUG] Using standard model parameters (with temperature={settings.TEMPERATURE})")
+        
+        return base_params
+    
+    def _get_reasoning_effort_for_task(self, analysis_type: str) -> str:
+        """Get optimal reasoning effort based on analysis type for GPT-5."""
+        if analysis_type in ["examination", "document", "compliance"]:
+            # Complex analysis tasks need thorough reasoning
+            return "medium"
+        elif analysis_type == "presentation":
+            # Presentation generation needs structured thinking
+            return "medium"
+        elif analysis_type == "validation":
+            # Evidence validation needs careful analysis
+            return "medium"
+        else:
+            # General queries can use minimal for faster response
+            return "minimal"
+    
+    def _get_verbosity_for_task(self, analysis_type: str) -> str:
+        """Get optimal verbosity for GPT-5 based on task type."""
+        if analysis_type in ["examination", "document"]:
+            # Document analysis needs detailed output
+            return "high"
+        elif analysis_type in ["compliance", "presentation", "validation"]:
+            # Structured tasks need medium detail
+            return "medium"
+        else:
+            # General queries can be more concise
+            return "medium"
+    
+    def parse_responses_output(self, response, expected_format: str = "json") -> str:
+        """
+        Standardized parsing of OpenAI Responses API output.
+        
+        Args:
+            response: OpenAI Responses API response object
+            expected_format: "json" or "text"
+            
+        Returns:
+            Parsed content as string
+        """
+        content = ""
+        if response.output:
+            for item in response.output:
+                if hasattr(item, 'content') and item.content:
+                    for content_item in item.content:
+                        if hasattr(content_item, 'text'):
+                            content += content_item.text
+        return content
+
 # Global instance
 openai_manager = OpenAIManager()

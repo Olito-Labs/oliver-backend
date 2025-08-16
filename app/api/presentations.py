@@ -90,74 +90,95 @@ async def get_study_context(study_id: str, user_id: str) -> Dict[str, Any]:
         return {}
 
 async def generate_slides_with_gpt5(prompt: str, slide_count: int, audience: str, tone: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
-    """Generate presentation slides using GPT-5"""
+    """Generate presentation slides using OpenAI Responses API with centralized parameter management."""
     try:
-        openai_client = openai_manager.get_client()
+        client = openai_manager.get_client()
+        if not client:
+            raise HTTPException(status_code=500, detail="OpenAI client not initialized")
         
-        # Build context-aware system prompt
-        system_prompt = f"""
-        You are Oliver, a regulatory compliance AI assistant specializing in creating professional presentations for financial institutions.
-        
-        Generate a {slide_count}-slide presentation for a {audience} audience with a {tone} tone.
-        
-        AUDIENCE GUIDELINES:
-        - Board: High-level strategic focus, executive summary style, key metrics and outcomes
-        - Regulators: Detailed compliance focus, regulatory citations, remediation status
-        - Management: Operational focus, action items, resource requirements, timelines
-        - Staff: Tactical focus, procedures, training needs, implementation details
-        
-        TONE GUIDELINES:
-        - Formal: Professional language, structured format, regulatory terminology
-        - Conversational: Accessible language, engaging format, practical examples
-        - Technical: Detailed analysis, specific procedures, technical terminology
-        
-        SLIDE STRUCTURE:
-        - Slide 1: Always a title slide with main topic and key message
-        - Middle slides: Content slides with 3-5 bullet points each
-        - Last slide: Conclusion with key takeaways and next steps
-        
-        Return a JSON object with:
+        # Build context-aware system prompt (instructions)
+        instructions = f"""You are Oliver, a regulatory compliance AI assistant specializing in creating professional presentations for financial institutions.
+
+Generate a {slide_count}-slide presentation for a {audience} audience with a {tone} tone.
+
+AUDIENCE GUIDELINES:
+- Board: High-level strategic focus, executive summary style, key metrics and outcomes
+- Regulators: Detailed compliance focus, regulatory citations, remediation status
+- Management: Operational focus, action items, resource requirements, timelines
+- Staff: Tactical focus, procedures, training needs, implementation details
+
+TONE GUIDELINES:
+- Formal: Professional language, structured format, regulatory terminology
+- Conversational: Accessible language, engaging format, practical examples
+- Technical: Detailed analysis, specific procedures, technical terminology
+
+SLIDE STRUCTURE:
+- Slide 1: Always a title slide with main topic and key message
+- Middle slides: Content slides with 3-5 bullet points each
+- Last slide: Conclusion with key takeaways and next steps
+
+Return a JSON object with:
+{{
+    "title": "Presentation title",
+    "description": "Brief description of presentation content",
+    "slides": [
         {{
-            "title": "Presentation title",
-            "description": "Brief description of presentation content",
-            "slides": [
-                {{
-                    "type": "title|content|two-column|conclusion",
-                    "title": "Slide title",
-                    "content": ["Bullet point 1", "Bullet point 2", ...],
-                    "metadata": {{
-                        "speakerNotes": "Optional presenter guidance"
-                    }}
-                }}
-            ]
+            "type": "title|content|two-column|conclusion",
+            "title": "Slide title",
+            "content": ["Bullet point 1", "Bullet point 2", ...],
+            "metadata": {{
+                "speakerNotes": "Optional presenter guidance"
+            }}
         }}
+    ]
+}}
+
+Focus on regulatory compliance, risk management, and professional business content.
+Make titles declarative and summarize key takeaways.
+Keep bullet points concise but informative."""
         
-        Focus on regulatory compliance, risk management, and professional business content.
-        Make titles declarative and summarize key takeaways.
-        Keep bullet points concise but informative.
-        """
-        
-        # Add context if available
-        user_prompt = f"Create a presentation about: {prompt}"
+        # Build user input with context
+        user_input = f"Create a presentation about: {prompt}"
         if context and context.get('study_title'):
-            user_prompt += f"\n\nContext from study '{context['study_title']}':"
+            user_input += f"\n\nContext from study '{context['study_title']}':"
             if context.get('exam_requests'):
-                user_prompt += f"\n- {len(context['exam_requests'])} examination requests covering: {', '.join(set(req['category'] for req in context['exam_requests']))}"
+                user_input += f"\n- {len(context['exam_requests'])} examination requests covering: {', '.join(set(req['category'] for req in context['exam_requests']))}"
             if context.get('document_count', 0) > 0:
-                user_prompt += f"\n- {context['document_count']} supporting documents available"
+                user_input += f"\n- {context['document_count']} supporting documents available"
         
-        response = await openai_client.chat.completions.create(
-            model=settings.OPENAI_MODEL,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ],
-            response_format={"type": "json_object"},
-            reasoning_effort="medium",
-            verbosity="medium"
+        # Format input for Responses API
+        input_data = [
+            {
+                "role": "user",
+                "content": [{"type": "input_text", "text": user_input}]
+            }
+        ]
+        
+        # Use centralized parameter builder
+        request_params = openai_manager.build_responses_params(
+            input_data=input_data,
+            instructions=instructions,
+            analysis_type="presentation",
+            output_format="json_object",
+            max_tokens=8000,  # Presentations can be longer
+            stream=False
         )
         
-        result = json.loads(response.choices[0].message.content)
+        # Call OpenAI Responses API
+        response = client.responses.create(**request_params)
+        
+        # Use centralized response parser
+        content = openai_manager.parse_responses_output(response, expected_format="json")
+        
+        if not content:
+            raise HTTPException(status_code=500, detail="No content received from OpenAI")
+        
+        # Parse JSON response
+        try:
+            result = json.loads(content)
+        except json.JSONDecodeError as e:
+            print(f"Failed to parse JSON response: {content}")
+            raise HTTPException(status_code=500, detail=f"Invalid JSON response from OpenAI: {str(e)}")
         
         # Ensure we have the right number of slides
         slides = result.get('slides', [])
@@ -182,8 +203,11 @@ async def generate_slides_with_gpt5(prompt: str, slide_count: int, audience: str
         result['slides'] = slides
         return result
         
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
     except Exception as e:
-        print(f"Error generating slides with GPT-5: {e}")
+        print(f"Error generating slides with OpenAI Responses API: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to generate slides: {str(e)}")
 
 # ============================================================================
