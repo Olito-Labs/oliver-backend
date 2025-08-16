@@ -1,0 +1,229 @@
+/* Olito + Fulton Hybrid Presentation Base (PDF-first)
+   File: OlitoFultonBase.css
+
+   Goals
+   - Combine Olito's refined brand energy (gold accents, subtle depth)
+     with Fulton's trustworthy blue palette and enterprise restraint
+   - Remain PDF-first: static, rectangular slides, controlled page breaks
+   - Dual-brand friendly (Olito Labs + Fulton Bank) without background logos
+*/
+
+/* Typography */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  /* Fulton palette */
+  --fulton-blue: #1e4b72;
+  --fulton-navy: #0f2a44;
+  --fulton-gray-50: #f9fafb;
+  --fulton-gray-100: #f3f4f6;
+  --fulton-gray-200: #e5e7eb;
+  --fulton-gray-300: #d1d5db;
+  --fulton-gray-400: #9ca3af;
+  --fulton-gray-600: #4b5563;
+  --fulton-gray-700: #374151;
+  --fulton-gray-800: #1f2937;
+  --fulton-white: #ffffff;
+
+  /* Olito accents */
+  --olito-gold: #c5aa6a;
+  --olito-gold-light: rgba(197, 170, 106, 0.10);
+  --olito-gold-border: rgba(197, 170, 106, 0.22);
+
+  /* Dark background system */
+  --bg-dark-start: #0b1a2f; /* deep navy */
+  --bg-dark-end: #0f2a44;   /* fulton-navy */
+  --panel-dark: #122743;    /* slightly lighter than page bg */
+
+  /* Typo */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;  /* 4px */
+  --spacing-sm: 0.5rem;   /* 8px */
+  --spacing-md: 1rem;     /* 16px */
+  --spacing-lg: 1.5rem;   /* 24px */
+  --spacing-xl: 2rem;     /* 32px */
+  --spacing-2xl: 3rem;    /* 48px */
+  --spacing-3xl: 4rem;    /* 64px */
+
+  /* Shape & subtle depth (kept minimal for enterprise PDF) */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+
+  /* Title sizing tuned for Letter Landscape PDFs */
+  --title-size: 2.25rem;
+  --subtitle-size: 1.125rem;
+}
+
+/* Reset */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-family: var(--font-family); font-size: 16px; line-height: 1.5; }
+body { background: linear-gradient(135deg, var(--bg-dark-start), var(--bg-dark-end)); color: #e5e7eb; }
+
+/* Containers */
+.of-slide-container {
+  width: 100%; min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--spacing-xl) 0;
+}
+
+.of-slide {
+  width: 95%; height: 95vh; max-width: 1400px;
+  display: flex; flex-direction: column;
+  background: var(--panel-dark);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  position: relative; /* anchor decorative accents */
+}
+
+/* Title slide centering */
+.of-title-slide {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* Optional subtle accent in top-left (no logos in background) */
+.of-decorative-element {
+  height: 5px; width: 900px;
+  background: linear-gradient(90deg, var(--olito-gold) 0%, rgba(197, 170, 106, 0.35) 60%, transparent 100%);
+  opacity: 0.7;
+  border-radius: 2px;
+}
+
+/* Keep accent anchored top-left on all slides for consistency */
+.of-slide .of-decorative-element,
+.of-title-slide .of-decorative-element {
+  position: absolute;
+  top: var(--spacing-md);
+  left: var(--spacing-md);
+}
+
+/* Optional subtle accent at the lower edge to balance the composition */
+.of-decorative-bottom {
+  height: 4px; width: 900px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.75) 0%, rgba(197, 170, 106, 0.35) 55%, transparent 100%);
+  opacity: 0.7;
+  border-radius: 2px;
+}
+
+/* Keep bottom accent anchored above footnotes when present */
+.of-slide .of-decorative-bottom,
+.of-title-slide .of-decorative-bottom {
+  position: absolute;
+  left: var(--spacing-md);
+  bottom: calc(var(--spacing-md) + 42px); /* footnotes sit just below this rule */
+}
+
+/* Header for content slides (right-aligned Olito logos, no co-brand) */
+.content-header {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+.content-header img { height: 34px !important; opacity: 0.95; width: auto; display: block; }
+.content-header img.header-brain { height: 29px !important; }
+.content-header img.header-wordmark { height: 24px !important; }
+.content-header img.header-fulton { height: 60px; }
+
+/* Dual-brand block (centered) */
+.of-dual-logos {
+  margin: var(--spacing-2xl) auto var(--spacing-xl) auto;
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--spacing-2xl);
+  padding: 0; /* no rounded/light background */
+}
+.of-dual-logos img { height: 72px; width: auto; display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45)); }
+.of-brand-separator { color: var(--olito-gold); font-size: 1.5rem; }
+
+/* Cluster Olito icon + wordmark for balanced spacing */
+.of-logo-cluster { display: inline-flex; align-items: center; gap: var(--spacing-sm); }
+.of-logo-cluster img.olito-icon { height: 50px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45)); }
+.of-logo-cluster img.olito-wordmark { height: 30px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35)); }
+.of-logo-cluster img.fulton-logo { height: 80px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35)); }
+
+/* Common Fulton logo size for headers */
+.fulton-logo { height: 56px; width: auto; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35)); }
+
+
+/* Title area */
+.of-title-area { text-align: center; padding: 0 var(--spacing-2xl); }
+.of-title {
+  font-size: var(--title-size);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--olito-gold);
+  line-height: 1.2;
+  margin-bottom: var(--spacing-md);
+}
+.of-subtitle {
+  font-size: var(--subtitle-size);
+  color: #cbd5e1;
+  font-weight: var(--font-weight-medium);
+}
+
+/* Content slide heading/subtitle (borrowed from olito-base typography) */
+.of-content-title {
+  font-size: 2.5rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  color: var(--olito-gold);
+  margin-top: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  text-align: left;
+}
+
+.of-content-subtitle {
+  font-size: 1rem;
+  font-weight: var(--font-weight-normal);
+  color: #9fb3c8;
+  line-height: 1.4;
+  text-align: left;
+  margin-top: calc(var(--spacing-2xl) + 4px);
+  margin-bottom: var(--spacing-xl);
+}
+
+/* Footer notes (optional) */
+.of-footnotes {
+  margin-top: auto; color: #9ca3af;
+  font-size: 0.875rem; padding: 0 var(--spacing-lg) var(--spacing-md) var(--spacing-lg);
+}
+
+/* Content area placeholder (for non-title slides) */
+.of-content-area {
+  flex: 1; padding: var(--spacing-lg) var(--spacing-2xl);
+  display: flex; flex-direction: column; gap: var(--spacing-lg);
+}
+
+/* Print adjustments: one page per container */
+@media print {
+  .of-slide-container {
+    width: 100% !important; height: 100vh !important; min-height: 100vh !important;
+    page-break-before: always; page-break-after: always; page-break-inside: avoid;
+    display: flex !important; margin: 0 !important; padding: 0 !important;
+  }
+  .of-slide-container:first-child { page-break-before: avoid; }
+  .of-slide-container:last-child { page-break-after: avoid; }
+  .of-slide {
+    width: 95% !important; height: 95% !important; min-height: 95vh !important; max-width: none !important;
+    border: 1px solid rgba(255,255,255,0.12) !important; background: var(--panel-dark) !important;
+  }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+  body { margin: 0 !important; padding: 0 !important; }
+}
+
+
+/* Olito Tech variant: hide external co-branding in header */
+.content-header .header-fulton,
+.content-header .of-brand-separator {
+  display: none !important;
+}
