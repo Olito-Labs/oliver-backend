@@ -7,7 +7,7 @@ import json
 from datetime import datetime
 
 from app.auth import get_current_user
-from app.llm_providers import get_openai_client
+from app.llm_providers import openai_manager
 from app.supabase_client import get_supabase_client
 from app.config import settings
 
@@ -92,7 +92,7 @@ async def get_study_context(study_id: str, user_id: str) -> Dict[str, Any]:
 async def generate_slides_with_gpt5(prompt: str, slide_count: int, audience: str, tone: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
     """Generate presentation slides using GPT-5"""
     try:
-        openai_client = get_openai_client()
+        openai_client = openai_manager.get_client()
         
         # Build context-aware system prompt
         system_prompt = f"""
