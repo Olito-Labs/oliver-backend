@@ -126,53 +126,58 @@ Be concise, authoritative, and focus on strategic implications over operational 
                 yield f"data: {json.dumps({'type': 'content_stream', 'content': section_header, 'section': section_id})}\n\n"
                 await asyncio.sleep(0.1)
 
-                # Process responses API output (streaming or non-streaming)
+                # Process responses API output - use output_text for simplicity
                 section_text = ""
                 
                 try:
-                    if hasattr(response, '__iter__'):
-                        # Streaming response
-                        print(f"[Executive] Processing streaming response for section {section_id}")
-                        for chunk in response:
-                            if hasattr(chunk, 'output') and chunk.output:
-                                for item in chunk.output:
-                                    if hasattr(item, 'type') and item.type == 'message':
-                                        if hasattr(item, 'content') and item.content:
-                                            for content_item in item.content:
-                                                if hasattr(content_item, 'text'):
-                                                    content = content_item.text
-                                                    section_text += content
-                                                    print(f"[Executive] Streaming content chunk: {content[:50]}...")
-                                                    
-                                                    yield f"data: {json.dumps({'type': 'content_stream', 'content': content, 'section': section_id})}\n\n"
-                                                    await asyncio.sleep(0.05)
+                    print(f"[Executive] Generating section {section_id} with prompt: {section_prompt[:100]}...")
+                    
+                    # Check if response has output_text (simple access)
+                    if hasattr(response, 'output_text') and response.output_text:
+                        section_text = response.output_text
+                        print(f"[Executive] Got section via output_text: {len(section_text)} chars")
+                        
+                        # Stream it in chunks for smooth display
+                        chunk_size = 30
+                        for i in range(0, len(section_text), chunk_size):
+                            chunk = section_text[i:i+chunk_size]
+                            yield f"data: {json.dumps({'type': 'content_stream', 'content': chunk, 'section': section_id})}\n\n"
+                            await asyncio.sleep(0.03)  # Smooth streaming
+                    
+                    # Fallback: check output array
+                    elif hasattr(response, 'output') and response.output:
+                        print(f"[Executive] Processing output array for section {section_id}")
+                        for item in response.output:
+                            print(f"[Executive] Output item type: {getattr(item, 'type', 'unknown')}")
+                            if hasattr(item, 'type') and item.type == 'message':
+                                if hasattr(item, 'content') and item.content:
+                                    for content_item in item.content:
+                                        if hasattr(content_item, 'text'):
+                                            section_text = content_item.text
+                                            print(f"[Executive] Got section content from output array: {len(section_text)} chars")
+                                            
+                                            # Stream it in chunks
+                                            chunk_size = 30
+                                            for i in range(0, len(section_text), chunk_size):
+                                                chunk = section_text[i:i+chunk_size]
+                                                yield f"data: {json.dumps({'type': 'content_stream', 'content': chunk, 'section': section_id})}\n\n"
+                                                await asyncio.sleep(0.03)
+                                            break
                     else:
-                        # Non-streaming response
-                        print(f"[Executive] Processing non-streaming response for section {section_id}")
-                        if hasattr(response, 'output') and response.output:
-                            for item in response.output:
-                                if hasattr(item, 'type') and item.type == 'message':
-                                    if hasattr(item, 'content') and item.content:
-                                        for content_item in item.content:
-                                            if hasattr(content_item, 'text'):
-                                                section_text = content_item.text
-                                                print(f"[Executive] Got section content: {len(section_text)} chars")
-                                                
-                                                # Stream it in chunks for smooth display
-                                                chunk_size = 50
-                                                for i in range(0, len(section_text), chunk_size):
-                                                    chunk = section_text[i:i+chunk_size]
-                                                    yield f"data: {json.dumps({'type': 'content_stream', 'content': chunk, 'section': section_id})}\n\n"
-                                                    await asyncio.sleep(0.05)
-                                                break
+                        print(f"[Executive] No content found in response for section {section_id}")
+                        print(f"[Executive] Response attributes: {dir(response)}")
+                        
+                        # Generate fallback content
+                        fallback_content = f"*Section content generation in progress for {section_title}...*\n\n"
+                        yield f"data: {json.dumps({'type': 'content_stream', 'content': fallback_content, 'section': section_id})}\n\n"
                 
                     section_content += section_text
                     full_content += section_text
-                    print(f"[Executive] Section {section_id} complete: {len(section_text)} chars")
+                    print(f"[Executive] Section {section_id} final length: {len(section_text)} chars")
                     
                 except Exception as section_error:
                     print(f"[Executive] Error processing section {section_id}: {section_error}")
-                    error_content = f"\n\n*Error generating this section: {str(section_error)}*\n\n"
+                    error_content = f"\n\n*Error generating section {section_title}: {str(section_error)}*\n\n"
                     yield f"data: {json.dumps({'type': 'content_stream', 'content': error_content, 'section': section_id})}\n\n"
 
                 # Complete section
