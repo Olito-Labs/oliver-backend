@@ -85,7 +85,7 @@ async def stream_competitive_intelligence(
             
             response = client.responses.create(**request_params)
             
-            # Process streaming response with comprehensive debugging
+            # Process streaming response - use delta for streaming chunks
             full_content = ""
             chunk_count = 0
             
@@ -93,33 +93,36 @@ async def stream_competitive_intelligence(
             
             for chunk in response:
                 chunk_count += 1
-                print(f"[CI] Processing chunk {chunk_count}")
-                print(f"[CI] Chunk type: {type(chunk)}")
-                print(f"[CI] Chunk attributes: {[attr for attr in dir(chunk) if not attr.startswith('_')]}")
                 
-                if hasattr(chunk, 'output') and chunk.output:
-                    print(f"[CI] Chunk has output with {len(chunk.output)} items")
-                    for i, item in enumerate(chunk.output):
-                        print(f"[CI] Output item {i} type: {getattr(item, 'type', 'unknown')}")
+                # Handle ResponseTextDeltaEvent for streaming
+                if hasattr(chunk, 'delta') and chunk.delta:
+                    if hasattr(chunk.delta, 'text') and chunk.delta.text:
+                        content_chunk = chunk.delta.text
+                        full_content += content_chunk
+                        print(f"[CI] Streaming chunk {chunk_count}: {len(content_chunk)} chars - {content_chunk[:50]}...")
                         
-                        if hasattr(item, 'type') and item.type == 'message':
-                            print(f"[CI] Found message item")
-                            if hasattr(item, 'content') and item.content:
-                                print(f"[CI] Message has {len(item.content)} content items")
-                                for j, content_item in enumerate(item.content):
-                                    print(f"[CI] Content item {j} type: {getattr(content_item, 'type', 'unknown')}")
-                                    print(f"[CI] Content item attributes: {[attr for attr in dir(content_item) if not attr.startswith('_')]}")
-                                    
-                                    if hasattr(content_item, 'text'):
-                                        content_chunk = content_item.text
-                                        full_content += content_chunk
-                                        print(f"[CI] Got content chunk: {len(content_chunk)} chars - {content_chunk[:100]}...")
-                                        
-                                        # Stream content as it's generated
-                                        yield f"data: {json.dumps({'type': 'content', 'content': content_chunk})}\n\n"
-                                        await asyncio.sleep(0.01)
-                else:
-                    print(f"[CI] Chunk has no output attribute")
+                        # Stream content as it's generated
+                        yield f"data: {json.dumps({'type': 'content', 'content': content_chunk})}\n\n"
+                        await asyncio.sleep(0.01)  # Smooth streaming
+                
+                # Also check for other chunk types
+                elif hasattr(chunk, 'type'):
+                    print(f"[CI] Chunk {chunk_count} type: {chunk.type}")
+                    
+                    # Handle final message chunks
+                    if chunk.type == 'message' and hasattr(chunk, 'content'):
+                        for content_item in chunk.content:
+                            if hasattr(content_item, 'text'):
+                                content_chunk = content_item.text
+                                full_content += content_chunk
+                                print(f"[CI] Message chunk: {len(content_chunk)} chars")
+                                yield f"data: {json.dumps({'type': 'content', 'content': content_chunk})}\n\n"
+                
+                # Debug what we're getting
+                if chunk_count <= 5 or chunk_count % 500 == 0:  # Log first few and every 500th
+                    print(f"[CI] Chunk {chunk_count} debug - Type: {type(chunk)}, Has delta: {hasattr(chunk, 'delta')}")
+                    if hasattr(chunk, 'delta'):
+                        print(f"[CI] Delta attributes: {[attr for attr in dir(chunk.delta) if not attr.startswith('_')]}")
 
             print(f"[CI] Processed {chunk_count} chunks, total content: {len(full_content)} chars")
 
