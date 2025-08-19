@@ -150,77 +150,193 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
             step4.content = f"Document encoded successfully. Ready for AI analysis ({len(base64_pdf)} characters)."
             yield await send_reasoning_step(step4)
             
-            # Step 5: GPT-5 Analysis
+            # Step 5: Multi-Step Real-Time AI Analysis
             step5 = ReasoningStep(
-                "Performing Deep AI Analysis",
-                "GPT-5 is analyzing the First Day Letter to extract examination requests...",
-                "lightbulb",
-                details="Using advanced reasoning to identify regulatory requirements, categorize risks, extract deadlines, and structure examination requests according to OCC taxonomy."
+                "Starting Multi-Step AI Analysis",
+                "Breaking down analysis into streaming steps for real-time feedback...",
+                "lightbulb"
             )
             yield await send_reasoning_step(step5)
+            await asyncio.sleep(0.5)
             
-            # Prepare the AI request
-            system_prompt = (
-                "Extract distinct information requests (RFI) from the First Day Letter PDF. "
-                "Analyze both the text content and any visual elements like tables, charts, or diagrams. "
-                "For each request, return json fields: title, description, category, "
-                "request_code if present, regulatory_deadline if present (ISO), priority (0-3). "
-                "For category, use ONLY these exact values: "
-                "'Credit Risk', 'Interest Rate Risk', 'Liquidity Risk', 'Price Risk', "
-                "'Operational Risk', 'Compliance Risk', 'Strategic Risk', "
-                "'Governance/Management Oversight', 'IT/Cybersecurity', 'BSA/AML', "
-                "'Capital Adequacy/Financial Reporting', 'Asset Management/Trust'. "
-                "If unsure, use 'Operational Risk'. Respond in valid json only."
+            # Step 5a: Document Structure Analysis (streaming)
+            step5a = ReasoningStep(
+                "Analyzing Document Structure",
+                "GPT-5 is identifying sections, headers, and overall document layout...",
+                "search"
             )
+            yield await send_reasoning_step(step5a)
             
-            request_params = {
-                "model": settings.OPENAI_MODEL,
-                "input": [
-                    {
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "input_file",
-                                "filename": document['filename'],
-                                "file_data": f"data:application/pdf;base64,{base64_pdf}",
-                            },
-                            {
-                                "type": "input_text",
-                                "text": "Analyze this First Day Letter PDF and extract all examination requests. Return the result as valid json.",
-                            },
-                        ],
-                    },
-                ],
-                "instructions": system_prompt,
-                "max_output_tokens": 8000,
-                "text": {"format": {"type": "json_object"}},
-                "store": True,
-                "stream": False,
-            }
-            
-            # Add model-specific parameters
-            if settings.OPENAI_MODEL.startswith("gpt-5"):
-                request_params["reasoning"] = {"effort": "medium"}
-                request_params["text"]["verbosity"] = "high"
-            elif settings.OPENAI_MODEL.startswith("o3"):
-                request_params["reasoning"] = {"effort": "medium", "summary": "detailed"}
-            else:
-                request_params["temperature"] = 0.7
-            
-            # Update step with more specific analysis details
-            step5.content = "GPT-5 is performing comprehensive document analysis using advanced reasoning capabilities..."
-            yield await send_reasoning_step(step5)
-            await asyncio.sleep(2)  # Give time for the update to be seen
-            
-            # Make the API call
             try:
-                resp = client.responses.create(**request_params)
-                step5.complete()
-                step5.content = "AI analysis completed successfully. Extracting structured examination requests..."
-                yield await send_reasoning_step(step5)
+                structure_prompt = (
+                    "Analyze this First Day Letter PDF and identify its structure. "
+                    "List the main sections, key headers, and document organization. "
+                    "Respond with a brief analysis of what sections contain examination requests."
+                )
+                
+                structure_params = {
+                    "model": settings.OPENAI_MODEL,
+                    "input": [{"role": "user", "content": [
+                        {"type": "input_file", "filename": document['filename'], "file_data": f"data:application/pdf;base64,{base64_pdf}"},
+                        {"type": "input_text", "text": structure_prompt}
+                    ]}],
+                    "instructions": structure_prompt,
+                    "max_output_tokens": 1000,
+                    "stream": True,  # Enable streaming for real-time output
+                    "store": True,
+                }
+                
+                if settings.OPENAI_MODEL.startswith("gpt-5"):
+                    structure_params["reasoning"] = {"effort": "low"}  # Fast analysis
+                    structure_params["text"] = {"verbosity": "medium"}
+                
+                # Stream the structure analysis
+                structure_response = client.responses.create(**structure_params)
+                structure_content = ""
+                
+                if hasattr(structure_response, '__iter__'):
+                    # Handle streaming response
+                    for chunk in structure_response:
+                        if hasattr(chunk, 'output') and chunk.output:
+                            for item in chunk.output:
+                                if getattr(item, 'type', '') == 'message' and getattr(item, 'content', None):
+                                    for c in item.content:
+                                        if getattr(c, 'type', '') == 'output_text' and getattr(c, 'text', None):
+                                            structure_content += c.text
+                                            step5a.content = f"Document structure: {structure_content[:100]}..."
+                                            yield await send_reasoning_step(step5a)
+                                            await asyncio.sleep(0.1)  # Real-time streaming
+                else:
+                    # Handle non-streaming response
+                    if structure_response.output:
+                        for item in structure_response.output:
+                            if getattr(item, 'type', '') == 'message' and getattr(item, 'content', None):
+                                for c in item.content:
+                                    if getattr(c, 'type', '') == 'output_text' and getattr(c, 'text', None):
+                                        structure_content = c.text
+                
+                step5a.complete()
+                step5a.content = f"Document structure analyzed: {len(structure_content)} characters of insights"
+                step5a.details = structure_content
+                yield await send_reasoning_step(step5a)
+                
             except Exception as e:
-                step5.error(f"AI analysis failed: {str(e)}")
-                yield await send_reasoning_step(step5)
+                step5a.error(f"Structure analysis failed: {str(e)}")
+                yield await send_reasoning_step(step5a)
+                # Continue with fallback approach
+                structure_content = "Document structure analysis unavailable, proceeding with direct extraction."
+            
+            # Step 5b: Category Identification (streaming)
+            step5b = ReasoningStep(
+                "Identifying Risk Categories",
+                "GPT-5 is scanning for regulatory risk categories and examination domains...",
+                "search"
+            )
+            yield await send_reasoning_step(step5b)
+            
+            try:
+                category_prompt = (
+                    "Based on this First Day Letter, identify the main regulatory risk categories mentioned. "
+                    "Look for terms like Credit Risk, Operational Risk, IT/Cybersecurity, BSA/AML, etc. "
+                    "Explain which categories you find and where they appear in the document."
+                )
+                
+                category_params = {
+                    "model": settings.OPENAI_MODEL,
+                    "input": [{"role": "user", "content": [
+                        {"type": "input_file", "filename": document['filename'], "file_data": f"data:application/pdf;base64,{base64_pdf}"},
+                        {"type": "input_text", "text": f"Document structure context: {structure_content[:500]}\n\n{category_prompt}"}
+                    ]}],
+                    "instructions": category_prompt,
+                    "max_output_tokens": 1500,
+                    "stream": True,
+                    "store": True,
+                }
+                
+                if settings.OPENAI_MODEL.startswith("gpt-5"):
+                    category_params["reasoning"] = {"effort": "low"}
+                    category_params["text"] = {"verbosity": "medium"}
+                
+                # Stream the category analysis
+                category_response = client.responses.create(**category_params)
+                category_content = ""
+                
+                if hasattr(category_response, '__iter__'):
+                    for chunk in category_response:
+                        if hasattr(chunk, 'output') and chunk.output:
+                            for item in chunk.output:
+                                if getattr(item, 'type', '') == 'message' and getattr(item, 'content', None):
+                                    for c in item.content:
+                                        if getattr(c, 'type', '') == 'output_text' and getattr(c, 'text', None):
+                                            category_content += c.text
+                                            step5b.content = f"Found categories: {category_content[:100]}..."
+                                            yield await send_reasoning_step(step5b)
+                                            await asyncio.sleep(0.1)
+                else:
+                    if category_response.output:
+                        for item in category_response.output:
+                            if getattr(item, 'type', '') == 'message' and getattr(item, 'content', None):
+                                for c in item.content:
+                                    if getattr(c, 'type', '') == 'output_text' and getattr(c, 'text', None):
+                                        category_content = c.text
+                
+                step5b.complete()
+                step5b.content = f"Risk categories identified: {len(category_content)} characters of analysis"
+                step5b.details = category_content
+                yield await send_reasoning_step(step5b)
+                
+            except Exception as e:
+                step5b.error(f"Category identification failed: {str(e)}")
+                yield await send_reasoning_step(step5b)
+                category_content = "Category analysis unavailable, using fallback classification."
+            
+            # Step 5c: Final Request Extraction (streaming)
+            step5c = ReasoningStep(
+                "Extracting Examination Requests",
+                "GPT-5 is now extracting specific examination requests with all details...",
+                "lightbulb"
+            )
+            yield await send_reasoning_step(step5c)
+            
+            try:
+                # Final extraction with context from previous steps
+                extraction_prompt = (
+                    "Based on the document structure and risk categories identified, extract all specific examination requests. "
+                    "For each request, provide: title, description, category, request_code (if any), regulatory_deadline (if any), priority (0-3). "
+                    "Use ONLY these categories: 'Credit Risk', 'Interest Rate Risk', 'Liquidity Risk', 'Price Risk', "
+                    "'Operational Risk', 'Compliance Risk', 'Strategic Risk', 'Governance/Management Oversight', "
+                    "'IT/Cybersecurity', 'BSA/AML', 'Capital Adequacy/Financial Reporting', 'Asset Management/Trust'. "
+                    "Return valid JSON only."
+                )
+                
+                extraction_params = {
+                    "model": settings.OPENAI_MODEL,
+                    "input": [{"role": "user", "content": [
+                        {"type": "input_file", "filename": document['filename'], "file_data": f"data:application/pdf;base64,{base64_pdf}"},
+                        {"type": "input_text", "text": f"Context:\nStructure: {structure_content[:300]}\nCategories: {category_content[:300]}\n\n{extraction_prompt}"}
+                    ]}],
+                    "instructions": extraction_prompt,
+                    "max_output_tokens": 6000,
+                    "text": {"format": {"type": "json_object"}},
+                    "stream": False,  # Final extraction needs complete JSON
+                    "store": True,
+                }
+                
+                if settings.OPENAI_MODEL.startswith("gpt-5"):
+                    extraction_params["reasoning"] = {"effort": "medium"}
+                    extraction_params["text"]["verbosity"] = "high"
+                
+                step5c.content = "Performing final extraction with full context and reasoning..."
+                yield await send_reasoning_step(step5c)
+                
+                resp = client.responses.create(**extraction_params)
+                step5c.complete()
+                step5c.content = "Request extraction completed successfully with contextual analysis"
+                yield await send_reasoning_step(step5c)
+                
+            except Exception as e:
+                step5c.error(f"Request extraction failed: {str(e)}")
+                yield await send_reasoning_step(step5c)
                 yield await send_error(f"AI analysis failed: {str(e)}")
                 return
             
