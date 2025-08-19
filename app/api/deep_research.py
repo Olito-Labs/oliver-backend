@@ -196,29 +196,12 @@ GUIDELINES:
             )
             yield await send_sse_message(step3)
             
-            # Configure Deep Research API call
+            # Configure Deep Research API call with background mode
             research_params = {
-                "model": "o3-deep-research-2025-06-26" if request.depth == "comprehensive" else "o4-mini-deep-research-2025-06-26",
-                "input": [
-                    {
-                        "role": "developer",
-                        "content": [
-                            {
-                                "type": "input_text",
-                                "text": system_prompt,
-                            }
-                        ]
-                    },
-                    {
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "input_text",
-                                "text": refined_query,
-                            }
-                        ]
-                    }
-                ],
+                "model": "o3-deep-research" if request.depth == "comprehensive" else "o4-mini-deep-research",
+                "input": refined_query,
+                "instructions": system_prompt,
+                "background": True,  # Essential for long-running research
                 "reasoning": {
                     "summary": "detailed" if request.depth == "comprehensive" else "auto"
                 },
@@ -226,7 +209,9 @@ GUIDELINES:
                     {
                         "type": "web_search_preview"
                     }
-                ]
+                ],
+                "store": True,  # Store for debugging and analysis
+                "max_tool_calls": 50 if request.depth == "comprehensive" else 25  # Control cost/latency
             }
             
             # Add code interpreter for data analysis if comprehensive
@@ -240,132 +225,169 @@ GUIDELINES:
                 })
             
             try:
-                # Simulate research progress with realistic timing
-                progress_steps = [
-                    ("Planning research strategy", 2),
-                    ("Executing web searches", 3),
-                    ("Analyzing competitor data", 4),
-                    ("Synthesizing market insights", 3),
-                    ("Generating structured report", 2)
+                # Since Deep Research doesn't support real-time streaming, we'll:
+                # 1. Start the background research
+                # 2. Show simulated progress with realistic timing
+                # 3. Poll for completion
+                
+                step3.content = "Starting Deep Research in background mode..."
+                yield await send_sse_message(step3)
+                
+                # Execute Deep Research API call in background mode
+                print(f"🔍 Starting Deep Research with params: {research_params}")
+                response = client.responses.create(**research_params)
+                
+                # Get the response ID for polling
+                response_id = getattr(response, 'id', None)
+                print(f"📋 Deep Research started with ID: {response_id}")
+                
+                if not response_id:
+                    raise Exception("No response ID received from Deep Research API")
+                
+                step3.status = "completed"
+                step3.content = f"Deep Research initiated with ID: {response_id}"
+                yield await send_sse_message(step3)
+                
+                # Step 4: Polling for completion with simulated progress
+                step4 = create_research_step(
+                    step_type="polling",
+                    title="Monitoring Research Progress",
+                    content="Polling Deep Research API for completion...",
+                    status="active"
+                )
+                yield await send_sse_message(step4)
+                
+                # Simulate realistic research progress while polling
+                progress_messages = [
+                    "Oliver is planning research strategy...",
+                    "Executing initial web searches...",
+                    "Analyzing competitor financial data...",
+                    "Gathering market intelligence...",
+                    "Synthesizing competitive insights...",
+                    "Generating structured report...",
+                    "Finalizing analysis and citations..."
                 ]
                 
                 search_count = 0
                 reasoning_count = 0
+                max_polls = 60  # 5 minutes max (5s intervals)
+                poll_count = 0
                 
-                for step_desc, duration in progress_steps:
-                    reasoning_count += 1
-                    progress_step = create_research_step(
-                        step_type="reasoning",
-                        title=f"Research Step {reasoning_count}",
-                        content=f"Oliver is {step_desc.lower()}...",
-                        status="active"
-                    )
-                    yield await send_sse_message(progress_step)
-                    await asyncio.sleep(duration)
-                    
-                    # Simulate some web searches during the process
-                    if reasoning_count in [2, 3, 4]:
-                        search_count += 1
-                        search_queries = [
-                            "banking competitive landscape 2024",
-                            "regulatory compliance strategies banks",
-                            "digital transformation financial services",
-                            "market share analysis major banks"
-                        ]
-                        search_step = create_research_step(
-                            step_type="web_search",
-                            title=f"Web Search {search_count}",
-                            content=f"Searching for: {search_queries[search_count-1] if search_count <= len(search_queries) else 'market intelligence'}",
-                            status="active",
-                            metadata={"query": search_queries[search_count-1] if search_count <= len(search_queries) else 'market intelligence'}
-                        )
-                        yield await send_sse_message(search_step)
-                        await asyncio.sleep(1)
+                while poll_count < max_polls:
+                    try:
+                        # Check if research is complete
+                        status_response = client.responses.retrieve(response_id)
+                        
+                        if hasattr(status_response, 'status'):
+                            if status_response.status == 'completed':
+                                # Research is complete!
+                                step4.status = "completed"
+                                step4.content = "Deep Research completed successfully!"
+                                yield await send_sse_message(step4)
+                                
+                                # Extract the final report and intermediate steps
+                                final_content = ""
+                                citations = []
+                                web_searches = []
+                                reasoning_steps = []
+                                
+                                if hasattr(status_response, 'output') and status_response.output:
+                                    for item in status_response.output:
+                                        if hasattr(item, 'type'):
+                                            if item.type == 'web_search_call':
+                                                web_searches.append(item)
+                                            elif item.type == 'reasoning':
+                                                reasoning_steps.append(item)
+                                            elif item.type == 'message':
+                                                if hasattr(item, 'content') and item.content:
+                                                    for content_item in item.content:
+                                                        if hasattr(content_item, 'text'):
+                                                            final_content = content_item.text
+                                                            
+                                                            # Extract citations
+                                                            if hasattr(content_item, 'annotations'):
+                                                                for ann in content_item.annotations:
+                                                                    citations.append({
+                                                                        "title": getattr(ann, 'title', 'Source'),
+                                                                        "url": getattr(ann, 'url', ''),
+                                                                        "start": getattr(ann, 'start_index', 0),
+                                                                        "end": getattr(ann, 'end_index', 0)
+                                                                    })
+                                
+                                if not final_content:
+                                    raise Exception("No content received from completed Deep Research")
+                                
+                                # Send completion with actual research data
+                                final_step = create_research_step(
+                                    step_type="completion",
+                                    title="Competitive Intelligence Report Ready",
+                                    content=final_content,
+                                    status="completed",
+                                    metadata={
+                                        "search_count": len(web_searches),
+                                        "reasoning_steps": len(reasoning_steps),
+                                        "citations": len(citations),
+                                        "report_length": len(final_content),
+                                        "citations_detail": citations,
+                                        "response_id": response_id
+                                    }
+                                )
+                                yield await send_sse_message(final_step)
+                                
+                                # Store in database
+                                try:
+                                    research_record = {
+                                        'id': str(uuid.uuid4()),
+                                        'user_id': user['uid'],
+                                        'research_query': request.research_query,
+                                        'competitors': request.competitors,
+                                        'focus_areas': request.focus_areas,
+                                        'time_horizon': request.time_horizon,
+                                        'depth': request.depth,
+                                        'report_content': final_content,
+                                        'metadata': final_step.metadata,
+                                        'response_id': response_id,
+                                        'created_at': datetime.utcnow().isoformat()
+                                    }
+                                    
+                                    result = supabase.table('competitive_intelligence_reports').insert(research_record).execute()
+                                    
+                                    if result.data:
+                                        storage_step = create_research_step(
+                                            step_type="storage",
+                                            title="Report Saved",
+                                            content=f"Research report saved with ID: {result.data[0]['id']}",
+                                            status="completed",
+                                            metadata={"report_id": result.data[0]['id']}
+                                        )
+                                        yield await send_sse_message(storage_step)
+                                except Exception as storage_error:
+                                    print(f"Failed to store research report: {storage_error}")
+                                
+                                break  # Exit polling loop
+                                
+                            elif status_response.status == 'failed':
+                                error_msg = getattr(status_response, 'error', {}).get('message', 'Deep Research failed')
+                                raise Exception(f"Deep Research failed: {error_msg}")
+                            
+                            elif status_response.status == 'in_progress':
+                                # Show progress update
+                                progress_index = min(poll_count // 5, len(progress_messages) - 1)
+                                step4.content = progress_messages[progress_index]
+                                yield await send_sse_message(step4)
+                        
+                        # Wait before next poll
+                        await asyncio.sleep(5)  # Poll every 5 seconds
+                        poll_count += 1
+                        
+                    except Exception as poll_error:
+                        print(f"Polling error: {poll_error}")
+                        await asyncio.sleep(5)
+                        poll_count += 1
                 
-                # Execute the actual Deep Research API call
-                step3.content = "Executing Deep Research analysis..."
-                yield await send_sse_message(step3)
-                
-                response = client.responses.create(**research_params)
-                
-                # Extract the final report
-                final_content = ""
-                citations = []
-                
-                if hasattr(response, 'output') and response.output:
-                    for item in response.output:
-                        if hasattr(item, 'type') and item.type == 'message':
-                            if hasattr(item, 'content') and item.content:
-                                for content_item in item.content:
-                                    if hasattr(content_item, 'text'):
-                                        final_content = content_item.text
-                                        
-                                        # Extract citations if available
-                                        if hasattr(content_item, 'annotations'):
-                                            for ann in content_item.annotations:
-                                                citations.append({
-                                                    "title": getattr(ann, 'title', 'Source'),
-                                                    "url": getattr(ann, 'url', ''),
-                                                    "start": getattr(ann, 'start_index', 0),
-                                                    "end": getattr(ann, 'end_index', 0)
-                                                })
-                                        break
-                            if final_content:
-                                break
-                
-                if not final_content:
-                    raise Exception("No content received from Deep Research API")
-                
-                # Complete the research step
-                step3.status = "completed"
-                step3.content = f"Research completed: {search_count} searches performed, {reasoning_count} analysis steps"
-                yield await send_sse_message(step3)
-                
-                # Send the final report
-                final_step = create_research_step(
-                    step_type="completion",
-                    title="Competitive Intelligence Report Ready",
-                    content=final_content,
-                    status="completed",
-                    metadata={
-                        "search_count": search_count,
-                        "reasoning_steps": reasoning_count,
-                        "citations": len(citations),
-                        "report_length": len(final_content),
-                        "citations_detail": citations
-                    }
-                )
-                yield await send_sse_message(final_step)
-                
-                # Store the research results in database
-                try:
-                    research_record = {
-                        'id': str(uuid.uuid4()),
-                        'user_id': user['uid'],
-                        'research_query': request.research_query,
-                        'competitors': request.competitors,
-                        'focus_areas': request.focus_areas,
-                        'time_horizon': request.time_horizon,
-                        'depth': request.depth,
-                        'report_content': final_content,
-                        'metadata': final_step.metadata,
-                        'created_at': datetime.utcnow().isoformat()
-                    }
-                    
-                    result = supabase.table('competitive_intelligence_reports').insert(research_record).execute()
-                    
-                    if result.data:
-                        storage_step = create_research_step(
-                            step_type="storage",
-                            title="Report Saved",
-                            content=f"Research report saved with ID: {result.data[0]['id']}",
-                            status="completed",
-                            metadata={"report_id": result.data[0]['id']}
-                        )
-                        yield await send_sse_message(storage_step)
-                except Exception as storage_error:
-                    # Don't fail the whole process if storage fails
-                    print(f"Failed to store research report: {storage_error}")
+                # If we exit the loop without completion, it's a timeout
+                if poll_count >= max_polls:
+                    raise Exception("Deep Research timed out after 5 minutes. This may be normal for comprehensive research - try using background mode with webhooks for production.")
                 
             except Exception as research_error:
                 step3.status = "error"
@@ -440,3 +462,33 @@ async def delete_research_report(report_id: str, user=Depends(get_current_user))
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting report: {str(e)}")
+
+@router.post("/webhook/completion")
+async def handle_deep_research_webhook(payload: Dict[str, Any]):
+    """
+    Webhook endpoint for Deep Research completion notifications.
+    This would be used in production with background mode.
+    """
+    try:
+        # Extract webhook data
+        response_id = payload.get('response_id')
+        status = payload.get('status')
+        
+        if status == 'completed' and response_id:
+            # Retrieve the completed research
+            client = openai_manager.get_client()
+            if client:
+                completed_response = client.responses.retrieve(response_id)
+                
+                # Process and store the results
+                # This would update the database and notify the frontend
+                # via WebSocket or similar real-time mechanism
+                
+                print(f"✅ Deep Research webhook: {response_id} completed")
+                return {"message": "Webhook processed successfully"}
+        
+        return {"message": "Webhook received"}
+        
+    except Exception as e:
+        print(f"❌ Webhook error: {e}")
+        raise HTTPException(status_code=500, detail=f"Webhook processing failed: {str(e)}")
