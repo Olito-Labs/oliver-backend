@@ -17,6 +17,7 @@ from app.api.streaming import router as streaming_router
 from app.api.deep_research import router as deep_research_router
 from app.api.deep_research_v2 import router as deep_research_v2_router
 from app.api.deep_research_simple import router as deep_research_simple_router
+from app.api.competitive_intelligence import router as competitive_intelligence_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -99,6 +100,7 @@ app.include_router(streaming_router)
 app.include_router(deep_research_router)
 app.include_router(deep_research_v2_router)
 app.include_router(deep_research_simple_router)
+app.include_router(competitive_intelligence_router)
 
 # Exception handlers
 @app.exception_handler(ValueError)
