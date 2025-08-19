@@ -96,17 +96,26 @@ Be concise, authoritative, and focus on strategic implications over operational 
                 # Generate section content
                 section_prompt = section_prompts[section_id]
                 
-                # Use simple chat completion for reliability
-                response = client.chat.completions.create(
-                    model=settings.OPENAI_MODEL,
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": section_prompt}
-                    ],
-                    temperature=0.7,
-                    max_tokens=800,
-                    stream=True
-                )
+                # Use responses API for GPT-5 compatibility
+                section_params = {
+                    "model": settings.OPENAI_MODEL,
+                    "input": section_prompt,
+                    "instructions": system_prompt,
+                    "max_output_tokens": 800,
+                    "stream": True,
+                    "store": True
+                }
+                
+                # Add GPT-5 specific parameters
+                if settings.OPENAI_MODEL.startswith("gpt-5"):
+                    section_params["reasoning"] = {"effort": "medium"}
+                    section_params["text"] = {"verbosity": "medium"}
+                elif settings.OPENAI_MODEL.startswith("o3"):
+                    section_params["reasoning"] = {"effort": "medium", "summary": "detailed"}
+                else:
+                    section_params["temperature"] = 0.7
+                
+                response = client.responses.create(**section_params)
 
                 section_content = ""
                 section_title = structure["sections"][sections.index(section_id)]["title"]
@@ -117,15 +126,35 @@ Be concise, authoritative, and focus on strategic implications over operational 
                 yield f"data: {json.dumps({'type': 'content_stream', 'content': section_header, 'section': section_id})}\n\n"
                 await asyncio.sleep(0.1)
 
-                # Stream section content
-                for chunk in response:
-                    if chunk.choices[0].delta.content:
-                        content = chunk.choices[0].delta.content
-                        section_content += content
-                        full_content += content
-                        
-                        yield f"data: {json.dumps({'type': 'content_stream', 'content': content, 'section': section_id})}\n\n"
-                        await asyncio.sleep(0.02)  # Smooth streaming
+                # Stream section content from responses API
+                if hasattr(response, '__iter__'):
+                    # Streaming response
+                    for chunk in response:
+                        if hasattr(chunk, 'output') and chunk.output:
+                            for item in chunk.output:
+                                if hasattr(item, 'type') and item.type == 'message':
+                                    if hasattr(item, 'content') and item.content:
+                                        for content_item in item.content:
+                                            if hasattr(content_item, 'text'):
+                                                content = content_item.text
+                                                section_content += content
+                                                full_content += content
+                                                
+                                                yield f"data: {json.dumps({'type': 'content_stream', 'content': content, 'section': section_id})}\n\n"
+                                                await asyncio.sleep(0.05)  # Smooth streaming
+                else:
+                    # Non-streaming fallback
+                    if hasattr(response, 'output') and response.output:
+                        for item in response.output:
+                            if hasattr(item, 'type') and item.type == 'message':
+                                if hasattr(item, 'content') and item.content:
+                                    for content_item in item.content:
+                                        if hasattr(content_item, 'text'):
+                                            content = content_item.text
+                                            section_content += content
+                                            full_content += content
+                                            
+                                            yield f"data: {json.dumps({'type': 'content_stream', 'content': content, 'section': section_id})}\n\n"
 
                 # Complete section
                 yield f"data: {json.dumps({'type': 'section_complete', 'section': section_id})}\n\n"
