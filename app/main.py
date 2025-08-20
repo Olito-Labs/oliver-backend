@@ -15,7 +15,7 @@ from app.api.documents import router as documents_router
 from app.api.exam import router as exam_router
 from app.api.streaming import router as streaming_router
 from app.api.competitive_intelligence_simple import router as competitive_intelligence_router
-from app.api.simple_assistant import router as simple_assistant_router
+
 from app.api.kannada_expert import router as kannada_expert_router
 
 # Configure logging
@@ -97,7 +97,6 @@ app.include_router(documents_router)
 app.include_router(exam_router)
 app.include_router(streaming_router)
 app.include_router(competitive_intelligence_router)
-app.include_router(simple_assistant_router)
 app.include_router(kannada_expert_router)
 
 # Exception handlers
