@@ -146,89 +146,82 @@ async def startup_advisor_chat(
 async def _generate_streaming_response(client, request_params, conversation_id, study_id, user) -> AsyncGenerator[str, None]:
     """Generate streaming response for Startup Advisor with conversation persistence."""
     try:
-        # Use context manager for proper stream handling
-        with client.responses.stream(**request_params) as stream:
-            response_id = None
-            accumulated_text = ""
-            accumulated_reasoning = ""
+        # Use correct streaming pattern as recommended
+        stream = client.responses.create(stream=True, **request_params)
+        response_id = None
+        accumulated_text = ""
+        accumulated_reasoning = ""
 
-            # Emit a normalized start event with metadata
-            start_payload = {
-                "type": "start",
-                "metadata": {
-                    "conversation_id": conversation_id,
-                    "model_used": "gpt-5-nano",
-                }
+        # Emit a normalized start event with metadata
+        start_payload = {
+            "type": "start",
+            "metadata": {
+                "conversation_id": conversation_id,
+                "model_used": "gpt-5-nano",
             }
-            yield f"data: {json.dumps(start_payload)}\n\n"
+        }
+        yield f"data: {json.dumps(start_payload)}\n\n"
 
-            for event in stream:
-                et = getattr(event, "type", None)
+        for event in stream:
+            et = getattr(event, "type", None)
 
-                if et == "response.created":
-                    response_id = getattr(getattr(event, "response", None), "id", None)
+            if et == "response.created":
+                response_id = getattr(getattr(event, "response", None), "id", None)
 
-                elif et == "response.output_text.delta":
-                    delta = getattr(event, "delta", "")
-                    if delta:
-                        accumulated_text += delta
-                        yield f"data: {json.dumps({'type': 'content', 'content': delta, 'done': False})}\n\n"
+            elif et == "response.output_text.delta":
+                delta = getattr(event, "delta", "")
+                if delta:
+                    accumulated_text += delta
+                    yield f"data: {json.dumps({'type': 'content', 'content': delta, 'done': False})}\n\n"
 
-                # Robust reasoning matching - handles any reasoning event
-                elif et and et.startswith("response.reasoning"):
-                    delta = getattr(event, "delta", "")
-                    if delta:
-                        accumulated_reasoning += delta
-                        yield f"data: {json.dumps({'type': 'reasoning', 'content': delta, 'done': False, 'channel': 'full'})}\n\n"
+            # Robust reasoning matching - handles any reasoning event
+            elif et and et.startswith("response.reasoning"):
+                delta = getattr(event, "delta", "")
+                if delta:
+                    accumulated_reasoning += delta
+                    yield f"data: {json.dumps({'type': 'reasoning', 'content': delta, 'done': False, 'channel': 'full'})}\n\n"
 
-                elif et == "response.refusal.delta":
-                    # Surface refusals into reasoning pane so the user sees *why*
-                    delta = getattr(event, "delta", "")
-                    if delta:
-                        accumulated_reasoning += delta
-                        yield f"data: {json.dumps({'type': 'reasoning', 'content': delta, 'done': False, 'channel': 'refusal'})}\n\n"
+            elif et == "response.refusal.delta":
+                # Surface refusals into reasoning pane so the user sees *why*
+                delta = getattr(event, "delta", "")
+                if delta:
+                    accumulated_reasoning += delta
+                    yield f"data: {json.dumps({'type': 'reasoning', 'content': delta, 'done': False, 'channel': 'refusal'})}\n\n"
 
-                elif et in ("response.error", "response.failed"):
-                    msg = getattr(event, "error", "Unknown error")
-                    yield f"data: {json.dumps({'type': 'error', 'content': str(msg), 'done': True})}\n\n"
-                    return
+            elif et in ("response.error", "response.failed"):
+                msg = getattr(event, "error", "Unknown error")
+                yield f"data: {json.dumps({'type': 'error', 'content': str(msg), 'done': True})}\n\n"
+                return
 
-                elif et == "response.completed":
-                    # Explicit completion handling
-                    break
+            elif et == "response.completed":
+                # Explicit completion handling - but don't break, let the loop finish naturally
+                pass
 
-            # Finalize using the SDK's final response to avoid drift
-            final = stream.get_final_response()
-            if not accumulated_text:
-                try:
-                    accumulated_text = getattr(final, "output_text", "") or ""
-                except Exception:
-                    pass
+        # After the stream ends naturally, finalize the response
+        # Store conversation in database
+        await _store_conversation_message(
+            user['uid'], study_id, request_params['input'],
+            accumulated_text, conversation_id, accumulated_reasoning
+        )
 
-            await _store_conversation_message(
-                user['uid'], study_id, request_params['input'],
-                accumulated_text, conversation_id, accumulated_reasoning
-            )
+        # Store response ID for conversation memory
+        if response_id:
+            CONVERSATION_RESPONSE_IDS[conversation_id] = response_id
 
-            # Store response ID for conversation memory
-            final_response_id = response_id or getattr(final, "id", None)
-            if final_response_id:
-                CONVERSATION_RESPONSE_IDS[conversation_id] = final_response_id
-
-            completion_data = {
-                'type': 'done',
-                'content': '',
-                'done': True,
-                'metadata': {
-                    'conversation_id': conversation_id,
-                    'response_id': final_response_id,
-                    'full_response': accumulated_text,
-                    'model_used': "gpt-5-nano",
-                    'timestamp': datetime.now().isoformat(),
-                    'study_id': study_id
-                }
+        completion_data = {
+            'type': 'done',
+            'content': '',
+            'done': True,
+            'metadata': {
+                'conversation_id': conversation_id,
+                'response_id': response_id,
+                'full_response': accumulated_text,
+                'model_used': "gpt-5-nano",
+                'timestamp': datetime.now().isoformat(),
+                'study_id': study_id
             }
-            yield f"data: {json.dumps(completion_data)}\n\n"
+        }
+        yield f"data: {json.dumps(completion_data)}\n\n"
         
     except Exception as e:
         error_chunk = {
