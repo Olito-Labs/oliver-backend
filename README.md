@@ -234,4 +234,4 @@ The `/api/health` endpoint provides:
 
 ## License
 
-MIT License - see LICENSE file for details.
+MIT License - see LICENSE file for details.# Clean competitive intelligence implementation
