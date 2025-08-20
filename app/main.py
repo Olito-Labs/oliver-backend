@@ -14,7 +14,7 @@ from app.api.studies import router as studies_router
 from app.api.documents import router as documents_router
 from app.api.exam import router as exam_router
 from app.api.streaming import router as streaming_router
-from app.api.competitive_intelligence_simple import router as competitive_intelligence_router
+from app.api.competitive_intelligence_streaming import router as competitive_intelligence_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

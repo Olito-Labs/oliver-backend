@@ -12,14 +12,14 @@ from app.auth import get_current_user
 from app.llm_providers import openai_manager
 from app.config import settings
 
-router = APIRouter(prefix="/api/competitive-intelligence-simple", tags=["competitive-intelligence-simple"])
+router = APIRouter(prefix="/api/competitive-intelligence", tags=["competitive-intelligence"])
 
 class CompetitiveIntelligenceRequest(BaseModel):
     query: str
     template: Optional[str] = "general"
 
 @router.post("/analyze/stream")
-async def stream_competitive_intelligence_simple(
+async def stream_competitive_intelligence(
     request: CompetitiveIntelligenceRequest,
     user=Depends(get_current_user)
 ):
@@ -42,7 +42,7 @@ async def stream_competitive_intelligence_simple(
             system_prompt = f"""You are Oliver, a competitive intelligence analyst for Fulton Bank. 
             Analyze the following query and provide strategic insights: {request.query}"""
 
-            print(f"[CI-Stream] Starting analysis: {request.query[:100]}...")
+            print(f"[CI-Stream] Starting streaming analysis: {request.query[:100]}...")
 
             # GPT-5 with minimal reasoning and streaming
             response = client.responses.create(
@@ -60,11 +60,11 @@ async def stream_competitive_intelligence_simple(
             full_content = ""
             chunk_count = 0
             
-            # Process streaming chunks using the correct format
+            # Process streaming chunks using the correct ResponseTextDeltaEvent format
             for chunk in response:
                 chunk_count += 1
                 
-                # Handle ResponseTextDeltaEvent with delta.text
+                # Handle ResponseTextDeltaEvent with delta.text (correct format from your logs)
                 if hasattr(chunk, 'delta') and chunk.delta and hasattr(chunk.delta, 'text'):
                     content_chunk = chunk.delta.text
                     full_content += content_chunk
@@ -72,9 +72,9 @@ async def stream_competitive_intelligence_simple(
                     # Stream content immediately
                     yield f"data: {json.dumps({'type': 'content', 'content': content_chunk})}\n\n"
                     
-                    # Log every 100th chunk to avoid spam
-                    if chunk_count % 100 == 0:
-                        print(f"[CI-Stream] Chunk {chunk_count}: {len(content_chunk)} chars")
+                    # Log progress every 500 chunks
+                    if chunk_count % 500 == 0:
+                        print(f"[CI-Stream] Processed {chunk_count} chunks, {len(full_content)} chars so far...")
 
             print(f"[CI-Stream] Streaming complete: {chunk_count} chunks, {len(full_content)} total chars")
 
@@ -90,7 +90,8 @@ async def stream_competitive_intelligence_simple(
                         "model_used": settings.OPENAI_MODEL,
                         "reasoning_effort": "minimal",
                         "chunks_processed": chunk_count,
-                        "content_length": len(full_content)
+                        "content_length": len(full_content),
+                        "streaming": True
                     },
                     'created_at': datetime.utcnow().isoformat()
                 }
@@ -120,103 +121,10 @@ async def stream_competitive_intelligence_simple(
             "Access-Control-Allow-Headers": "*",
         }
     )
-    try:
-        client = openai_manager.get_client()
-        if not client:
-            raise HTTPException(status_code=500, detail="OpenAI client unavailable")
-
-        # Super simple system prompt
-        system_prompt = f"""You are Oliver, a competitive intelligence analyst for Fulton Bank. 
-        Analyze the following query and provide strategic insights: {request.query}"""
-
-        print(f"[CI-Simple] Starting analysis with query: {request.query[:100]}...")
-
-        # Use the simplest possible GPT-5 call
-        response = client.responses.create(
-            model=settings.OPENAI_MODEL,
-            input=request.query,
-            instructions=system_prompt,
-            reasoning={"effort": "minimal"},  # Fastest possible
-            text={"verbosity": "medium"},
-            max_output_tokens=3000
-        )
-
-        print(f"[CI-Simple] Got response, extracting content...")
-
-        # Extract content - try every possible way
-        content = ""
-        
-        # Method 1: output_text
-        if hasattr(response, 'output_text') and response.output_text:
-            content = response.output_text
-            print(f"[CI-Simple] Got content via output_text: {len(content)} chars")
-        
-        # Method 2: output array
-        elif hasattr(response, 'output') and response.output:
-            print(f"[CI-Simple] Checking output array with {len(response.output)} items")
-            for item in response.output:
-                print(f"[CI-Simple] Item type: {getattr(item, 'type', 'unknown')}")
-                if getattr(item, 'type', '') == 'message':
-                    if hasattr(item, 'content') and item.content:
-                        for content_item in item.content:
-                            if getattr(content_item, 'type', '') == 'output_text':
-                                content = getattr(content_item, 'text', '')
-                                print(f"[CI-Simple] Got content via output array: {len(content)} chars")
-                                break
-                if content:
-                    break
-        
-        # Method 3: Direct text access
-        elif hasattr(response, 'text'):
-            content = response.text
-            print(f"[CI-Simple] Got content via direct text: {len(content)} chars")
-        
-        if not content:
-            print(f"[CI-Simple] No content found. Response type: {type(response)}")
-            print(f"[CI-Simple] Response attributes: {[attr for attr in dir(response) if not attr.startswith('_')]}")
-            raise HTTPException(status_code=500, detail="No content generated")
-
-        print(f"[CI-Simple] SUCCESS: Generated {len(content)} characters")
-        print(f"[CI-Simple] Content preview: {content[:200]}...")
-
-        # Store in database
-        try:
-            analysis_record = {
-                'id': str(uuid.uuid4()),
-                'user_id': user['uid'],
-                'query': request.query,
-                'template': request.template,
-                'analysis_content': content,
-                'metadata': {
-                    "model_used": settings.OPENAI_MODEL,
-                    "reasoning_effort": "minimal",
-                    "content_length": len(content)
-                },
-                'created_at': datetime.utcnow().isoformat()
-            }
-            
-            result = supabase.table('competitive_intelligence_analyses').insert(analysis_record).execute()
-            analysis_id = result.data[0]['id'] if result.data else None
-            print(f"[CI-Simple] Stored analysis: {analysis_id}")
-            
-        except Exception as storage_error:
-            print(f"[CI-Simple] Storage failed: {storage_error}")
-            # Continue anyway
-
-        return {
-            "success": True,
-            "content": content,
-            "query": request.query,
-            "template": request.template
-        }
-
-    except Exception as e:
-        print(f"[CI-Simple] ERROR: {e}")
-        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
 @router.get("/templates")
-async def get_simple_templates():
-    """Get simple analysis templates"""
+async def get_streaming_templates():
+    """Get analysis templates for streaming"""
     return {
         "templates": [
             {
