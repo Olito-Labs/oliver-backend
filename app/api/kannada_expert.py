@@ -164,6 +164,7 @@ async def _generate_streaming_response(client, request_params, conversation_id, 
 
         for event in stream:
             et = getattr(event, "type", None)
+            print(f"[DEBUG] Stream event: {et}")
 
             if et == "response.created":
                 response_id = getattr(getattr(event, "response", None), "id", None)
@@ -171,6 +172,14 @@ async def _generate_streaming_response(client, request_params, conversation_id, 
             elif et == "response.output_text.delta":
                 delta = getattr(event, "delta", "")
                 if delta:
+                    accumulated_text += delta
+                    yield f"data: {json.dumps({'type': 'content', 'content': delta, 'done': False})}\n\n"
+            
+            # Also handle other possible content event names
+            elif et and ("output" in et or "text" in et) and "delta" in et and "reasoning" not in et:
+                delta = getattr(event, "delta", "")
+                if delta:
+                    print(f"[DEBUG] Found content via event: {et}")
                     accumulated_text += delta
                     yield f"data: {json.dumps({'type': 'content', 'content': delta, 'done': False})}\n\n"
 
@@ -198,6 +207,9 @@ async def _generate_streaming_response(client, request_params, conversation_id, 
                 pass
 
         # After the stream ends naturally, finalize the response
+        print(f"[DEBUG] Stream ended. Accumulated text length: {len(accumulated_text)}")
+        print(f"[DEBUG] Accumulated reasoning length: {len(accumulated_reasoning)}")
+        
         # Store conversation in database
         await _store_conversation_message(
             user['uid'], study_id, request_params['input'],
