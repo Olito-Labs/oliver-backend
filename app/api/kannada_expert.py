@@ -12,17 +12,20 @@ from app.auth import get_current_user
 from app.config import settings
 from app.supabase_client import supabase
 
-router = APIRouter(prefix="/api/kannada-expert", tags=["kannada-expert"])
+router = APIRouter(prefix="/api/startup-advisor", tags=["startup-advisor"])
 
-class KannadaExpertRequest(BaseModel):
-    """Request model for Kannada Expert workflow."""
+# Simple in-memory conversation threading (use database in production for persistence)
+CONVERSATION_RESPONSE_IDS: Dict[str, str] = {}
+
+class StartupAdvisorRequest(BaseModel):
+    """Request model for Startup Advisor workflow."""
     message: str
     study_id: Optional[str] = None
     conversation_id: Optional[str] = None
     stream: bool = True
 
-class KannadaExpertResponse(BaseModel):
-    """Response model for Kannada Expert workflow."""
+class StartupAdvisorResponse(BaseModel):
+    """Response model for Startup Advisor workflow."""
     response: str
     conversation_id: str
     study_id: Optional[str] = None
@@ -30,23 +33,41 @@ class KannadaExpertResponse(BaseModel):
     model_used: str
     response_id: Optional[str] = None
 
-class KannadaConversationCreate(BaseModel):
-    """Model for creating a new Kannada conversation."""
-    title: str = "Kannada Translation Session"
+class StartupAdvisorConversationCreate(BaseModel):
+    """Model for creating a new Startup Advisor conversation."""
+    title: str = "Startup Advisor Session"
     description: Optional[str] = None
 
-def _create_kannada_system_prompt() -> str:
-    """Create specialized system prompt for Kannada translation expert."""
-    return """You are a galli boy from mandya and live in bangalore and mysore. You are a helpful assistant, but only talk in street kannada - be a cool boli maga and treat your friends like your boys"""
+def _create_startup_advisor_system_prompt() -> str:
+    """Create specialized system prompt for Startup Advisor based on Paul Graham's writings."""
+    return """You are Oliver, a startup advisor deeply versed in Paul Graham's philosophy and writings. You provide thoughtful, practical advice to entrepreneurs based on Paul's insights from Y Combinator and his essays.
+
+Your expertise covers:
+- Startup fundamentals and early-stage strategy
+- Product development and finding product-market fit
+- Fundraising, investors, and Y Combinator insights
+- Building great teams and company culture
+- Technical founder advice and scaling challenges
+- Market timing and competitive strategy
+
+Style Guidelines:
+- Give direct, actionable advice in Paul Graham's clear, thoughtful style
+- Reference specific concepts from his essays when relevant
+- Be encouraging but realistic about startup challenges
+- Focus on what matters most for early-stage companies
+- Ask clarifying questions when you need more context
+- Share relevant examples and analogies when helpful
+
+Always ground your advice in Paul's core principles: build something people want, talk to users, iterate quickly, and focus on growth. Be the advisor Paul Graham would be - wise, practical, and genuinely helpful to founders."""
 
 @router.post("/chat")
-async def kannada_expert_chat(
-    request: KannadaExpertRequest,
+async def startup_advisor_chat(
+    request: StartupAdvisorRequest,
     user=Depends(get_current_user)
 ):
     """
-    Kannada Expert chat endpoint with Supabase integration for production.
-    Handles both streaming and non-streaming responses.
+    Startup Advisor chat endpoint with Supabase integration for production.
+    Handles both streaming and non-streaming responses with conversation memory.
     """
     try:
         client = openai_manager.get_client()
@@ -56,8 +77,11 @@ async def kannada_expert_chat(
         # Generate or use existing conversation ID
         conversation_id = request.conversation_id or str(uuid.uuid4())
         
-        # Create system prompt for Kannada expert
-        system_prompt = _create_kannada_system_prompt()
+        # Get previous response ID for conversation continuity
+        previous_response_id = CONVERSATION_RESPONSE_IDS.get(conversation_id)
+        
+        # Create system prompt for Startup Advisor
+        system_prompt = _create_startup_advisor_system_prompt()
         
         # Build request parameters for GPT-5 Nano (optimized for speed)
         request_params = {
@@ -66,12 +90,16 @@ async def kannada_expert_chat(
             "instructions": system_prompt,
             "max_output_tokens": 1000,  # Reduced for faster responses
             "store": True,
-            "metadata": {"purpose": "kannada-expert", "user_id": user['uid']},
+            "metadata": {"purpose": "startup-advisor", "user_id": user['uid']},
         }
         
-        # GPT-5 Nano specific parameters (optimized for speed but with reasoning)
-        request_params["reasoning"] = {"effort": "low", "summary": "detailed"}  # Low effort for speed but still show reasoning
-        request_params["text"] = {"verbosity": "medium"}  # Medium verbosity for clear translations
+        # Add previous response ID for conversation memory
+        if previous_response_id:
+            request_params["previous_response_id"] = previous_response_id
+        
+        # GPT-5 Nano specific parameters (optimized for thoughtful startup advice)
+        request_params["reasoning"] = {"effort": "medium", "summary": "detailed"}  # Medium effort for thoughtful advice
+        request_params["text"] = {"verbosity": "medium"}  # Medium verbosity for clear advice
         
         if request.stream:
             # Streaming response
@@ -97,10 +125,13 @@ async def kannada_expert_chat(
                 if hasattr(message_output, 'content') and len(message_output.content) > 0:
                     response_text = message_output.content[0].text
             
-            # Store conversation in database
+            # Store conversation in database and response ID for memory
+            response_id = getattr(response, 'id', None)
+            if response_id:
+                CONVERSATION_RESPONSE_IDS[conversation_id] = response_id
             await _store_conversation_message(user['uid'], request.study_id, request.message, response_text, conversation_id)
             
-            return KannadaExpertResponse(
+            return StartupAdvisorResponse(
                 response=response_text,
                 conversation_id=conversation_id,
                 study_id=request.study_id,
@@ -110,10 +141,10 @@ async def kannada_expert_chat(
             )
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error processing Kannada expert request: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error processing Startup Advisor request: {str(e)}")
 
 async def _generate_streaming_response(client, request_params, conversation_id, study_id, user) -> AsyncGenerator[str, None]:
-    """Generate streaming response for Kannada expert with conversation persistence."""
+    """Generate streaming response for Startup Advisor with conversation persistence."""
     try:
         # Use context manager for proper stream handling
         with client.responses.stream(**request_params) as stream:
@@ -179,13 +210,18 @@ async def _generate_streaming_response(client, request_params, conversation_id, 
                 accumulated_text, conversation_id, accumulated_reasoning
             )
 
+            # Store response ID for conversation memory
+            final_response_id = response_id or getattr(final, "id", None)
+            if final_response_id:
+                CONVERSATION_RESPONSE_IDS[conversation_id] = final_response_id
+
             completion_data = {
                 'type': 'done',
                 'content': '',
                 'done': True,
                 'metadata': {
                     'conversation_id': conversation_id,
-                    'response_id': response_id or getattr(final, "id", None),
+                    'response_id': final_response_id,
                     'full_response': accumulated_text,
                     'model_used': "gpt-5-nano",
                     'timestamp': datetime.now().isoformat(),
@@ -214,7 +250,7 @@ async def _store_conversation_message(user_id: str, study_id: Optional[str], use
             'sender': 'user',
             'metadata': {
                 'conversation_id': conversation_id,
-                'workflow_type': 'kannada-expert'
+                'workflow_type': 'startup-advisor'
             },
             'created_at': datetime.now().isoformat()
         }
@@ -227,7 +263,7 @@ async def _store_conversation_message(user_id: str, study_id: Optional[str], use
             'sender': 'assistant',
             'metadata': {
                 'conversation_id': conversation_id,
-                'workflow_type': 'kannada-expert',
+                'workflow_type': 'startup-advisor',
                 'model_used': "gpt-5-nano"
             },
             'reasoning': reasoning,
@@ -248,23 +284,23 @@ async def _store_conversation_message(user_id: str, study_id: Optional[str], use
         # Don't fail the request if storage fails
 
 @router.post("/conversations")
-async def create_kannada_conversation(
-    request: KannadaConversationCreate,
+async def create_startup_advisor_conversation(
+    request: StartupAdvisorConversationCreate,
     user=Depends(get_current_user)
 ):
-    """Create a new Kannada Expert conversation/study."""
+    """Create a new Startup Advisor conversation/study."""
     try:
         study_data = {
             'id': str(uuid.uuid4()),
             'user_id': user['uid'],
             'title': request.title,
             'description': request.description,
-            'workflow_type': 'kannada-expert',
-            'intent': 'kannada-expert',
+            'workflow_type': 'startup-advisor',
+            'intent': 'startup-advisor',
             'current_step': 0,
             'workflow_status': 'in_progress',
             'workflow_data': {
-                'expert_type': 'kannada-translation',
+                'expert_type': 'startup-advisor',
                 'conversation_started_at': datetime.now().isoformat()
             },
             'status': 'active'
@@ -275,52 +311,54 @@ async def create_kannada_conversation(
         if result.data:
             return {"study": result.data[0]}
         else:
-            raise HTTPException(status_code=500, detail="Failed to create Kannada Expert conversation")
+            raise HTTPException(status_code=500, detail="Failed to create Startup Advisor conversation")
             
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error creating Kannada Expert conversation: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error creating Startup Advisor conversation: {str(e)}")
 
 @router.get("/conversations")
-async def get_kannada_conversations(user=Depends(get_current_user)):
-    """Get all Kannada Expert conversations for the current user."""
+async def get_startup_advisor_conversations(user=Depends(get_current_user)):
+    """Get all Startup Advisor conversations for the current user."""
     try:
         result = supabase.table('studies')\
             .select("*")\
             .eq('user_id', user['uid'])\
-            .eq('workflow_type', 'kannada-expert')\
+            .eq('workflow_type', 'startup-advisor')\
             .order('last_message_at', desc=True)\
             .execute()
             
         return {"conversations": result.data or []}
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching Kannada Expert conversations: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching Startup Advisor conversations: {str(e)}")
 
 @router.get("/status")
-async def get_kannada_expert_status():
-    """Get the status of the Kannada Expert workflow."""
+async def get_startup_advisor_status():
+    """Get the status of the Startup Advisor workflow."""
     try:
         client = openai_manager.get_client()
         provider_info = openai_manager.get_current_provider_info()
         
         return {
             "status": "ready" if client else "unavailable",
-            "workflow": "kannada-expert",
-            "model": "gpt-5-nano",  # Specifically using GPT-5 Nano for speed
+            "workflow": "startup-advisor",
+            "model": "gpt-5-nano",  # Using GPT-5 Nano for thoughtful but fast advice
             "base_model": settings.OPENAI_MODEL,  # Show the configured base model too
             "provider_info": provider_info,
-            "optimization": "speed-optimized for translation tasks",
+            "optimization": "optimized for startup advice with Paul Graham insights",
             "capabilities": [
-                "English to Kannada translation",
-                "Kannada to English translation", 
-                "Grammar explanations",
-                "Cultural context",
+                "Startup strategy and fundamentals",
+                "Product-market fit guidance", 
+                "Fundraising and investor advice",
+                "Y Combinator insights",
+                "Technical founder support",
+                "Paul Graham essay-based wisdom",
                 "Conversation persistence"
             ],
             "endpoints": {
-                "chat": "/api/kannada-expert/chat",
-                "conversations": "/api/kannada-expert/conversations",
-                "status": "/api/kannada-expert/status"
+                "chat": "/api/startup-advisor/chat",
+                "conversations": "/api/startup-advisor/conversations",
+                "status": "/api/startup-advisor/status"
             }
         }
     except Exception as e:
@@ -330,24 +368,24 @@ async def get_kannada_expert_status():
         }
 
 @router.post("/test")
-async def test_kannada_expert(user=Depends(get_current_user)):
-    """Quick test endpoint to verify the Kannada Expert is working."""
+async def test_startup_advisor(user=Depends(get_current_user)):
+    """Quick test endpoint to verify the Startup Advisor is working."""
     try:
-        test_request = KannadaExpertRequest(
-            message="Translate: Good morning, how are you today?",
+        test_request = StartupAdvisorRequest(
+            message="What's the most important thing for an early-stage startup to focus on?",
             stream=False
         )
         
-        response = await kannada_expert_chat(test_request, user)
+        response = await startup_advisor_chat(test_request, user)
         
         return {
             "test_status": "success",
             "test_response": response,
-            "message": "Kannada Expert workflow is working correctly!"
+            "message": "Startup Advisor workflow is working correctly!"
         }
     except Exception as e:
         return {
             "test_status": "failed",
             "error": str(e),
-            "message": "Kannada Expert workflow encountered an error."
+            "message": "Startup Advisor workflow encountered an error."
         }
