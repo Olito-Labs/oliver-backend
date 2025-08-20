@@ -118,12 +118,23 @@ async def startup_advisor_chat(
             # Non-streaming response
             response = client.responses.create(**request_params)
             
-            # Extract response text
+            # Extract response text with multiple fallbacks
             response_text = ""
-            if response.output and len(response.output) > 0:
+            
+            # Try multiple ways to extract the response text
+            if hasattr(response, 'output_text') and response.output_text:
+                response_text = response.output_text
+                print(f"[DEBUG] Got response via output_text: {len(response_text)} chars")
+            elif response.output and len(response.output) > 0:
                 message_output = response.output[0]
                 if hasattr(message_output, 'content') and len(message_output.content) > 0:
                     response_text = message_output.content[0].text
+                    print(f"[DEBUG] Got response via output.content: {len(response_text)} chars")
+            elif hasattr(response, 'text') and response.text:
+                response_text = response.text
+                print(f"[DEBUG] Got response via text: {len(response_text)} chars")
+            
+            print(f"[DEBUG] Final response_text: '{response_text[:100]}...' (length: {len(response_text)})")
             
             # Store conversation in database and response ID for memory
             response_id = getattr(response, 'id', None)
@@ -247,42 +258,57 @@ async def _generate_streaming_response(client, request_params, conversation_id, 
 async def _store_conversation_message(user_id: str, study_id: Optional[str], user_message: str, assistant_response: str, conversation_id: str, reasoning: Optional[str] = None):
     """Store conversation messages in Supabase for persistence."""
     try:
-        # Store user message
+        # Only store if we have a study context and valid content
+        if not study_id or not assistant_response.strip():
+            print(f"[DEBUG] Skipping storage - study_id: {study_id}, response_length: {len(assistant_response) if assistant_response else 0}")
+            return
+            
+        # Store user message (simplified schema)
         user_message_data = {
             'id': str(uuid.uuid4()),
             'study_id': study_id,
             'content': user_message,
             'sender': 'user',
-            'metadata': {
-                'conversation_id': conversation_id,
-                'workflow_type': 'startup-advisor'
-            },
             'created_at': datetime.now().isoformat()
         }
         
-        # Store assistant response
+        # Store assistant response (simplified schema)
         assistant_message_data = {
             'id': str(uuid.uuid4()),
             'study_id': study_id,
             'content': assistant_response,
             'sender': 'assistant',
-            'metadata': {
-                'conversation_id': conversation_id,
-                'workflow_type': 'startup-advisor',
-                'model_used': "gpt-5-nano"
-            },
             'reasoning': reasoning,
             'created_at': datetime.now().isoformat()
         }
         
-        # Insert both messages
-        if study_id:  # Only store if we have a study context
-            supabase.table('messages').insert([user_message_data, assistant_message_data]).execute()
-            
-            # Update study's last_message_at
+        # Insert both messages with error handling
+        try:
+            result = supabase.table('messages').insert([user_message_data, assistant_message_data]).execute()
+            print(f"[DEBUG] Successfully stored {len(result.data) if result.data else 0} messages")
+        except Exception as db_error:
+            print(f"[DEBUG] Database insert failed: {db_error}")
+            # Try inserting without reasoning field if it doesn't exist
+            assistant_message_data_simple = {
+                'id': str(uuid.uuid4()),
+                'study_id': study_id,
+                'content': assistant_response,
+                'sender': 'assistant',
+                'created_at': datetime.now().isoformat()
+            }
+            try:
+                supabase.table('messages').insert([user_message_data, assistant_message_data_simple]).execute()
+                print(f"[DEBUG] Stored messages without reasoning field")
+            except Exception as simple_error:
+                print(f"[DEBUG] Even simple insert failed: {simple_error}")
+        
+        # Update study's last_message_at
+        try:
             supabase.table('studies').update({
                 'last_message_at': datetime.now().isoformat()
             }).eq('id', study_id).eq('user_id', user_id).execute()
+        except Exception as update_error:
+            print(f"[DEBUG] Study update failed: {update_error}")
             
     except Exception as e:
         print(f"Warning: Failed to store conversation: {e}")
