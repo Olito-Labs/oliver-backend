@@ -288,12 +288,281 @@ PATTERN EXAMPLE (Three Column):
         return examples.get(layout_type, "")
 
 
+# Training examples for few-shot learning
+def get_training_examples():
+    """Get training examples from working slide HTML."""
+    
+    # Foundation Pillars Pattern (slide-02.html)
+    foundation_pillars_html = '''<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fulton Bank Growth Foundation</title>
+  <link rel="stylesheet" href="/framework/css/olito-tech.css" />
+</head>
+<body>
+  <div class="of-slide-container">
+    <div class="of-slide fulton-content-template">
+      <div class="of-decorative-element"></div>
+
+      <div class="content-header">
+        <img class="header-brain" src="/framework/assets/logo2.png" alt="Olito Labs Brain" />
+        <img class="header-wordmark" src="/framework/assets/logo3.png" alt="Olito Labs" />
+        <span class="of-brand-separator" style="font-size:1rem">+</span>
+        <img class="header-fulton" src="/framework/assets/fulton-logo.png" alt="Fulton Bank" />
+      </div>
+
+      <div class="content-main">
+        <h1 class="slide-title">Fulton Bank is positioned for unprecedented growth</h1>
+        <div class="slide-subtitle"><h2>Two reinforcing pillars set the stage for compounding momentum</h2></div>
+
+        <div class="success-foundation">
+          <div class="foundation-pillar">
+            <div class="pillar-icon">
+              <div class="icon-circle">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3.75 8.25h16.5M6 12h12M8.25 15.75h7.5" />
+                  <path d="M4.5 3.75h15a.75.75 0 01.75.75v15a.75.75 0 01-.75.75h-15a.75.75 0 01-.75-.75v-15a.75.75 0 01.75-.75z" />
+                </svg>
+              </div>
+            </div>
+            <div class="pillar-text">
+              <h3>Internal transformation</h3>
+              <p>Modernized operations and disciplined cost control form a resilient core for scalable growth.</p>
+            </div>
+          </div>
+          <div class="foundation-plus">+</div>
+          <div class="foundation-pillar">
+            <div class="pillar-icon">
+              <div class="icon-circle">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 21h18M5 10l7-7 7 7M5 10v11h5v-6h4v6h5V10" />
+                </svg>
+              </div>
+            </div>
+            <div class="pillar-text">
+              <h3>Strategic expansion</h3>
+              <p>Republic First integration expands Greater Philadelphia and unlocks multi‑segment cross‑sell.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="future-opportunity">
+          <h2>
+            <span class="highlight">Where can Fulton apply AI to build on this momentum?</span> We suggest the regulatory space.
+          </h2>
+        </div>
+      </div>
+
+      <div class="of-footnotes">Sources: FDIC (Republic First transaction); DBRS/Morningstar; FULT Q2‑2025 earnings.</div>
+      <div class="of-decorative-bottom"></div>
+    </div>
+  </div>
+</body>
+</html>'''
+
+    # Process Flow Pattern (slide-03.html)  
+    process_flow_html = '''<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Regulatory Supervision Cycle</title>
+  <link rel="stylesheet" href="/framework/css/olito-tech.css" />
+</head>
+<body>
+  <div class="of-slide-container">
+    <div class="of-slide fulton-content-template">
+      <div class="of-decorative-element"></div>
+
+      <div class="content-header">
+        <img class="header-brain" src="/framework/assets/logo2.png" alt="Olito Labs Brain" />
+        <img class="header-wordmark" src="/framework/assets/logo3.png" alt="Olito Labs" />
+        <span class="of-brand-separator" style="font-size:1rem">+</span>
+        <img class="header-fulton" src="/framework/assets/fulton-logo.png" alt="Fulton Bank" />
+      </div>
+
+      <div class="content-main">
+        <h1 class="slide-title">Regulatory scrutiny heightens with growth</h1>
+        <div class="slide-subtitle"><h2>Fulton's success will likely attract a brighter supervisory spotlight</h2></div>
+
+        <div class="narrative-flow">
+          <div class="mechanism-panel">
+            <h3>Current supervisory cycle: A constant demand on resources</h3>
+            <div class="cycle-stages-container">
+              <div class="stage">
+                <div class="stage-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C6.095 4.01 5.25 4.973 5.25 6.108V18.75c0 1.243.87 2.25 1.969 2.25H13.5A2.25 2.25 0 0015.75 18.75v-2.625m3.75-10.5V6.75c0-.621-.504-1.125-1.125-1.125H8.25c-.621 0-1.125.504-1.125 1.125v3.75c0 .621.504 1.125 1.125 1.125h2.25m-2.25-4.5h.008v.008h-.008v-.008z" />
+                  </svg>
+                </div>
+                <p class="stage-name">Planning</p>
+                <p class="stage-cost">Senior Management Time</p>
+              </div>
+              <div class="stage">
+                <div class="stage-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                  </svg>
+                </div>
+                <p class="stage-name">Activities</p>
+                <p class="stage-cost">Team Hours & Data Analysis</p>
+              </div>
+              <div class="stage">
+                <div class="stage-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.006 3 11.5c0 4.556 4.03 8.25 9 8.25z" />
+                  </svg>
+                </div>
+                <p class="stage-name">Communication</p>
+                <p class="stage-cost">Executive Focus</p>
+              </div>
+              <div class="stage">
+                <div class="stage-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                  </svg>
+                </div>
+                <p class="stage-name">Documentation</p>
+                <p class="stage-cost">Compliance Resources</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="problem-hook">
+            <h2>The key challenge is no longer just managing risk, but doing so <span class="highlight">without diverting critical focus from growth.</span></h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="of-footnotes">Source: OCC, "Bank Supervision Process," Comptroller's Handbook (June 2018).</div>
+      <div class="of-decorative-bottom"></div>
+    </div>
+  </div>
+</body>
+</html>'''
+
+    # Three Column Pattern (slide-04.html)
+    three_column_html = '''<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Introducing Oliver</title>
+  <link rel="stylesheet" href="/framework/css/olito-tech.css" />
+</head>
+<body>
+  <div class="of-slide-container">
+    <div class="of-slide fulton-content-template">
+      <div class="of-decorative-element"></div>
+
+      <div class="content-header">
+        <img class="header-brain" src="/framework/assets/logo2.png" alt="Olito Labs Brain" />
+        <img class="header-wordmark" src="/framework/assets/logo3.png" alt="Olito Labs" />
+        <span class="of-brand-separator" style="font-size:1rem">+</span>
+        <img class="header-fulton" src="/framework/assets/fulton-logo.png" alt="Fulton Bank" />
+      </div>
+
+      <div class="content-main">
+        <h1 class="slide-title">Introducing Oliver - your custom regulatory copilot</h1>
+        <div class="subtitle"><h2>Oliver has pre-built AI agents that orchestrate into Fulton‑specific workflows</h2></div>
+
+        <div class="section-title">How Oliver Works</div>
+
+        <div class="solution-grid">
+          <div class="agents-column">
+            <div class="column-header">1. Pre-built AI Agents</div>
+            <div class="agents-list">
+              <div class="agent-card" style="--agent-color: #1e4b72;">
+                <div class="agent-icon">FB</div>
+                <div class="agent-content">
+                  <div class="agent-title">Fulton Bank Expert</div>
+                  <div class="agent-description">Demographics & market analysis, call reports, FDIC data</div>
+                </div>
+              </div>
+              <div class="agent-card" style="--agent-color: #0f2a44;">
+                <div class="agent-icon">FD</div>
+                <div class="agent-content">
+                  <div class="agent-title">FDIC Supervision Expert</div>
+                  <div class="agent-description">FILs, examination procedures, RMS manual</div>
+                </div>
+              </div>
+              <div class="agent-card" style="--agent-color: #c5aa6a;">
+                <div class="agent-icon">FR</div>
+                <div class="agent-content">
+                  <div class="agent-title">Federal Reserve Expert</div>
+                  <div class="agent-description">SR letters & capital planning, CCAR guidelines</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="engine-column">
+            <div class="column-header">2. Orchestration</div>
+            <div class="engine-stack">
+              <div class="connector">→</div>
+              <div class="engine-hub">
+                <div class="hub-spark spark-1"></div>
+                <div class="hub-spark spark-2"></div>
+                <div class="hub-spark spark-3"></div>
+                <div class="hub-spark spark-4"></div>
+              </div>
+              <div class="engine-label">Engine</div>
+              <div class="connector">→</div>
+            </div>
+          </div>
+
+          <div class="workflows-column">
+            <div class="column-header">3. Custom‑Built Workflows</div>
+            <div class="workflows-list">
+              <div class="workflow-card">
+                <div class="workflow-content">
+                  <div class="workflow-title">First Day Letter Automation</div>
+                  <div class="workflow-description">Auto‑map requests to data sources; collect and package policies with citations.</div>
+                </div>
+              </div>
+              <div class="workflow-card">
+                <div class="workflow-content">
+                  <div class="workflow-title">Exam Planning & Scope Alignment</div>
+                  <div class="workflow-description">Crosswalk risk assessments to OCC Operating Plan; identify scope focus.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="of-decorative-bottom"></div>
+    </div>
+  </div>
+</body>
+</html>'''
+
+    return [
+        dspy.Example(
+            slide_request="Show Fulton Bank's growth foundation with two reinforcing pillars: internal transformation and strategic expansion",
+            slide_html=foundation_pillars_html
+        ).with_inputs("slide_request"),
+        
+        dspy.Example(
+            slide_request="Explain the regulatory supervision cycle showing planning, activities, communication, and documentation stages",
+            slide_html=process_flow_html
+        ).with_inputs("slide_request"),
+        
+        dspy.Example(
+            slide_request="Introduce Oliver with AI agents, orchestration engine, and custom workflows for regulatory compliance",
+            slide_html=three_column_html
+        ).with_inputs("slide_request")
+    ]
+
 # Global slide generator instance
 slide_generator = None
+optimized_slide_generator = None
 
 def initialize_dspy():
-    """Initialize DSPy with the configured OpenAI model."""
-    global slide_generator
+    """Initialize DSPy with the configured OpenAI model and few-shot training."""
+    global slide_generator, optimized_slide_generator
     
     try:
         # Format model for DSPy 3.0+ (requires provider/model format)
@@ -320,15 +589,38 @@ def initialize_dspy():
         
         dspy.configure(lm=lm)
         
-        # Create slide generator instance
-        slide_generator = SlideGenerator()
+        # Create base slide generator
+        base_generator = SlideGenerator()
         
-        logger.info(f"DSPy initialized successfully with model: {model}")
+        # Get training examples from working slides
+        training_examples = get_training_examples()
+        
+        # Use LabeledFewShot teleprompter for few-shot learning
+        teleprompter = dspy.LabeledFewShot(k=len(training_examples))
+        
+        # Compile the optimized generator with training examples
+        logger.info(f"Training slide generator with {len(training_examples)} examples...")
+        optimized_slide_generator = teleprompter.compile(
+            student=base_generator,
+            trainset=training_examples
+        )
+        
+        # Use the optimized generator as the main generator
+        slide_generator = optimized_slide_generator
+        
+        logger.info(f"DSPy initialized successfully with few-shot training. Model: {model}, Examples: {len(training_examples)}")
         return True
         
     except Exception as e:
-        logger.error(f"Failed to initialize DSPy: {e}")
-        return False
+        logger.error(f"Failed to initialize DSPy with few-shot training: {e}")
+        # Fallback to base generator if training fails
+        try:
+            slide_generator = SlideGenerator()
+            logger.warning("Falling back to base generator without few-shot training")
+            return True
+        except Exception as fallback_error:
+            logger.error(f"Fallback initialization also failed: {fallback_error}")
+            return False
 
 
 @router.post("/generate-slide", response_model=SlideGenerationResponse)
@@ -354,6 +646,7 @@ async def generate_slide(request: SlideGenerationRequest) -> SlideGenerationResp
         )
         
         # Prepare response with enhanced metadata
+        is_few_shot_trained = optimized_slide_generator is not None
         response = SlideGenerationResponse(
             slide_html=result.slide_html,
             framework_used=request.css_framework,
@@ -366,7 +659,9 @@ async def generate_slide(request: SlideGenerationRequest) -> SlideGenerationResp
                 "content_elements": result.content_elements,
                 "slide_purpose": result.slide_purpose,
                 "stages_completed": ["layout_analysis", "content_structuring", "html_generation"],
-                "pipeline_version": "enhanced_v1"
+                "pipeline_version": "few_shot_v1" if is_few_shot_trained else "enhanced_v1",
+                "few_shot_trained": is_few_shot_trained,
+                "training_examples": len(get_training_examples()) if is_few_shot_trained else 0
             }
         )
         
@@ -462,8 +757,11 @@ async def slide_generation_health():
         health_status = {
             "status": "healthy" if slide_generator is not None else "unhealthy",
             "dspy_configured": slide_generator is not None,
+            "few_shot_trained": optimized_slide_generator is not None,
+            "training_examples": len(get_training_examples()) if optimized_slide_generator is not None else 0,
             "model": settings.OPENAI_MODEL,
-            "frameworks_available": ["olito-tech", "fulton-base"]
+            "frameworks_available": ["olito-tech", "fulton-base"],
+            "pipeline_version": "few_shot_v1" if optimized_slide_generator is not None else "enhanced_v1"
         }
         
         return health_status
