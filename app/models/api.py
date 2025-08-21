@@ -83,4 +83,31 @@ class ErrorResponse(BaseModel):
     """Error response model."""
     error: str
     detail: Optional[str] = None
-    timestamp: datetime 
+    timestamp: datetime
+
+# Slide Generation Models
+class SlideGenerationRequest(BaseModel):
+    """Request model for slide generation."""
+    slide_request: str = Field(..., description="Natural language description of the desired slide")
+    css_framework: str = Field(default="olito-tech", description="CSS framework to use: 'olito-tech' or 'fulton-base'")
+    model: str = Field(default="gpt-4", description="OpenAI model to use")
+
+class SlideGenerationResponse(BaseModel):
+    """Response model for slide generation."""
+    slide_html: str = Field(..., description="Generated HTML slide code")
+    framework_used: str = Field(..., description="CSS framework that was used")
+    model_used: str = Field(..., description="Model that was used for generation")
+    generation_metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata about generation")
+
+class SlideFramework(BaseModel):
+    """Model for available slide frameworks."""
+    id: str = Field(..., description="Framework identifier")
+    name: str = Field(..., description="Human-readable framework name")
+    description: str = Field(..., description="Framework description")
+    colors: Dict[str, str] = Field(..., description="Framework color palette")
+
+class SlideExample(BaseModel):
+    """Model for slide generation examples."""
+    type: str = Field(..., description="Type of slide (title, metrics, problem, etc.)")
+    request: str = Field(..., description="Example request text")
+    description: str = Field(..., description="Description of what this example creates") 
