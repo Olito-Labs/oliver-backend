@@ -12,6 +12,7 @@ from app.models.api import (
     SlideExample
 )
 from app.slide_templates import SLIDE_TEMPLATES, VISUAL_COMPONENTS, SVG_ICONS
+from app.refined_slide_patterns import REFINED_PATTERNS, DESIGN_GUIDELINES, ANTI_PATTERNS, get_pattern_for_request
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -52,7 +53,11 @@ class SlideGenerator(dspy.Module):
         return dspy.Prediction(slide_html=result.slide_html)
     
     def _enhance_request_with_context(self, request: str, framework: str) -> str:
-        """Add framework-specific context and visual design requirements."""
+        """Add framework-specific context with refined design principles."""
+        
+        # Determine the best pattern for this request
+        recommended_pattern = get_pattern_for_request(request)
+        pattern_info = REFINED_PATTERNS.get(recommended_pattern, REFINED_PATTERNS['single_focus_message'])
         
         framework_context = {
             "olito-tech": """
@@ -76,149 +81,203 @@ Structure: Container > Slide > Header/Title/Content/Footnotes
         return f"""
 {context}
 
-VISUAL DESIGN REQUIREMENTS:
-1. Create VISUALLY SOPHISTICATED slides like McKinsey/BCG presentations
-2. Use GRAPHICAL ELEMENTS: icons, shapes, visual hierarchies, cards, grids
-3. Implement PROFESSIONAL LAYOUTS: multi-column, visual flow diagrams, comparison matrices
-4. Apply VISUAL STORYTELLING: use spacing, typography, and color to guide the eye
-5. Include CUSTOM STYLING in <style> tags for unique visual effects
-6. Create INFORMATION HIERARCHY with varied font sizes, weights, and colors
-7. Use DATA VISUALIZATION techniques even for conceptual information
-8. Add VISUAL METAPHORS and iconography (using SVG icons or Unicode symbols)
+REFINED DESIGN PRINCIPLES (Based on McKinsey/BCG Analysis):
 
-HTML STRUCTURE:
+🎯 FOCUS & CLARITY:
+- ONE clear message per slide, not multiple competing elements
+- Maximum 2-3 main sections total
+- Each section serves the central message
+
+📐 LAYOUT & SPACING:
+- Generous whitespace: padding 2-3rem, gaps 1.5-2rem minimum
+- Strategic use of CSS Grid for precise alignment
+- Avoid cramped, webpage-like layouts with many small boxes
+
+📝 TYPOGRAPHY HIERARCHY:
+- Main title: 2.5-3rem, var(--olito-gold), font-weight 700
+- Section headers: 1.8-2rem, white, font-weight 600
+- Panel titles: 1-1.2rem, white, font-weight 600
+- Body text: 0.95-1rem, #cbd5e1, line-height 1.4-1.6
+- Subtitles: #9fb3c8, slightly smaller than main text
+
+🎨 VISUAL SOPHISTICATION:
+- Subtle backgrounds: rgba(255,255,255,0.04) for panels
+- Strategic borders: 1px solid with low opacity (0.1-0.3)
+- Purposeful icons: simple, consistent, categorization only
+- Color accents: var(--olito-gold) for emphasis, not decoration
+
+📊 DATA VISUALIZATION:
+- Every chart/visual must serve the message
+- Prefer single, clear data story over multiple competing visuals
+- Use gauges, simple charts, or large metrics with context
+
+RECOMMENDED PATTERN: {recommended_pattern}
+PATTERN STRUCTURE: {pattern_info['structure']}
+
+❌ AVOID:
+{chr(10).join([f'- {item}' for item in ANTI_PATTERNS['avoid']])}
+
+✅ INSTEAD DO:
+{chr(10).join([f'- {item}' for item in ANTI_PATTERNS['instead_do']])}
+
+HTML REQUIREMENTS:
 1. Complete HTML with DOCTYPE, head, and body
 2. Link to CSS: ../../framework/css/{framework}.css
-3. Include comprehensive <style> section for custom visual design
-4. Use semantic HTML with proper ARIA labels
-5. Implement responsive design with media queries
+3. Comprehensive <style> section following the refined principles above
+4. Semantic HTML with proper structure
+5. Responsive design with media queries
 
 USER REQUEST: {request}
         """.strip()
 
 
     def _load_visual_examples(self) -> dict:
-        """Load examples of high-quality visual slide patterns."""
+        """Load refined examples based on high-quality slide analysis."""
         return {
             "olito-tech": """
-VISUAL PATTERN EXAMPLES:
+REFINED VISUAL PATTERNS (Based on WSFS/Tech Architecture Analysis):
 
-1. MULTI-COLUMN LAYOUTS WITH VISUAL DIVIDERS:
-   <div class="intro-grid" style="display: grid; grid-template-columns: 1fr 2px 1fr; gap: 2rem;">
-     <div class="left-section">...</div>
-     <div class="gold-divider" style="background: linear-gradient(180deg, transparent 20%, var(--olito-gold) 35%, var(--olito-gold) 65%, transparent 80%); width: 2px;"></div>
-     <div class="right-section">...</div>
-   </div>
-
-2. VISUAL CARDS WITH HOVER EFFECTS:
-   <div class="horizon-card" style="background: rgba(255,255,255,0.04); border: 2px solid var(--olito-gold); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: transform 0.2s;">
-     <div class="card-header" style="display: flex; align-items: center; gap: 0.5rem;">
-       <div class="icon-circle" style="width: 32px; height: 32px; background: var(--olito-gold); border-radius: 50%; display: grid; place-items: center;">1</div>
-       <h3 style="color: white; font-weight: 600;">Title</h3>
+1. EXECUTIVE SUMMARY LAYOUT (WSFS Pattern):
+   <div class="executive-container" style="display: flex; flex-direction: column; gap: 2rem;">
+     <div class="headline-section" style="background: linear-gradient(135deg, rgba(197,170,106,0.12), rgba(197,170,106,0.06)); border-left: 4px solid var(--olito-gold); padding: 2rem; text-align: center;">
+       <h2 style="font-size: 1.8rem; color: white; font-weight: 700;">Main Strategic Insight</h2>
+     </div>
+     <div class="analysis-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+       <!-- Maximum 2 insight panels -->
      </div>
    </div>
 
-3. PROCESS FLOW WITH ARROWS:
-   <div class="cycle-stages" style="display: flex; justify-content: space-between;">
-     <div class="stage" style="position: relative;">
-       <div class="stage-icon" style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, rgba(197,170,106,0.1), transparent); border: 1px solid var(--olito-gold);">
-         <!-- SVG icon here -->
-       </div>
-       <p class="stage-name">Stage Name</p>
-       <!-- Arrow connector using ::after pseudo-element or inline SVG -->
+2. DATA INSIGHT LAYOUT (WSFS CRE Gauge Pattern):
+   <div class="data-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;">
+     <div class="visualization-section" style="background: rgba(255,255,255,0.04); border: 1px solid var(--olito-gold-border); padding: 2rem; text-align: center;">
+       <!-- Single purposeful chart/gauge/metric -->
+     </div>
+     <div class="insights-section" style="display: flex; flex-direction: column; gap: 1rem;">
+       <!-- Maximum 3-4 insight panels -->
      </div>
    </div>
 
-4. VISUAL HIERARCHY WITH TYPOGRAPHY:
-   <h1 style="font-size: 2.5rem; font-weight: 700; color: var(--olito-gold); margin-bottom: 0.5rem;">Main Title</h1>
-   <h2 style="font-size: 1.25rem; color: #9fb3c8; margin-bottom: 2rem;">Supporting subtitle with context</h2>
-   <div class="content-panels">...</div>
+3. SIMPLE THREE-COLUMN (Tech Architecture Pattern):
+   <div class="strategy-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem; align-items: start;">
+     <div class="column" style="padding: 1.5rem; height: 100%;">
+       <h3 style="font-size: 1.8rem; color: white; font-weight: 700;">Pillar Title</h3>
+       <p style="color: var(--olito-gold); font-size: 1.1rem; margin: 0.5rem 0;">Brief subtitle</p>
+       <p style="color: #9fb3c8; font-size: 1rem; margin-bottom: 1.5rem;">Single sentence description</p>
+       <!-- Maximum 3-4 bullet points -->
+     </div>
+   </div>
 
-5. DATA VISUALIZATION PATTERNS:
-   - Use grids for comparisons: grid-template-columns for equal columns
-   - Use flexbox for dynamic layouts: display: flex with gap
-   - Create visual metrics with large numbers and supporting text
-   - Use progress bars, circles, or custom shapes for data representation
+4. STRATEGIC WHITESPACE PRINCIPLES:
+   - Padding: 2-3rem minimum for main sections
+   - Gaps: 1.5-2rem between major elements  
+   - Margins: 1-1.5rem between related items
+   - Line-height: 1.4-1.6 for readability
+   - Max-width: 80ch for text blocks
+
+5. REFINED TYPOGRAPHY HIERARCHY:
+   - Main title: font-size: 2.5rem; font-weight: 700; color: var(--olito-gold);
+   - Section headers: font-size: 1.8rem; font-weight: 600; color: white;
+   - Panel titles: font-size: 1.1rem; font-weight: 600; color: white;
+   - Body text: font-size: 0.95rem; color: #cbd5e1; line-height: 1.4;
+   - Subtitles: font-size: 1.05rem; color: #9fb3c8;
+
+6. PURPOSEFUL VISUAL ELEMENTS:
+   - Icons: Simple, 24-32px, consistent style, serve categorization
+   - Borders: 1px solid with rgba(255,255,255,0.1-0.3) opacity
+   - Backgrounds: rgba(255,255,255,0.04-0.08) for subtle panels
+   - Accent colors: var(--olito-gold) strategically, not everywhere
             """,
             "fulton-base": """
-VISUAL PATTERN EXAMPLES:
+REFINED PATTERNS FOR FULTON FRAMEWORK:
 
-1. ENTERPRISE GRID LAYOUTS:
-   <div class="metrics-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
-     <div class="metric-card" style="background: white; border-left: 4px solid var(--fulton-blue); padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-       <div class="metric-value" style="font-size: 2.5rem; font-weight: 700; color: var(--fulton-blue);">$2.4M</div>
-       <div class="metric-label" style="color: #666; font-size: 0.9rem; text-transform: uppercase;">Annual Savings</div>
+1. CLEAN METRIC DISPLAY (Avoid Dense Dashboards):
+   <div class="focused-metrics" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 600px; margin: 0 auto;">
+     <div class="metric-card" style="background: white; border-left: 4px solid var(--fulton-blue); padding: 2rem; text-align: center;">
+       <div style="font-size: 3rem; font-weight: 700; color: var(--fulton-blue); line-height: 1;">92%</div>
+       <div style="color: #666; font-size: 1rem; margin-top: 0.5rem;">Customer Satisfaction</div>
      </div>
    </div>
 
-2. COMPARISON MATRICES:
-   <table class="comparison-table" style="width: 100%; border-collapse: separate; border-spacing: 0;">
-     <thead style="background: var(--fulton-blue); color: white;">
-       <tr><th>Criteria</th><th>Option A</th><th>Option B</th></tr>
-     </thead>
-     <tbody>
-       <tr style="background: rgba(30,75,114,0.05);">...</tr>
-     </tbody>
-   </table>
-
-3. PROFESSIONAL CALLOUT BOXES:
-   <div class="insight-box" style="background: linear-gradient(135deg, rgba(30,75,114,0.1), transparent); border-left: 3px solid var(--fulton-gold); padding: 1.5rem; margin: 2rem 0;">
-     <h3 style="color: var(--fulton-blue); margin-bottom: 0.5rem;">Key Insight</h3>
-     <p style="color: #333; line-height: 1.6;">Important finding or recommendation...</p>
+2. STRATEGIC COMPARISON LAYOUT:
+   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;">
+     <div style="background: rgba(30,75,114,0.05); border-left: 3px solid var(--fulton-blue); padding: 2rem;">
+       <h3 style="color: var(--fulton-blue); font-size: 1.5rem; margin-bottom: 1rem;">Current State</h3>
+       <!-- Maximum 3 bullet points -->
+     </div>
+     <div style="background: rgba(197,170,106,0.05); border-left: 3px solid var(--fulton-gold); padding: 2rem;">
+       <h3 style="color: var(--fulton-gold); font-size: 1.5rem; margin-bottom: 1rem;">Future State</h3>
+       <!-- Maximum 3 bullet points -->
+     </div>
    </div>
+
+3. MINIMAL CONTENT PRINCIPLES:
+   - Single key message per slide
+   - Maximum 2-3 main sections
+   - Generous padding and spacing
+   - Strategic use of brand colors
+   - Clean typography hierarchy
             """
         }
     
     def _load_design_principles(self) -> str:
-        """Load core design principles for professional presentations."""
+        """Load refined design principles based on high-quality slide analysis."""
         return """
-CORE DESIGN PRINCIPLES FOR PROFESSIONAL SLIDES:
+REFINED DESIGN PRINCIPLES (McKinsey/BCG Level):
 
-1. VISUAL HIERARCHY:
-   - Use size, color, and weight to establish clear importance levels
-   - Primary: Large, bold, branded colors (gold/blue)
-   - Secondary: Medium size, semi-bold, white/light colors  
-   - Supporting: Smaller, regular weight, muted colors
+🎯 FOCUS & MESSAGE CLARITY:
+   - ONE clear message per slide - everything else supports it
+   - Maximum 2-3 main sections total
+   - Avoid competing visual elements or messages
+   - Each element must serve the central narrative
 
-2. WHITESPACE & BREATHING ROOM:
-   - Use generous padding (1.5-2rem minimum)
-   - Create visual separation between sections
-   - Don't fill every pixel - emptiness is powerful
+📐 STRATEGIC WHITESPACE:
+   - Generous padding: 2-3rem minimum for main containers
+   - Section gaps: 1.5-2rem between major elements
+   - Content breathing room: 1rem between related items
+   - Don't fill every pixel - emptiness creates elegance
 
-3. VISUAL STORYTELLING:
-   - Guide the eye with visual flow (left-to-right, top-to-bottom)
-   - Use arrows, lines, or numbered sequences for processes
-   - Group related content in visual containers (cards, panels)
+📝 REFINED TYPOGRAPHY:
+   - Main titles: 2.5-3rem, var(--olito-gold), font-weight 700
+   - Section headers: 1.8-2rem, white, font-weight 600  
+   - Panel titles: 1-1.2rem, white, font-weight 600
+   - Body text: 0.95-1rem, #cbd5e1, line-height 1.4-1.6
+   - Subtitles: 1.05rem, #9fb3c8, context/explanation
+   - Maximum 3 different font sizes per slide
 
-4. PROFESSIONAL COLOR USAGE:
-   - Primary brand color for emphasis and headers
-   - Neutral grays for body text
-   - Accent colors sparingly for highlights
-   - Consistent opacity/transparency for depth
+🎨 SOPHISTICATED VISUALS:
+   - Subtle panel backgrounds: rgba(255,255,255,0.04-0.08)
+   - Minimal borders: 1px solid with 0.1-0.3 opacity
+   - Strategic accent colors: var(--olito-gold) for emphasis only
+   - Simple icons: 24-32px, consistent style, purposeful
+   - No decorative elements - every visual serves the message
 
-5. TYPOGRAPHY EXCELLENCE:
-   - Limit to 2-3 font sizes per slide
-   - Use weight variations (300-700) for hierarchy
-   - Consistent line-height (1.4-1.6 for body, 1.1-1.2 for headers)
+📊 PURPOSEFUL DATA VISUALIZATION:
+   - Single, clear data story per slide
+   - Gauges/charts that communicate specific insights
+   - Large, impactful numbers with context
+   - Avoid multiple competing visualizations
+   - Every chart must answer a business question
 
-6. VISUAL ELEMENTS:
-   - Icons to represent concepts (SVG or Unicode)
-   - Shapes for grouping (rounded rectangles, circles)
-   - Lines/dividers for separation (with gradient effects)
-   - Shadows for depth (subtle, not harsh)
+📄 CONTENT DENSITY CONTROL:
+   - Maximum 3-4 bullet points per section
+   - Single sentences or short phrases preferred
+   - Each insight panel = icon + title + 1 paragraph max
+   - Avoid dense text blocks or complex nested information
 
-7. RESPONSIVE & ACCESSIBLE:
-   - Use relative units (rem, %, vw/vh)
-   - Include media queries for different screen sizes
-   - Proper contrast ratios (WCAG AA minimum)
-   - Semantic HTML with ARIA labels
+📡 LAYOUT SOPHISTICATION:
+   - CSS Grid for precise alignment and spacing
+   - Consistent visual treatment across similar elements
+   - Two-column layouts for comparisons/insights
+   - Three-column only when truly necessary
+   - Single-column for focused messages
 
-8. CONSULTING-STYLE TECHNIQUES:
-   - 2x2 matrices for strategic positioning
-   - Process flows with clear stages
-   - Comparison tables with visual indicators
-   - Metric dashboards with large numbers
-   - Executive summary boxes with key takeaways
+❌ CRITICAL ANTI-PATTERNS TO AVOID:
+   - Multiple small boxes (webpage-like layouts)
+   - Dense text paragraphs or bullet lists
+   - More than 4-5 distinct sections
+   - Decorative charts without clear purpose
+   - Cramped spacing or small fonts
+   - Multiple competing messages
         """
 
 # Global slide generator instance
@@ -314,25 +373,21 @@ async def generate_slide(request: SlideGenerationRequest) -> SlideGenerationResp
         )
 
 def detect_slide_type(request: str) -> str:
-    """Detect the type of slide from the request."""
+    """Detect the type of slide from the request using refined patterns."""
     request_lower = request.lower()
     
-    if any(word in request_lower for word in ['title', 'hero', 'intro', 'cover']):
-        return 'title_slide'
-    elif any(word in request_lower for word in ['compare', 'comparison', 'versus', 'options', 'three']):
-        return 'three_column_comparison'
-    elif any(word in request_lower for word in ['process', 'flow', 'steps', 'stages', 'workflow']):
-        return 'process_flow'
-    elif any(word in request_lower for word in ['metrics', 'kpi', 'dashboard', 'numbers', 'statistics']):
-        return 'metrics_dashboard'
-    elif any(word in request_lower for word in ['problem', 'solution', 'challenge', 'opportunity']):
-        return 'problem_solution'
-    elif any(word in request_lower for word in ['summary', 'executive', 'takeaway', 'conclusion']):
+    if any(word in request_lower for word in ['summary', 'executive', 'overview', 'key takeaways']):
         return 'executive_summary'
-    elif any(word in request_lower for word in ['matrix', '2x2', 'quadrant', 'positioning']):
-        return 'matrix_2x2'
+    elif any(word in request_lower for word in ['gauge', 'chart', 'visualization', 'data', 'percentage', 'metrics']):
+        return 'data_insight'
+    elif any(word in request_lower for word in ['compare', 'comparison', 'versus', 'vs', 'traditional vs', 'current vs']):
+        return 'strategic_comparison'
+    elif any(word in request_lower for word in ['three', '3', 'pillars', 'capabilities', 'approaches', 'columns']):
+        return 'simple_three_column'
+    elif any(word in request_lower for word in ['title', 'hero', 'announce', 'message']):
+        return 'focused_title'
     else:
-        return 'general'
+        return 'single_focus_message'
 
 
 @router.get("/slide-frameworks", response_model=Dict[str, List[SlideFramework]])
@@ -369,39 +424,34 @@ async def get_slide_examples():
     """Get example slide requests for different types of slides."""
     examples = [
         SlideExample(
-            type="title",
-            request="Create a visually stunning title slide for 'AI-Powered Risk Management Solutions' with subtitle 'Three enterprise tools to anticipate, detect, and mitigate risk'",
-            description="Hero slide with strong visual impact and professional typography"
-        ),
-        SlideExample(
-            type="three_column",
-            request="Create a three-column comparison slide showing: 1) Predictive Loss Forecasting Engine with scenario simulation, 2) Continuous Control Monitoring Copilot with LLM pattern recognition, 3) Third-Party Risk Intelligence Radar with vendor scoring",
-            description="Professional three-column layout with visual cards and hover effects"
-        ),
-        SlideExample(
-            type="process_flow",
-            request="Show the regulatory exam cycle with 4 stages: Planning (Senior Management Time), Activities (Team Hours), Communication (Executive Focus), Documentation (Compliance Resources) - with visual flow arrows between stages",
-            description="Visual process flow with circular icons and gradient connectors"
-        ),
-        SlideExample(
-            type="metrics",
-            request="Create a metrics dashboard showing: $2.4M annual savings (up 150%), 60% faster processing time, 95% accuracy rate, 3x productivity gain - with visual indicators and trend arrows",
-            description="Metrics dashboard with large numbers, visual emphasis, and change indicators"
-        ),
-        SlideExample(
-            type="problem_solution",
-            request="Create a problem-solution slide: Problem side shows 'Manual processes, High error rates, Compliance risks' with red warning icons. Solution side shows 'AI automation, 95% accuracy, Real-time monitoring' with green success icons",
-            description="Visual contrast between problem (red) and solution (green) with icons"
+            type="focused_title",
+            request="Create a clean title slide with the message 'AI reduces compliance costs by 60%' - focus on the single key insight with minimal supporting elements",
+            description="Clean, focused title slide with single powerful message"
         ),
         SlideExample(
             type="executive_summary",
-            request="Generate an executive summary with 3 key takeaways: 1) AI reduces operational risk by 40%, 2) ROI achieved in 6 months, 3) Scalable across all business units. Include a bottom line statement about transformational impact",
-            description="Executive summary with numbered points and visual hierarchy"
+            request="Executive summary: 'WSFS appears strong but has dangerous CRE over-concentration' with 2 insights: surface view (strong metrics) vs deeper analysis (regulatory risk)",
+            description="Executive summary following WSFS pattern - headline + two contrasting insights"
         ),
         SlideExample(
-            type="matrix",
-            request="Create a 2x2 matrix for strategic positioning: X-axis is 'Implementation Complexity' (Low to High), Y-axis is 'Business Impact' (Low to High). Place items in quadrants with visual styling",
-            description="Strategic 2x2 matrix with labeled axes and styled quadrants"
+            type="data_insight",
+            request="Show customer satisfaction at 92% using a gauge visualization, with 3 key insights about what's driving the improvement - keep it focused and elegant",
+            description="Data visualization with purposeful chart and focused insights (WSFS CRE pattern)"
+        ),
+        SlideExample(
+            type="strategic_comparison",
+            request="Compare traditional risk management vs AI-powered approach in two clean panels - focus on key differences, not exhaustive lists",
+            description="Two-panel comparison with clear contrast and minimal content"
+        ),
+        SlideExample(
+            type="simple_three_column",
+            request="Show three AI capabilities: predictive analytics, automation, and insights - each column should have title, brief description, and 3 key features maximum",
+            description="Clean three-column layout following tech architecture pattern"
+        ),
+        SlideExample(
+            type="single_focus",
+            request="Announce 'Q3 revenue up 45% to $5.2M' as the main message with 2-3 supporting metrics - keep it clean and impactful",
+            description="Single focused message with minimal supporting elements"
         )
     ]
     
