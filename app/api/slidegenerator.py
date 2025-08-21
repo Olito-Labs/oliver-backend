@@ -93,12 +93,22 @@ def initialize_dspy():
         if "/" not in model:
             model = f"openai/{model}"
         
-        # Initialize DSPy LM
-        lm = dspy.LM(
-            model=model,
-            api_key=settings.OPENAI_API_KEY,
-            max_tokens=settings.MAX_TOKENS
-        )
+        # Initialize DSPy LM with model-specific requirements
+        if model.endswith("gpt-5") or "gpt-5" in model:
+            # GPT-5 requires temperature=1.0 and max_tokens >= 20000
+            lm = dspy.LM(
+                model=model,
+                api_key=settings.OPENAI_API_KEY,
+                temperature=1.0,
+                max_tokens=20000
+            )
+        else:
+            # Standard models
+            lm = dspy.LM(
+                model=model,
+                api_key=settings.OPENAI_API_KEY,
+                max_tokens=settings.MAX_TOKENS
+            )
         
         dspy.configure(lm=lm)
         
