@@ -124,11 +124,11 @@ CONTENT ELEMENTS: {', '.join(content_elements)}
 
 STRICT REQUIREMENTS:
 1. Generate complete HTML with DOCTYPE, head, and body
-2. Link to CSS: ../../framework/css/{framework}.css  
+2. Link to CSS: /framework/css/{framework}.css  
 3. Use ONLY olito-tech.css framework classes
 4. 16:9 landscape format with effective horizontal space usage
 5. Left-aligned titles using .slide-title class (2.85rem, bold, gold)
-6. Include .content-header with dual logos (top-right)
+6. Include .content-header with dual logos (top-right) using /framework/assets/ paths
 7. Add .of-decorative-element (top) and .of-decorative-bottom
 8. Professional enterprise aesthetic, PDF-compatible (no animations)
 9. Proper semantic HTML structure with accessibility
@@ -146,6 +146,11 @@ REQUIRED STRUCTURE:
 - Header: .content-header (top-right, dual logos with Olito + Fulton)
 - Decorative: .of-decorative-element (top), .of-decorative-bottom
 - Footnotes: .of-footnotes (bottom-anchored)
+
+LOGO ASSETS (use these exact paths):
+- Olito Brain: /framework/assets/logo2.png
+- Olito Wordmark: /framework/assets/logo3.png  
+- Fulton Logo: /framework/assets/fulton-logo.png
 
 KEY CLASSES:
 - .slide-title: Main title (2.85rem, bold, --olito-gold, left-aligned)
