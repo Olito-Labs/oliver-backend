@@ -57,9 +57,9 @@ class GenerateSlide(dspy.Signature):
 class SlideGenerator(dspy.Module):
     def __init__(self):
         super().__init__()
-        # Prefer Predict (no rationale) for speed
-        self.synthesizer = dspy.Predict(SynthesizeSlideMessage, config={"temperature": 0.2, "max_tokens": 400})
-        self.generator = dspy.Predict(GenerateSlide, config={"temperature": 0.2, "max_tokens": 1400})
+        # Prefer Predict (no rationale) for speed. NOTE: pass kwargs directly, not under `config`.
+        self.synthesizer = dspy.Predict(SynthesizeSlideMessage, temperature=0.2, n=1)
+        self.generator = dspy.Predict(GenerateSlide, temperature=0.2, n=1)
         self.visual_examples = self._load_visual_examples()
         self.design_principles = self._load_design_principles()
     
