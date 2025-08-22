@@ -26,32 +26,40 @@ class SynthesizeSlideMessage(dspy.Signature):
     f"""Critically analyze and synthesize the user's request into one clear, focused slide message.
     
     {get_synthesis_context()}
+    
+    CONSTRAINTS:
+    - Title MUST be ≤ 12 words and read as a single declarative sentence (one line, two max)
+    - Content must occupy full width; avoid sidebars, tabs, chips, labels, or tags
+    - No section labels like 'Executive summary', 'Why it matters', 'The challenge', 'The value'
+    - Use at most 3 supporting bullets or a single focused paragraph
+    - Every element must serve the core message; remove decorative or redundant text
     """
     
     user_request = dspy.InputField(desc="User's natural language description of desired slide content")
     
-    core_insight = dspy.OutputField(desc="Single, declarative sentence capturing the key insight or message")
-    supporting_points = dspy.OutputField(desc="Maximum 3 essential supporting points that reinforce the core insight")
-    visual_approach = dspy.OutputField(desc="Specific visual strategy to communicate this message effectively")
-    synthesis_rationale = dspy.OutputField(desc="Brief explanation of what was distilled and why")
+    core_insight = dspy.OutputField(desc="Single, declarative sentence (≤12 words) capturing the key message")
+    supporting_points = dspy.OutputField(desc="Up to 3 crisp bullets that directly reinforce the insight")
+    visual_approach = dspy.OutputField(desc="Minimal visual strategy: 'headline-only' | 'short-bullets' | 'single-metric' | 'single-figure' (pick one)")
+    synthesis_rationale = dspy.OutputField(desc="One sentence on what was distilled and why")
 
 class GenerateSlide(dspy.Signature):
-    """Generate visually sophisticated, McKinsey/BCG-quality presentation slide HTML from synthesized message."""
+    """Generate a minimal, professional slide HTML from a synthesized message (fast)."""
     
-    core_insight = dspy.InputField(desc="Single, clear declarative sentence that is the slide's main message")
-    supporting_points = dspy.InputField(desc="Maximum 3 essential supporting points")
-    visual_approach = dspy.InputField(desc="Specific visual strategy for this message")
+    core_insight = dspy.InputField(desc="Single, clear declarative sentence (≤12 words) for the H1 title")
+    supporting_points = dspy.InputField(desc="Up to 3 crisp bullets OR short paragraph (≤60 words)")
+    visual_approach = dspy.InputField(desc="One of: headline-only | short-bullets | single-metric | single-figure")
     css_framework = dspy.InputField(desc="CSS framework to use: 'olito-tech' or 'fulton-base'")
-    design_principles = dspy.InputField(desc="Core design principles for professional presentations")
+    design_principles = dspy.InputField(desc="Minimal slide constraints and HTML requirements")
     
-    slide_html = dspy.OutputField(desc="Complete HTML slide code with sophisticated visual design, proper structure, and professional styling")
+    slide_html = dspy.OutputField(desc="Complete HTML (doctype/head/body) with full-width content, one H1, no labels/tags/chips, minimal CSS usage")
 
 
 class SlideGenerator(dspy.Module):
     def __init__(self):
         super().__init__()
-        self.synthesizer = dspy.ChainOfThought(SynthesizeSlideMessage)
-        self.generator = dspy.ChainOfThought(GenerateSlide)
+        # Prefer Predict (no rationale) for speed
+        self.synthesizer = dspy.Predict(SynthesizeSlideMessage, config={"temperature": 0.2, "max_tokens": 400})
+        self.generator = dspy.Predict(GenerateSlide, config={"temperature": 0.2, "max_tokens": 1400})
         self.visual_examples = self._load_visual_examples()
         self.design_principles = self._load_design_principles()
     
@@ -66,22 +74,66 @@ class SlideGenerator(dspy.Module):
         # Stage 2: Generate slide from synthesized message
         enhanced_context = self._enhance_request_with_context(slide_request, css_framework)
         
+        title = self._constrain_title(synthesis.core_insight)
+
         result = self.generator(
-            core_insight=synthesis.core_insight,
+            core_insight=title,
             supporting_points=synthesis.supporting_points,
             visual_approach=synthesis.visual_approach,
             css_framework=css_framework,
             design_principles=enhanced_context
         )
         
-        logger.info(f"Generated slide ({len(result.slide_html)} chars) for insight: {synthesis.core_insight[:50]}...")
+        html_clean = self._sanitize_html(result.slide_html)
+        logger.info(f"Generated slide ({len(html_clean)} chars) for insight: {title[:50]}...")
         
         return dspy.Prediction(
-            slide_html=result.slide_html,
-            core_insight=synthesis.core_insight,
+            slide_html=html_clean,
+            core_insight=title,
             synthesis_rationale=synthesis.synthesis_rationale,
             supporting_points=synthesis.supporting_points
         )
+
+    # ---------- Helpers ----------
+    def _constrain_title(self, text: str) -> str:
+        try:
+            words = text.strip().split()
+            if len(words) <= 12:
+                return text.strip().rstrip('.').capitalize()
+            limited = " ".join(words[:12]).rstrip('.')
+            return limited.capitalize()
+        except Exception:
+            return text
+
+    def _sanitize_html(self, html: str) -> str:
+        """Remove common labels and chips; ensure one H1 and full-width container."""
+        try:
+            import re
+            # Remove common section labels
+            forbidden = [r"Executive summary", r"Why it matters", r"The challenge", r"The value", r"Overview", r"Summary"]
+            for lab in forbidden:
+                html = re.sub(rf"<h[12][^>]*>\s*{lab}[^<]*</h[12]>", "", html, flags=re.IGNORECASE)
+
+            # Ensure single H1: demote additional h1s to h2
+            h1s = re.findall(r"<h1[\s\S]*?</h1>", html, flags=re.IGNORECASE)
+            if len(h1s) > 1:
+                first = True
+                def repl(m):
+                    nonlocal first
+                    if first:
+                        first = False
+                        return m.group(0)
+                    return re.sub(r"<h1", "<h2", re.sub(r"</h1>", "</h2>", m.group(0)), flags=re.IGNORECASE)
+                html = re.sub(r"<h1[\s\S]*?</h1>", repl, html, flags=re.IGNORECASE)
+
+            # Remove badges/chips
+            html = re.sub(r"<span[^>]*class=\"[^\"]*(badge|chip)[^\"]*\"[^>]*>[\s\S]*?</span>", "", html, flags=re.IGNORECASE)
+
+            # Enforce full-width content by removing sidebars if any (basic heuristic)
+            html = html.replace("of-sidebar", "of-content-area")
+            return html
+        except Exception:
+            return html
     
     def _enhance_request_with_context(self, request: str, framework: str) -> str:
         """Add framework-specific context with refined design principles."""
@@ -112,35 +164,27 @@ Structure: Container > Slide > Header/Title/Content/Footnotes
         return f"""
 {context}
 
-REFINED DESIGN PRINCIPLES (Based on McKinsey/BCG Analysis):
+REFINED DESIGN PRINCIPLES (Minimal, fast):
 
 🎯 FOCUS & CLARITY:
-- ONE clear message per slide, not multiple competing elements
-- Maximum 2-3 main sections total
-- Each section serves the central message
+- ONE clear message per slide
+- Title ≤ 12 words, single declarative sentence
+- Content spans full width; no sidebars or badges
+- No labels like "Executive summary" or "Why it matters"
 
 📐 LAYOUT & SPACING:
-- Generous whitespace: padding 2-3rem, gaps 1.5-2rem minimum
-- Strategic use of CSS Grid for precise alignment
-- Avoid cramped, webpage-like layouts with many small boxes
+- Generous whitespace; avoid many small boxes
+- Use a single main column layout
+- If bullets, keep ≤ 3 items, short phrases
 
 📝 TYPOGRAPHY HIERARCHY:
-- Main title: 2.5-3rem, var(--olito-gold), font-weight 700
-- Section headers: 1.8-2rem, white, font-weight 600
-- Panel titles: 1-1.2rem, white, font-weight 600
-- Body text: 0.95-1rem, #cbd5e1, line-height 1.4-1.6
-- Subtitles: #9fb3c8, slightly smaller than main text
+- H1 only once; body text concise (≤ 60 words if paragraph)
 
-🎨 VISUAL SOPHISTICATION:
-- Subtle backgrounds: rgba(255,255,255,0.04) for panels
-- Strategic borders: 1px solid with low opacity (0.1-0.3)
-- Purposeful icons: simple, consistent, categorization only
-- Color accents: var(--olito-gold) for emphasis, not decoration
+🎨 VISUALS (OPTIONAL):
+- Only add a single visual if it materially helps (metric/figure)
 
 📊 DATA VISUALIZATION:
-- Every chart/visual must serve the message
-- Prefer single, clear data story over multiple competing visuals
-- Use gauges, simple charts, or large metrics with context
+- Prefer a single large metric or one simple figure
 
 RECOMMENDED PATTERN: {recommended_pattern}
 PATTERN STRUCTURE: {pattern_info['structure']}
