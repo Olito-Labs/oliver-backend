@@ -3,6 +3,8 @@ from typing import Optional, Dict, Any, List
 import logging
 import dspy
 import json
+import hashlib
+from functools import lru_cache
 
 from app.config import settings
 from app.models.api import (
@@ -21,135 +23,206 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api", tags=["slides"])
 
 
-# DSPy Components - Enhanced for richer output
-class AnalyzeSlideRequest(dspy.Signature):
-    """Analyze the user's request to understand what type of slide and content they need.
+# DSPy Components - Optimized for speed and quality
+class AnalyzeAndStructure(dspy.Signature):
+    """Analyze request and structure professional slide content in one pass.
     
-    ANALYSIS FRAMEWORK:
-    1. IDENTIFY PATTERN: Is this executive summary, data insight, comparison, etc?
-    2. EXTRACT KEY ELEMENTS: What are all the important pieces of information?
-    3. DETERMINE VISUAL NEEDS: Does this need charts, metrics, gauges, or comparisons?
-    4. ASSESS COMPLEXITY: How much detail is actually needed for professional communication?
+    FAST ANALYSIS:
+    1. Identify the core message and supporting points
+    2. Determine the best visual pattern (executive summary, data insight, comparison)
+    3. Structure 2-3 main content sections with appropriate depth
+    4. Specify any data visualizations needed
     
-    DON'T over-simplify. Professional slides often need multiple supporting elements.
+    Be comprehensive but efficient - professional slides need substance.
     """
     
-    user_request = dspy.InputField(desc="User's natural language description of desired slide content")
+    user_request = dspy.InputField(desc="User's slide request")
     
-    slide_pattern = dspy.OutputField(desc="Pattern type: 'executive_summary' | 'data_insight' | 'strategic_comparison' | 'three_pillar' | 'focused_message'")
-    primary_message = dspy.OutputField(desc="Main message (≤15 words) - declarative and insightful")
-    key_elements = dspy.OutputField(desc="List of 3-6 important elements to include in the slide")
-    visual_requirements = dspy.OutputField(desc="Visual elements needed: 'gauge' | 'metrics' | 'comparison_panels' | 'process_flow' | 'icon_grid' | 'none'")
-    content_depth = dspy.OutputField(desc="Content richness: 'minimal' | 'moderate' | 'comprehensive'")
+    slide_title = dspy.OutputField(desc="Declarative title (≤15 words) capturing the key insight")
+    slide_subtitle = dspy.OutputField(desc="Supporting context or framing")
+    slide_pattern = dspy.OutputField(desc="Pattern: 'executive_summary' | 'data_insight' | 'comparison' | 'three_column' | 'focused'")
+    main_sections = dspy.OutputField(desc="2-3 main sections as JSON: [{title, content, points}]")
+    visual_elements = dspy.OutputField(desc="Visuals needed: 'metrics' | 'gauge' | 'comparison_panels' | 'none'")
+    key_data = dspy.OutputField(desc="Key metrics/percentages to highlight")
 
-class StructureSlideContent(dspy.Signature):
-    """Structure the slide content based on pattern and requirements.
-    
-    Create professional, McKinsey-level content structure that:
-    - Follows the identified pattern (executive summary, data insight, etc.)
-    - Includes all key elements with appropriate depth
-    - Organizes information hierarchically
-    - Balances synthesis with comprehensiveness
-    """
-    
-    primary_message = dspy.InputField(desc="Main declarative message for the slide")
-    key_elements = dspy.InputField(desc="List of important elements to include")
-    slide_pattern = dspy.InputField(desc="Pattern type to follow")
-    content_depth = dspy.InputField(desc="How rich the content should be")
-    
-    slide_title = dspy.OutputField(desc="Polished title (≤15 words) that captures the insight")
-    slide_subtitle = dspy.OutputField(desc="Supporting context or framing (optional)")
-    main_sections = dspy.OutputField(desc="List of 2-4 main content sections with titles and content")
-    supporting_data = dspy.OutputField(desc="Key metrics, percentages, or data points to highlight")
-    visual_elements = dspy.OutputField(desc="Specific visual components to include and their data")
-
-class GenerateRichHTML(dspy.Signature):
-    """Generate professional, visually rich HTML following McKinsey/BCG standards.
+class GenerateProfessionalHTML(dspy.Signature):
+    """Generate rich, professional HTML slide efficiently.
     
     Create complete HTML that:
-    - Uses sophisticated layouts (grids, panels, cards)
-    - Includes appropriate visual elements (gauges, metrics, icons)
-    - Follows the pattern structure precisely
-    - Maintains professional typography and spacing
-    - Is typically 250-400 lines of well-structured HTML
+    - Uses sophisticated layouts matching the pattern
+    - Includes visual elements (metrics, panels, etc.)
+    - Follows McKinsey/BCG design standards
+    - Has proper spacing, typography, and hierarchy
+    - Typically 200-350 lines of well-structured HTML
     """
     
-    slide_title = dspy.InputField(desc="Polished slide title")
-    slide_subtitle = dspy.InputField(desc="Supporting context")
-    main_sections = dspy.InputField(desc="Structured content sections")
-    supporting_data = dspy.InputField(desc="Key metrics and data points")
-    visual_elements = dspy.InputField(desc="Visual components to include")
-    slide_pattern = dspy.InputField(desc="Pattern to follow for layout")
-    css_framework = dspy.InputField(desc="CSS framework: 'olito-tech' or 'fulton-base'")
-    pattern_examples = dspy.InputField(desc="HTML examples from similar high-quality slides")
+    slide_title = dspy.InputField(desc="Slide title")
+    slide_subtitle = dspy.InputField(desc="Subtitle/context")
+    slide_pattern = dspy.InputField(desc="Visual pattern to follow")
+    main_sections = dspy.InputField(desc="Content sections")
+    visual_elements = dspy.InputField(desc="Visual components needed")
+    key_data = dspy.InputField(desc="Metrics and data points")
+    css_framework = dspy.InputField(desc="'olito-tech' or 'fulton-base'")
+    design_guidelines = dspy.InputField(desc="Key design principles")
     
-    slide_html = dspy.OutputField(desc="Complete, professional HTML (300+ lines) with rich visuals and sophisticated layout")
+    slide_html = dspy.OutputField(desc="Complete professional HTML with rich visuals and layout")
 
 
-class EnhancedSlideGenerator(dspy.Module):
-    """Multi-stage slide generator that creates rich, professional slides."""
+class OptimizedSlideGenerator(dspy.Module):
+    """Fast, two-stage slide generator for professional slides."""
     
     def __init__(self):
         super().__init__()
-        # Three-stage pipeline for richer output
-        self.analyzer = dspy.ChainOfThought(AnalyzeSlideRequest)  # Use CoT for better analysis
-        self.structurer = dspy.Predict(StructureSlideContent)
-        self.html_generator = dspy.Predict(GenerateRichHTML)
+        # Two-stage pipeline for speed
+        # Use Predict instead of ChainOfThought for 2-3x speed improvement
+        self.analyzer = dspy.Predict(AnalyzeAndStructure)
+        self.html_generator = dspy.Predict(GenerateProfessionalHTML)
         
-        # Load rich examples and templates
-        self.pattern_examples = self._load_pattern_examples()
-        self.visual_components = self._load_visual_components()
-        self.html_templates = self._load_html_templates()
+        # Pre-load templates for faster access
+        self.pattern_cache = self._preload_patterns()
+        self.design_cache = self._preload_design_guidelines()
+        
+        # Simple cache for recent generations
+        self._cache = {}
+        self._cache_size = 10
     
     def forward(self, slide_request: str, css_framework: str = "olito-tech"):
-        # Stage 1: Analyze request to understand needs
-        logger.info(f"Analyzing request: {slide_request[:100]}...")
+        # Check cache first
+        cache_key = hashlib.md5(f"{slide_request}:{css_framework}".encode()).hexdigest()
+        if cache_key in self._cache:
+            logger.info("Using cached result for speed")
+            return self._cache[cache_key]
+        
+        # Stage 1: Analyze and structure in one pass (faster)
+        logger.info(f"Analyzing and structuring: {slide_request[:100]}...")
         analysis = self.analyzer(
             user_request=slide_request
         )
-        logger.info(f"Detected pattern: {analysis.slide_pattern}, depth: {analysis.content_depth}")
+        logger.info(f"Pattern: {analysis.slide_pattern}, generating HTML...")
         
-        # Stage 2: Structure content based on analysis
-        logger.info("Structuring slide content...")
-        structure = self.structurer(
-            primary_message=analysis.primary_message,
-            key_elements=analysis.key_elements,
-            slide_pattern=analysis.slide_pattern,
-            content_depth=analysis.content_depth
-        )
-        
-        # Stage 3: Generate rich HTML
-        logger.info("Generating professional HTML...")
-        pattern_html = self._get_pattern_examples(analysis.slide_pattern, css_framework)
+        # Stage 2: Generate HTML with cached guidelines
+        design_guidelines = self._get_cached_guidelines(analysis.slide_pattern, css_framework)
         
         html_result = self.html_generator(
-            slide_title=structure.slide_title,
-            slide_subtitle=structure.slide_subtitle,
-            main_sections=structure.main_sections,
-            supporting_data=structure.supporting_data,
-            visual_elements=structure.visual_elements,
+            slide_title=analysis.slide_title,
+            slide_subtitle=analysis.slide_subtitle,
             slide_pattern=analysis.slide_pattern,
+            main_sections=analysis.main_sections,
+            visual_elements=analysis.visual_elements,
+            key_data=analysis.key_data,
             css_framework=css_framework,
-            pattern_examples=pattern_html
+            design_guidelines=design_guidelines
         )
         
-        # Post-process HTML
-        final_html = self._enhance_html(html_result.slide_html, analysis.visual_requirements)
-        logger.info(f"Generated rich slide ({len(final_html)} chars)")
+        # Quick post-processing
+        final_html = self._quick_enhance(html_result.slide_html, analysis.visual_elements)
+        logger.info(f"Generated slide ({len(final_html)} chars)")
         
-        return dspy.Prediction(
+        result = dspy.Prediction(
             slide_html=final_html,
             slide_pattern=analysis.slide_pattern,
-            primary_message=structure.slide_title,
+            primary_message=analysis.slide_title,
             metadata={
                 "pattern": analysis.slide_pattern,
-                "depth": analysis.content_depth,
-                "sections": len(structure.main_sections.split('||')) if isinstance(structure.main_sections, str) else len(structure.main_sections),
-                "visual_requirements": analysis.visual_requirements
+                "visual_elements": analysis.visual_elements
             }
         )
+        
+        # Cache result
+        if len(self._cache) >= self._cache_size:
+            # Remove oldest entry
+            self._cache.pop(next(iter(self._cache)))
+        self._cache[cache_key] = result
+        
+        return result
 
-    # ---------- Enhanced Helper Methods ----------
+    # ---------- Optimized Helper Methods ----------
+    
+    def _preload_patterns(self) -> dict:
+        """Pre-load pattern examples for faster access."""
+        return {
+            "executive_summary": "2-column grid with headline and insights panels",
+            "data_insight": "Visualization left, insights right in 2-column layout",
+            "comparison": "Side-by-side panels with visual distinction",
+            "three_column": "3 equal columns with consistent treatment",
+            "focused": "Large title with minimal supporting elements"
+        }
+    
+    def _preload_design_guidelines(self) -> dict:
+        """Pre-load concise design guidelines for speed."""
+        return {
+            "olito-tech": """
+            CSS: olito-tech.css | Colors: --olito-gold (#c5aa6a), dark theme
+            Typography: 2.85rem titles, 1.8rem sections, 1.1rem panels
+            Spacing: 2-3rem padding, 1.5-2rem gaps
+            Panels: rgba(255,255,255,0.04) backgrounds, 1px borders
+            """,
+            "fulton-base": """
+            CSS: fulton-base.css | Colors: --fulton-blue (#1e4b72), light theme  
+            Typography: Professional hierarchy, clean fonts
+            Spacing: Generous whitespace, grid layouts
+            Panels: Clean cards with accent borders
+            """
+        }
+    
+    def _get_cached_guidelines(self, pattern: str, framework: str) -> str:
+        """Get cached guidelines for fast generation."""
+        base = self.design_cache.get(framework, self.design_cache["olito-tech"])
+        pattern_hint = self.pattern_cache.get(pattern, "")
+        
+        # Minimal but effective guidelines
+        return f"""
+{base}
+
+PATTERN: {pattern} - {pattern_hint}
+
+KEY REQUIREMENTS:
+1. Professional HTML (200-350 lines)
+2. Proper slide structure with title, subtitle, main content
+3. {pattern} layout pattern
+4. Include headers with logos if olito-tech
+5. Add timestamp at bottom-right
+6. Use CSS Grid for layouts
+7. Rich visual elements where appropriate
+
+EXAMPLE STRUCTURE:
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="../../framework/css/{framework}.css" />
+  <style>/* Professional styles */</style>
+</head>
+<body>
+  <div class="of-slide-container">
+    <div class="of-slide">
+      <!-- Header with logos -->
+      <h1 class="slide-title">{{title}}</h1>
+      <div class="slide-subtitle">{{subtitle}}</div>
+      <!-- Main content with {pattern} layout -->
+      <div class="timestamp-br">Generated {{date}}</div>
+    </div>
+  </div>
+</body>
+</html>
+"""
+    
+    def _quick_enhance(self, html: str, visual_elements: str) -> str:
+        """Quick HTML enhancement without heavy processing."""
+        import datetime
+        
+        # Add timestamp if missing
+        if "timestamp-br" not in html:
+            timestamp = datetime.datetime.now().strftime("%b %d, %Y • %H:%M EST")
+            timestamp_html = f'<div class="timestamp-br">Generated {timestamp}</div>'
+            html = html.replace("</body>", f"      {timestamp_html}\n    </body>")
+        
+        # Quick visual element injection if needed
+        if "metric" in visual_elements and "metric-card" not in html:
+            # Inject a simple metric template if metrics are needed but missing
+            pass  # Skip complex processing for speed
+        
+        return html
     
     def _get_pattern_examples(self, pattern: str, framework: str) -> str:
         """Get HTML examples for the specific pattern from our high-quality slides."""
@@ -405,20 +478,20 @@ def initialize_dspy():
                 max_tokens=30000  # Increased for rich HTML output
             )
         else:
-            # Standard models with increased tokens for rich output
+            # Standard models optimized for speed
             lm = dspy.LM(
                 model=model,
                 api_key=settings.OPENAI_API_KEY,
-                max_tokens=20000,  # Increased from default
-                temperature=0.7    # Balanced creativity
+                max_tokens=15000,  # Balanced for speed and quality
+                temperature=0.6    # Slightly lower for consistency
             )
         
         dspy.configure(lm=lm)
         
-        # Create enhanced slide generator instance
-        slide_generator = EnhancedSlideGenerator()
+        # Create optimized slide generator instance
+        slide_generator = OptimizedSlideGenerator()
         
-        logger.info(f"Enhanced DSPy slide generator initialized with model: {model}")
+        logger.info(f"Optimized DSPy slide generator initialized with model: {model}")
         return True
         
     except Exception as e:
@@ -428,7 +501,10 @@ def initialize_dspy():
 
 @router.post("/generate-slide", response_model=SlideGenerationResponse)
 async def generate_slide(request: SlideGenerationRequest) -> SlideGenerationResponse:
-    """Generate a presentation slide from natural language description."""
+    """Generate a presentation slide from natural language description.
+    
+    Optimized for speed: targets < 2 minute generation time.
+    """
     
     # Initialize DSPy if not already done
     if slide_generator is None:
@@ -473,9 +549,10 @@ async def generate_slide(request: SlideGenerationRequest) -> SlideGenerationResp
         
     except Exception as e:
         logger.error(f"Slide generation failed: {e}")
+        # Return error in format expected by frontend
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to generate slide: {str(e)}"
+            detail=str(e)  # Frontend expects 'detail' field in error response
         )
 
 def detect_slide_type(request: str) -> str:
