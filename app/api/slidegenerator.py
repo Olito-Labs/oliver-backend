@@ -21,193 +21,216 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api", tags=["slides"])
 
 
-# DSPy Components
-class SynthesizeSlideMessage(dspy.Signature):
-    f"""Critically analyze and synthesize the user's request into one clear, focused slide message.
+# DSPy Components - Enhanced for richer output
+class AnalyzeSlideRequest(dspy.Signature):
+    """Analyze the user's request to understand what type of slide and content they need.
     
-    {get_synthesis_context()}
+    ANALYSIS FRAMEWORK:
+    1. IDENTIFY PATTERN: Is this executive summary, data insight, comparison, etc?
+    2. EXTRACT KEY ELEMENTS: What are all the important pieces of information?
+    3. DETERMINE VISUAL NEEDS: Does this need charts, metrics, gauges, or comparisons?
+    4. ASSESS COMPLEXITY: How much detail is actually needed for professional communication?
     
-    CONSTRAINTS:
-    - Title MUST be ≤ 12 words and read as a single declarative sentence (one line, two max)
-    - Content must occupy full width; avoid sidebars, tabs, chips, labels, or tags
-    - No section labels like 'Executive summary', 'Why it matters', 'The challenge', 'The value'
-    - Use at most 3 supporting bullets or a single focused paragraph
-    - Every element must serve the core message; remove decorative or redundant text
+    DON'T over-simplify. Professional slides often need multiple supporting elements.
     """
     
     user_request = dspy.InputField(desc="User's natural language description of desired slide content")
     
-    core_insight = dspy.OutputField(desc="Single, declarative sentence (≤12 words) capturing the key message")
-    supporting_points = dspy.OutputField(desc="Up to 3 crisp bullets that directly reinforce the insight")
-    visual_approach = dspy.OutputField(desc="Minimal visual strategy: 'headline-only' | 'short-bullets' | 'single-metric' | 'single-figure' (pick one)")
-    synthesis_rationale = dspy.OutputField(desc="One sentence on what was distilled and why")
+    slide_pattern = dspy.OutputField(desc="Pattern type: 'executive_summary' | 'data_insight' | 'strategic_comparison' | 'three_pillar' | 'focused_message'")
+    primary_message = dspy.OutputField(desc="Main message (≤15 words) - declarative and insightful")
+    key_elements = dspy.OutputField(desc="List of 3-6 important elements to include in the slide")
+    visual_requirements = dspy.OutputField(desc="Visual elements needed: 'gauge' | 'metrics' | 'comparison_panels' | 'process_flow' | 'icon_grid' | 'none'")
+    content_depth = dspy.OutputField(desc="Content richness: 'minimal' | 'moderate' | 'comprehensive'")
 
-class GenerateSlide(dspy.Signature):
-    """Generate a minimal, professional slide HTML from a synthesized message (fast)."""
+class StructureSlideContent(dspy.Signature):
+    """Structure the slide content based on pattern and requirements.
     
-    core_insight = dspy.InputField(desc="Single, clear declarative sentence (≤12 words) for the H1 title")
-    supporting_points = dspy.InputField(desc="Up to 3 crisp bullets OR short paragraph (≤60 words)")
-    visual_approach = dspy.InputField(desc="One of: headline-only | short-bullets | single-metric | single-figure")
-    css_framework = dspy.InputField(desc="CSS framework to use: 'olito-tech' or 'fulton-base'")
-    design_principles = dspy.InputField(desc="Minimal slide constraints and HTML requirements")
+    Create professional, McKinsey-level content structure that:
+    - Follows the identified pattern (executive summary, data insight, etc.)
+    - Includes all key elements with appropriate depth
+    - Organizes information hierarchically
+    - Balances synthesis with comprehensiveness
+    """
     
-    slide_html = dspy.OutputField(desc="Complete HTML (doctype/head/body) with full-width content, one H1, no labels/tags/chips, minimal CSS usage")
+    primary_message = dspy.InputField(desc="Main declarative message for the slide")
+    key_elements = dspy.InputField(desc="List of important elements to include")
+    slide_pattern = dspy.InputField(desc="Pattern type to follow")
+    content_depth = dspy.InputField(desc="How rich the content should be")
+    
+    slide_title = dspy.OutputField(desc="Polished title (≤15 words) that captures the insight")
+    slide_subtitle = dspy.OutputField(desc="Supporting context or framing (optional)")
+    main_sections = dspy.OutputField(desc="List of 2-4 main content sections with titles and content")
+    supporting_data = dspy.OutputField(desc="Key metrics, percentages, or data points to highlight")
+    visual_elements = dspy.OutputField(desc="Specific visual components to include and their data")
+
+class GenerateRichHTML(dspy.Signature):
+    """Generate professional, visually rich HTML following McKinsey/BCG standards.
+    
+    Create complete HTML that:
+    - Uses sophisticated layouts (grids, panels, cards)
+    - Includes appropriate visual elements (gauges, metrics, icons)
+    - Follows the pattern structure precisely
+    - Maintains professional typography and spacing
+    - Is typically 250-400 lines of well-structured HTML
+    """
+    
+    slide_title = dspy.InputField(desc="Polished slide title")
+    slide_subtitle = dspy.InputField(desc="Supporting context")
+    main_sections = dspy.InputField(desc="Structured content sections")
+    supporting_data = dspy.InputField(desc="Key metrics and data points")
+    visual_elements = dspy.InputField(desc="Visual components to include")
+    slide_pattern = dspy.InputField(desc="Pattern to follow for layout")
+    css_framework = dspy.InputField(desc="CSS framework: 'olito-tech' or 'fulton-base'")
+    pattern_examples = dspy.InputField(desc="HTML examples from similar high-quality slides")
+    
+    slide_html = dspy.OutputField(desc="Complete, professional HTML (300+ lines) with rich visuals and sophisticated layout")
 
 
-class SlideGenerator(dspy.Module):
+class EnhancedSlideGenerator(dspy.Module):
+    """Multi-stage slide generator that creates rich, professional slides."""
+    
     def __init__(self):
         super().__init__()
-        # Prefer Predict (no rationale) for speed. For gpt-5, temperature must be 1.0 and many params are restricted,
-        # so we rely on the global LM configuration and avoid per-call overrides.
-        self.synthesizer = dspy.Predict(SynthesizeSlideMessage)
-        self.generator = dspy.Predict(GenerateSlide)
-        self.visual_examples = self._load_visual_examples()
-        self.design_principles = self._load_design_principles()
+        # Three-stage pipeline for richer output
+        self.analyzer = dspy.ChainOfThought(AnalyzeSlideRequest)  # Use CoT for better analysis
+        self.structurer = dspy.Predict(StructureSlideContent)
+        self.html_generator = dspy.Predict(GenerateRichHTML)
+        
+        # Load rich examples and templates
+        self.pattern_examples = self._load_pattern_examples()
+        self.visual_components = self._load_visual_components()
+        self.html_templates = self._load_html_templates()
     
     def forward(self, slide_request: str, css_framework: str = "olito-tech"):
-        # Stage 1: Critical synthesis - distill to one clear message
-        logger.info(f"Synthesizing message from: {slide_request[:100]}...")
-        synthesis = self.synthesizer(
+        # Stage 1: Analyze request to understand needs
+        logger.info(f"Analyzing request: {slide_request[:100]}...")
+        analysis = self.analyzer(
             user_request=slide_request
         )
-        logger.info(f"Synthesized core insight: {synthesis.core_insight}")
+        logger.info(f"Detected pattern: {analysis.slide_pattern}, depth: {analysis.content_depth}")
         
-        # Stage 2: Generate slide from synthesized message
-        enhanced_context = self._enhance_request_with_context(slide_request, css_framework)
-        
-        title = self._constrain_title(synthesis.core_insight)
-
-        result = self.generator(
-            core_insight=title,
-            supporting_points=synthesis.supporting_points,
-            visual_approach=synthesis.visual_approach,
-            css_framework=css_framework,
-            design_principles=enhanced_context
+        # Stage 2: Structure content based on analysis
+        logger.info("Structuring slide content...")
+        structure = self.structurer(
+            primary_message=analysis.primary_message,
+            key_elements=analysis.key_elements,
+            slide_pattern=analysis.slide_pattern,
+            content_depth=analysis.content_depth
         )
         
-        html_clean = self._sanitize_html(result.slide_html)
-        logger.info(f"Generated slide ({len(html_clean)} chars) for insight: {title[:50]}...")
+        # Stage 3: Generate rich HTML
+        logger.info("Generating professional HTML...")
+        pattern_html = self._get_pattern_examples(analysis.slide_pattern, css_framework)
+        
+        html_result = self.html_generator(
+            slide_title=structure.slide_title,
+            slide_subtitle=structure.slide_subtitle,
+            main_sections=structure.main_sections,
+            supporting_data=structure.supporting_data,
+            visual_elements=structure.visual_elements,
+            slide_pattern=analysis.slide_pattern,
+            css_framework=css_framework,
+            pattern_examples=pattern_html
+        )
+        
+        # Post-process HTML
+        final_html = self._enhance_html(html_result.slide_html, analysis.visual_requirements)
+        logger.info(f"Generated rich slide ({len(final_html)} chars)")
         
         return dspy.Prediction(
-            slide_html=html_clean,
-            core_insight=title,
-            synthesis_rationale=synthesis.synthesis_rationale,
-            supporting_points=synthesis.supporting_points
+            slide_html=final_html,
+            slide_pattern=analysis.slide_pattern,
+            primary_message=structure.slide_title,
+            metadata={
+                "pattern": analysis.slide_pattern,
+                "depth": analysis.content_depth,
+                "sections": len(structure.main_sections.split('||')) if isinstance(structure.main_sections, str) else len(structure.main_sections),
+                "visual_requirements": analysis.visual_requirements
+            }
         )
 
-    # ---------- Helpers ----------
-    def _constrain_title(self, text: str) -> str:
-        try:
-            words = text.strip().split()
-            if len(words) <= 12:
-                return text.strip().rstrip('.').capitalize()
-            limited = " ".join(words[:12]).rstrip('.')
-            return limited.capitalize()
-        except Exception:
-            return text
-
-    def _sanitize_html(self, html: str) -> str:
-        """Remove common labels and chips; ensure one H1 and full-width container."""
-        try:
-            import re
-            # Remove common section labels
-            forbidden = [r"Executive summary", r"Why it matters", r"The challenge", r"The value", r"Overview", r"Summary"]
-            for lab in forbidden:
-                html = re.sub(rf"<h[12][^>]*>\s*{lab}[^<]*</h[12]>", "", html, flags=re.IGNORECASE)
-
-            # Ensure single H1: demote additional h1s to h2
-            h1s = re.findall(r"<h1[\s\S]*?</h1>", html, flags=re.IGNORECASE)
-            if len(h1s) > 1:
-                first = True
-                def repl(m):
-                    nonlocal first
-                    if first:
-                        first = False
-                        return m.group(0)
-                    return re.sub(r"<h1", "<h2", re.sub(r"</h1>", "</h2>", m.group(0)), flags=re.IGNORECASE)
-                html = re.sub(r"<h1[\s\S]*?</h1>", repl, html, flags=re.IGNORECASE)
-
-            # Remove badges/chips
-            html = re.sub(r"<span[^>]*class=\"[^\"]*(badge|chip)[^\"]*\"[^>]*>[\s\S]*?</span>", "", html, flags=re.IGNORECASE)
-
-            # Enforce full-width content by removing sidebars if any (basic heuristic)
-            html = html.replace("of-sidebar", "of-content-area")
-            return html
-        except Exception:
-            return html
+    # ---------- Enhanced Helper Methods ----------
     
-    def _enhance_request_with_context(self, request: str, framework: str) -> str:
-        """Add framework-specific context with refined design principles."""
+    def _get_pattern_examples(self, pattern: str, framework: str) -> str:
+        """Get HTML examples for the specific pattern from our high-quality slides."""
         
-        # Determine the best pattern for this request
-        recommended_pattern = get_pattern_for_request(request)
-        pattern_info = REFINED_PATTERNS.get(recommended_pattern, REFINED_PATTERNS['single_focus_message'])
-        
-        framework_context = {
-            "olito-tech": """
-Framework: Olito Tech CSS (olito-tech.css)
-Key classes: .of-slide-container, .of-slide, .of-title, .of-subtitle, .of-content-area, .of-decorative-element
-Colors: Dark theme with --olito-gold (#c5aa6a), --fulton-blue (#1e4b72), dark backgrounds
-Layout: PDF-first design, no animations, rectangular slides
-Structure: Container > Slide > Header/Content/Footer
+        # These are based on the WSFS analysis slides which are exemplary
+        pattern_examples = {
+            "executive_summary": """
+            Example structure from professional slides:
+            - Headline section with gradient background and strong message
+            - 2-column analysis grid comparing perspectives (e.g., Surface View vs Deeper Insight)
+            - Bottom section with prediction and opportunity panels
+            - Rich typography: 2.85rem titles, 1.8rem section headers, strategic colors
+            - Professional spacing: 2-3rem padding, 1.5-2rem gaps
             """,
-            "fulton-base": """
-Framework: Fulton Base CSS (fulton-base.css)  
-Key classes: .fulton-slide-container, .fulton-slide, .slide-title, .fulton-content-area, .fulton-horizontal-layout
-Colors: Professional blue palette with --fulton-blue (#1e4b72), --fulton-gold (#c5aa6a)
-Layout: Enterprise PDF-optimized, clean typography, grid-based layouts
-Structure: Container > Slide > Header/Title/Content/Footnotes
+            
+            "data_insight": """
+            Example structure:
+            - 2-column layout: visualization left (gauge/chart), insights right
+            - Gauge with SVG visualization showing thresholds
+            - Metric cards with large values and context
+            - 3-4 insight panels with icons and focused content
+            - Source attribution at bottom
+            """,
+            
+            "strategic_comparison": """
+            Example structure:
+            - Clear title focusing on the transformation
+            - 2 equal panels side-by-side with visual distinction
+            - Each panel: icon header, title, 3-4 key points
+            - Color coding: different accent colors for each side
+            - Optional implications section below
+            """,
+            
+            "three_pillar": """
+            Example structure:
+            - 3-column grid with equal spacing
+            - Each column: large number/icon, title, subtitle, description
+            - Consistent visual treatment across columns
+            - Optional metrics or indicators per column
+            - Generous whitespace between elements
+            """,
+            
+            "focused_message": """
+            Example structure:
+            - Large impactful title (2.5-3rem)
+            - Supporting subtitle for context
+            - Optional single visual element (metric/chart)
+            - 2-3 supporting points maximum
+            - Extensive whitespace for emphasis
             """
         }
         
-        context = framework_context.get(framework, framework_context["olito-tech"])
+        return pattern_examples.get(pattern, pattern_examples["focused_message"])
+    
+    def _enhance_html(self, html: str, visual_requirements: str) -> str:
+        """Enhance HTML with visual components based on requirements."""
         
-        return f"""
-{context}
-
-REFINED DESIGN PRINCIPLES (Minimal, fast):
-
-🎯 FOCUS & CLARITY:
-- ONE clear message per slide
-- Title ≤ 12 words, single declarative sentence
-- Content spans full width; no sidebars or badges
-- No labels like "Executive summary" or "Why it matters"
-
-📐 LAYOUT & SPACING:
-- Generous whitespace; avoid many small boxes
-- Use a single main column layout
-- If bullets, keep ≤ 3 items, short phrases
-
-📝 TYPOGRAPHY HIERARCHY:
-- H1 only once; body text concise (≤ 60 words if paragraph)
-
-🎨 VISUALS (OPTIONAL):
-- Only add a single visual if it materially helps (metric/figure)
-
-📊 DATA VISUALIZATION:
-- Prefer a single large metric or one simple figure
-
-RECOMMENDED PATTERN: {recommended_pattern}
-PATTERN STRUCTURE: {pattern_info['structure']}
-
-❌ AVOID:
-{chr(10).join([f'- {item}' for item in ANTI_PATTERNS['avoid']])}
-
-✅ INSTEAD DO:
-{chr(10).join([f'- {item}' for item in ANTI_PATTERNS['instead_do']])}
-
-HTML REQUIREMENTS:
-1. Complete HTML with DOCTYPE, head, and body
-2. Link to CSS: ../../framework/css/{framework}.css
-3. Comprehensive <style> section following the refined principles above
-4. Semantic HTML with proper structure
-5. Responsive design with media queries
-
-USER REQUEST: {request}
-        """.strip()
+        # Add timestamp
+        if "timestamp-br" not in html:
+            import datetime
+            timestamp = datetime.datetime.now().strftime("%b %d, %Y • %H:%M EST")
+            timestamp_html = f'\n      <div class="timestamp-br">Generated {timestamp}</div>'
+            html = html.replace("</body>", f"{timestamp_html}\n</body>")
+        
+        # Add decorative elements if missing
+        if "of-decorative-element" not in html and "of-slide" in html:
+            decorative = '<div class="of-decorative-element"></div>'
+            html = html.replace('<div class="of-slide">', f'<div class="of-slide">\n      {decorative}')
+        
+        # Ensure proper headers with logos (based on WSFS examples)
+        if "content-header" not in html and "olito-tech" in html:
+            header_html = """
+      <div class="content-header">\n        <img class="header-brain" src="../../framework/assets/logo2.png" alt="Olito Labs Brain" />\n        <img class="header-wordmark" src="../../framework/assets/logo3.png" alt="Olito Labs" />\n      </div>"""
+            html = html.replace('<div class="content-main">', f'{header_html}\n\n      <div class="content-main">')
+        
+            return html
+    
 
 
-    def _load_visual_examples(self) -> dict:
+
+    def _load_pattern_examples(self) -> dict:
         """Load refined examples based on high-quality slide analysis."""
         return {
             "olito-tech": """
@@ -295,72 +318,74 @@ REFINED PATTERNS FOR FULTON FRAMEWORK:
             """
         }
     
-    def _load_design_principles(self) -> str:
-        """Load refined design principles based on high-quality slide analysis."""
-        return """
-REFINED DESIGN PRINCIPLES (McKinsey/BCG Level):
+    def _load_visual_components(self) -> dict:
+        """Load visual component templates for rich content."""
+        return {
+            "gauge": """
+            <svg class="gauge-svg" viewBox="0 0 240 140" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20,120 A100,100 0 0,1 220,120" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="12"/>
+              <path d="M20,120 A100,100 0 0,1 {angle_x},{angle_y}" fill="none" stroke="var(--olito-gold)" stroke-width="12"/>
+              <text x="120" y="95" text-anchor="middle" font-size="24" fill="var(--olito-gold)" font-weight="bold">{value}%</text>
+            </svg>
+            """,
+            
+            "metric_card": """
+            <div class="metric-card" style="background: rgba(255,255,255,0.04); border-left: 4px solid var(--olito-gold); padding: 1.5rem;">
+              <div style="font-size: 2.5rem; font-weight: 700; color: var(--olito-gold);">{value}</div>
+              <div style="font-size: 0.9rem; color: #9fb3c8; margin-top: 0.5rem;">{label}</div>
+              <div style="font-size: 0.85rem; color: #cbd5e1; margin-top: 0.5rem;">{context}</div>
+            </div>
+            """,
+            
+            "insight_panel": """
+            <div class="insight-panel" style="background: rgba(255,255,255,0.04); border: 1px solid var(--olito-gold-border); padding: 1.5rem; border-radius: 8px;">
+              <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <div style="width: 32px; height: 32px; background: var(--olito-gold); border-radius: 50%; display: grid; place-items: center;">
+                  <span style="font-weight: bold; color: #0b1a2f;">{icon}</span>
+                </div>
+                <h3 style="font-size: 1.1rem; color: white; font-weight: 600;">{title}</h3>
+              </div>
+              <p style="color: #cbd5e1; line-height: 1.5;">{content}</p>
+            </div>
+            """
+        }
+    
+    def _load_html_templates(self) -> dict:
+        """Load complete HTML templates for different patterns."""
+        # This would load the actual templates from the WSFS examples
+        # For now, returning structure guidance
+        return {
+            "base_structure": """
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+              <meta charset="UTF-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+              <title>{title}</title>
+              <link rel="stylesheet" href="../../framework/css/{framework}.css" />
+              <style>
+                /* Custom styles following McKinsey/BCG standards */
+                {custom_styles}
+              </style>
+            </head>
+            <body>
+              <div class="of-slide-container">
+                <div class="of-slide">
+                  {content}
+                </div>
+              </div>
+            </body>
+            </html>
+            """
+        }
+    
 
-🎯 FOCUS & MESSAGE CLARITY:
-   - ONE clear message per slide - everything else supports it
-   - Maximum 2-3 main sections total
-   - Avoid competing visual elements or messages
-   - Each element must serve the central narrative
 
-📐 STRATEGIC WHITESPACE:
-   - Generous padding: 2-3rem minimum for main containers
-   - Section gaps: 1.5-2rem between major elements
-   - Content breathing room: 1rem between related items
-   - Don't fill every pixel - emptiness creates elegance
-
-📝 REFINED TYPOGRAPHY:
-   - Main titles: 2.5-3rem, var(--olito-gold), font-weight 700
-   - Section headers: 1.8-2rem, white, font-weight 600  
-   - Panel titles: 1-1.2rem, white, font-weight 600
-   - Body text: 0.95-1rem, #cbd5e1, line-height 1.4-1.6
-   - Subtitles: 1.05rem, #9fb3c8, context/explanation
-   - Maximum 3 different font sizes per slide
-
-🎨 SOPHISTICATED VISUALS:
-   - Subtle panel backgrounds: rgba(255,255,255,0.04-0.08)
-   - Minimal borders: 1px solid with 0.1-0.3 opacity
-   - Strategic accent colors: var(--olito-gold) for emphasis only
-   - Simple icons: 24-32px, consistent style, purposeful
-   - No decorative elements - every visual serves the message
-
-📊 PURPOSEFUL DATA VISUALIZATION:
-   - Single, clear data story per slide
-   - Gauges/charts that communicate specific insights
-   - Large, impactful numbers with context
-   - Avoid multiple competing visualizations
-   - Every chart must answer a business question
-
-📄 CONTENT DENSITY CONTROL:
-   - Maximum 3-4 bullet points per section
-   - Single sentences or short phrases preferred
-   - Each insight panel = icon + title + 1 paragraph max
-   - Avoid dense text blocks or complex nested information
-
-📡 LAYOUT SOPHISTICATION:
-   - CSS Grid for precise alignment and spacing
-   - Consistent visual treatment across similar elements
-   - Two-column layouts for comparisons/insights
-   - Three-column only when truly necessary
-   - Single-column for focused messages
-
-❌ CRITICAL ANTI-PATTERNS TO AVOID:
-   - Multiple small boxes (webpage-like layouts)
-   - Dense text paragraphs or bullet lists
-   - More than 4-5 distinct sections
-   - Decorative charts without clear purpose
-   - Cramped spacing or small fonts
-   - Multiple competing messages
-        """
-
-# Global slide generator instance
+# Global enhanced slide generator instance
 slide_generator = None
 
 def initialize_dspy():
-    """Initialize DSPy with the configured OpenAI model."""
+    """Initialize DSPy with the configured OpenAI model for rich slide generation."""
     global slide_generator
     
     try:
@@ -370,28 +395,30 @@ def initialize_dspy():
             model = f"openai/{model}"
         
         # Initialize DSPy LM with model-specific requirements
+        # For rich HTML generation, we need higher token limits
         if model.endswith("gpt-5") or "gpt-5" in model:
             # GPT-5 requires temperature=1.0 and large completion window.
             lm = dspy.LM(
                 model=model,
                 api_key=settings.OPENAI_API_KEY,
                 temperature=1.0,
-                max_tokens=20000
+                max_tokens=30000  # Increased for rich HTML output
             )
         else:
-            # Standard models
+            # Standard models with increased tokens for rich output
             lm = dspy.LM(
                 model=model,
                 api_key=settings.OPENAI_API_KEY,
-                max_tokens=settings.MAX_TOKENS
+                max_tokens=20000,  # Increased from default
+                temperature=0.7    # Balanced creativity
             )
         
         dspy.configure(lm=lm)
         
-        # Create slide generator instance
-        slide_generator = SlideGenerator()
+        # Create enhanced slide generator instance
+        slide_generator = EnhancedSlideGenerator()
         
-        logger.info(f"DSPy initialized successfully with model: {model}")
+        logger.info(f"Enhanced DSPy slide generator initialized with model: {model}")
         return True
         
     except Exception as e:
@@ -419,13 +446,13 @@ async def generate_slide(request: SlideGenerationRequest) -> SlideGenerationResp
         slide_type = detect_slide_type(request.slide_request)
         logger.info(f"Detected slide type: {slide_type}")
         
-        # Generate the slide with enhanced context
+        # Generate the slide with enhanced pipeline
         result = slide_generator(
             slide_request=request.slide_request,
             css_framework=request.css_framework
         )
         
-        # Prepare response with synthesis information
+        # Prepare response with enhanced metadata
         response = SlideGenerationResponse(
             slide_html=result.slide_html,
             framework_used=request.css_framework,
@@ -435,9 +462,9 @@ async def generate_slide(request: SlideGenerationRequest) -> SlideGenerationResp
                 "html_length": len(result.slide_html),
                 "framework": request.css_framework,
                 "detected_type": slide_type,
-                "core_insight": getattr(result, 'core_insight', 'Not available'),
-                "synthesis_rationale": getattr(result, 'synthesis_rationale', 'Not available'),
-                "supporting_points": getattr(result, 'supporting_points', [])
+                "slide_pattern": getattr(result, 'slide_pattern', 'unknown'),
+                "primary_message": getattr(result, 'primary_message', 'Not available'),
+                "metadata": getattr(result, 'metadata', {})
             }
         )
         
