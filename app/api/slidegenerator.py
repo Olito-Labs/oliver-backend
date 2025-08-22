@@ -13,6 +13,7 @@ from app.models.api import (
 )
 from app.slide_templates import SLIDE_TEMPLATES, VISUAL_COMPONENTS, SVG_ICONS
 from app.refined_slide_patterns import REFINED_PATTERNS, DESIGN_GUIDELINES, ANTI_PATTERNS, get_pattern_for_request
+from app.synthesis_prompts import get_synthesis_context
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -21,12 +22,26 @@ router = APIRouter(prefix="/api", tags=["slides"])
 
 
 # DSPy Components
-class GenerateSlide(dspy.Signature):
-    """Generate visually sophisticated, McKinsey/BCG-quality presentation slide HTML."""
+class SynthesizeSlideMessage(dspy.Signature):
+    f"""Critically analyze and synthesize the user's request into one clear, focused slide message.
     
-    slide_request = dspy.InputField(desc="Natural language description of the desired slide content and type")
+    {get_synthesis_context()}
+    """
+    
+    user_request = dspy.InputField(desc="User's natural language description of desired slide content")
+    
+    core_insight = dspy.OutputField(desc="Single, declarative sentence capturing the key insight or message")
+    supporting_points = dspy.OutputField(desc="Maximum 3 essential supporting points that reinforce the core insight")
+    visual_approach = dspy.OutputField(desc="Specific visual strategy to communicate this message effectively")
+    synthesis_rationale = dspy.OutputField(desc="Brief explanation of what was distilled and why")
+
+class GenerateSlide(dspy.Signature):
+    """Generate visually sophisticated, McKinsey/BCG-quality presentation slide HTML from synthesized message."""
+    
+    core_insight = dspy.InputField(desc="Single, clear declarative sentence that is the slide's main message")
+    supporting_points = dspy.InputField(desc="Maximum 3 essential supporting points")
+    visual_approach = dspy.InputField(desc="Specific visual strategy for this message")
     css_framework = dspy.InputField(desc="CSS framework to use: 'olito-tech' or 'fulton-base'")
-    visual_examples = dspy.InputField(desc="Examples of high-quality slide patterns and visual techniques")
     design_principles = dspy.InputField(desc="Core design principles for professional presentations")
     
     slide_html = dspy.OutputField(desc="Complete HTML slide code with sophisticated visual design, proper structure, and professional styling")
@@ -35,22 +50,38 @@ class GenerateSlide(dspy.Signature):
 class SlideGenerator(dspy.Module):
     def __init__(self):
         super().__init__()
-        self.generate = dspy.ChainOfThought(GenerateSlide)
+        self.synthesizer = dspy.ChainOfThought(SynthesizeSlideMessage)
+        self.generator = dspy.ChainOfThought(GenerateSlide)
         self.visual_examples = self._load_visual_examples()
         self.design_principles = self._load_design_principles()
     
     def forward(self, slide_request: str, css_framework: str = "olito-tech"):
-        # Add framework-specific context to the request
-        enhanced_request = self._enhance_request_with_context(slide_request, css_framework)
+        # Stage 1: Critical synthesis - distill to one clear message
+        logger.info(f"Synthesizing message from: {slide_request[:100]}...")
+        synthesis = self.synthesizer(
+            user_request=slide_request
+        )
+        logger.info(f"Synthesized core insight: {synthesis.core_insight}")
         
-        result = self.generate(
-            slide_request=enhanced_request,
+        # Stage 2: Generate slide from synthesized message
+        enhanced_context = self._enhance_request_with_context(slide_request, css_framework)
+        
+        result = self.generator(
+            core_insight=synthesis.core_insight,
+            supporting_points=synthesis.supporting_points,
+            visual_approach=synthesis.visual_approach,
             css_framework=css_framework,
-            visual_examples=self.visual_examples[css_framework],
-            design_principles=self.design_principles
+            design_principles=enhanced_context
         )
         
-        return dspy.Prediction(slide_html=result.slide_html)
+        logger.info(f"Generated slide ({len(result.slide_html)} chars) for insight: {synthesis.core_insight[:50]}...")
+        
+        return dspy.Prediction(
+            slide_html=result.slide_html,
+            core_insight=synthesis.core_insight,
+            synthesis_rationale=synthesis.synthesis_rationale,
+            supporting_points=synthesis.supporting_points
+        )
     
     def _enhance_request_with_context(self, request: str, framework: str) -> str:
         """Add framework-specific context with refined design principles."""
@@ -349,7 +380,7 @@ async def generate_slide(request: SlideGenerationRequest) -> SlideGenerationResp
             css_framework=request.css_framework
         )
         
-        # Prepare response
+        # Prepare response with synthesis information
         response = SlideGenerationResponse(
             slide_html=result.slide_html,
             framework_used=request.css_framework,
@@ -358,7 +389,10 @@ async def generate_slide(request: SlideGenerationRequest) -> SlideGenerationResp
                 "request_length": len(request.slide_request),
                 "html_length": len(result.slide_html),
                 "framework": request.css_framework,
-                "detected_type": slide_type
+                "detected_type": slide_type,
+                "core_insight": getattr(result, 'core_insight', 'Not available'),
+                "synthesis_rationale": getattr(result, 'synthesis_rationale', 'Not available'),
+                "supporting_points": getattr(result, 'supporting_points', [])
             }
         )
         
