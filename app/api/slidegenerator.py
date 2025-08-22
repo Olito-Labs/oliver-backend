@@ -57,9 +57,10 @@ class GenerateSlide(dspy.Signature):
 class SlideGenerator(dspy.Module):
     def __init__(self):
         super().__init__()
-        # Prefer Predict (no rationale) for speed. NOTE: pass kwargs directly, not under `config`.
-        self.synthesizer = dspy.Predict(SynthesizeSlideMessage, temperature=0.2, n=1)
-        self.generator = dspy.Predict(GenerateSlide, temperature=0.2, n=1)
+        # Prefer Predict (no rationale) for speed. For gpt-5, temperature must be 1.0 and many params are restricted,
+        # so we rely on the global LM configuration and avoid per-call overrides.
+        self.synthesizer = dspy.Predict(SynthesizeSlideMessage)
+        self.generator = dspy.Predict(GenerateSlide)
         self.visual_examples = self._load_visual_examples()
         self.design_principles = self._load_design_principles()
     
@@ -370,7 +371,7 @@ def initialize_dspy():
         
         # Initialize DSPy LM with model-specific requirements
         if model.endswith("gpt-5") or "gpt-5" in model:
-            # GPT-5 requires temperature=1.0 and max_tokens >= 20000
+            # GPT-5 requires temperature=1.0 and large completion window.
             lm = dspy.LM(
                 model=model,
                 api_key=settings.OPENAI_API_KEY,
