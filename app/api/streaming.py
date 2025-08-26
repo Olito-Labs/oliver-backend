@@ -561,52 +561,74 @@ async def simulate_fdl(payload: Dict[str, Any], user=Depends(get_current_user)):
                 "Please draft the First Day Letter accordingly. Use markdown for headings and numbered lists."
             )
 
-            request_params = {
-                "model": exam_model,
-                "input": [{
-                    "role": "user",
-                    "content": [
-                        {"type": "input_text", "text": user_prompt}
-                    ]
-                }],
-                "instructions": system_prompt,
-                "max_output_tokens": 4000,
-                "store": False,
-                "stream": True,
-            }
-            if exam_model.startswith("gpt-5"):
-                request_params["reasoning"] = {"effort": "low"}
-                request_params["text"] = {"verbosity": "medium"}
-
-            response = client.responses.create(**request_params)
-
+            # Stream using official Responses streaming interface for reliable deltas
             full_text = ""
-            if hasattr(response, "__iter__"):
-                for chunk in response:
-                    if hasattr(chunk, 'output') and chunk.output:
-                        for item in chunk.output:
+            try:
+                stream_params = {
+                    "model": exam_model,
+                    "input": [{
+                        "role": "user",
+                        "content": [{"type": "input_text", "text": user_prompt}],
+                    }],
+                    "instructions": system_prompt,
+                    "max_output_tokens": 4000,
+                    "store": False,
+                }
+                if exam_model.startswith("gpt-5"):
+                    stream_params["reasoning"] = {"effort": "low"}
+                    stream_params["text"] = {"verbosity": "medium"}
+
+                # Use streaming context manager
+                with client.responses.stream(**stream_params) as resp_stream:
+                    for event in resp_stream:
+                        ev_type = getattr(event, 'type', '')
+                        if ev_type == 'response.output_text.delta':
+                            delta = getattr(event, 'delta', None)
+                            if delta:
+                                full_text += delta
+                                yield await send_letter_chunk(delta)
+                        elif ev_type == 'response.error':
+                            err = getattr(event, 'error', None)
+                            msg = str(err) if err else 'Unknown error'
+                            yield await send_error(f"OpenAI streaming error: {msg}")
+                            return
+                        elif ev_type == 'response.completed':
+                            # Completed normally
+                            break
+            except Exception as stream_ex:
+                # Fallback to non-streaming create if stream not supported
+                try:
+                    request_params = {
+                        "model": exam_model,
+                        "input": [{
+                            "role": "user",
+                            "content": [{"type": "input_text", "text": user_prompt}],
+                        }],
+                        "instructions": system_prompt,
+                        "max_output_tokens": 4000,
+                        "store": False,
+                        "stream": False,
+                    }
+                    if exam_model.startswith("gpt-5"):
+                        request_params["reasoning"] = {"effort": "low"}
+                        request_params["text"] = {"verbosity": "medium"}
+                    fallback_resp = client.responses.create(**request_params)
+                    content = ""
+                    if fallback_resp.output:
+                        for item in fallback_resp.output:
                             if getattr(item, 'type', '') == 'message' and getattr(item, 'content', None):
                                 for c in item.content:
                                     if getattr(c, 'type', '') == 'output_text' and getattr(c, 'text', None):
-                                        text_piece = c.text
-                                        full_text += text_piece
-                                        # Stream piece to client
-                                        yield await send_letter_chunk(text_piece)
-            else:
-                # Non-streaming fallback
-                content = ""
-                if response.output:
-                    for item in response.output:
-                        if getattr(item, 'type', '') == 'message' and getattr(item, 'content', None):
-                            for c in item.content:
-                                if getattr(c, 'type', '') == 'output_text' and getattr(c, 'text', None):
-                                    content = c.text
-                                    break
-                        if content:
-                            break
-                full_text = content
-                if full_text:
-                    yield await send_letter_chunk(full_text)
+                                        content = c.text
+                                        break
+                            if content:
+                                break
+                    full_text = content
+                    if full_text:
+                        yield await send_letter_chunk(full_text)
+                except Exception as final_ex:
+                    yield await send_error(f"Simulation failed: {str(final_ex)}")
+                    return
 
             # Finish
             step.complete()
