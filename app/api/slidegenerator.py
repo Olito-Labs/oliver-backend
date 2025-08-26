@@ -695,10 +695,12 @@ async def generate_slide_mini(request: SlideGenerationRequest) -> SlideGeneratio
             "1) Output ONLY valid HTML (no markdown fences, no explanations). "
             "2) Use standard 16:9 layout with generous whitespace and clear hierarchy. "
             "3) Title is left-aligned, declarative, under 12 words. "
-            "4) Include a bottom-right timestamp element with class 'timestamp-br'. "
+            "4) Include a bottom-left source element. "
             "5) Link the provided CSS framework using <link rel=\"stylesheet\" href=\"../../framework/css/{framework}.css\" />. "
             "6) If visual elements are used, keep them purposeful and minimal. "
-            "7) No extraneous labels or decorations; everything must have a purpose."
+            "7) No extraneous labels or decorations; everything must have a purpose. "
+            "8) Make it a professional slide, not just a list of bullets. Think McKinsey slide or BCG slide "
+            "9) Try to be visual where possible and minimize wordiness, but only if the end effect with be professional and dignified. "
         )
 
         # User instruction: describe the requested slide and chosen framework
