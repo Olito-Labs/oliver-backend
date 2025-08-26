@@ -7,6 +7,7 @@ import hashlib
 from functools import lru_cache
 
 from app.config import settings
+from app.llm_providers import openai_manager
 from app.models.api import (
     SlideGenerationRequest, 
     SlideGenerationResponse, 
@@ -667,3 +668,127 @@ async def slide_generation_health():
             "error": str(e),
             "dspy_configured": False
         }
+
+
+# ============================================
+# New: OpenAI Responses API slide generation
+# ============================================
+
+@router.post("/generate-slide-mini", response_model=SlideGenerationResponse)
+async def generate_slide_mini(request: SlideGenerationRequest) -> SlideGenerationResponse:
+    """Generate a presentation slide using OpenAI Responses API (gpt-5-mini).
+    Leaves the existing DSPy-based endpoint intact, but provides a faster and more
+    reliable path mirroring the examination prep workflow approach.
+    """
+    try:
+        client = openai_manager.get_client()
+        if not client:
+            raise HTTPException(status_code=500, detail="OpenAI client not available")
+
+        # Use the examination model setting for parity with examination prep (defaults to gpt-5-mini)
+        slide_model = settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL
+
+        # System prompt tuned for professional, minimalist slides (McKinsey-like aesthetics)
+        system_prompt = (
+            "You are Oliver, generating a single professional HTML slide. "
+            "Follow these rules strictly: "
+            "1) Output ONLY valid HTML (no markdown fences, no explanations). "
+            "2) Use standard 16:9 layout with generous whitespace and clear hierarchy. "
+            "3) Title is left-aligned, declarative, under 12 words. "
+            "4) Include a bottom-right timestamp element with class 'timestamp-br'. "
+            "5) Link the provided CSS framework using <link rel=\"stylesheet\" href=\"../../framework/css/{framework}.css\" />. "
+            "6) If visual elements are used, keep them purposeful and minimal. "
+            "7) No extraneous labels or decorations; everything must have a purpose."
+        )
+
+        # User instruction: describe the requested slide and chosen framework
+        user_prompt = (
+            f"Framework: {request.css_framework}.\n"
+            f"Create a professional slide for this description: {request.slide_request}\n"
+            "Return full HTML for a single slide, suitable for standalone viewing."
+        )
+
+        # Build request parameters for Responses API
+        request_params = {
+            "model": slide_model,
+            "input": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "input_text", "text": user_prompt}
+                    ],
+                },
+            ],
+            "instructions": system_prompt,
+            "max_output_tokens": 6000,
+            "store": False,
+            "stream": False,
+        }
+
+        # gpt-5 specific knobs
+        if slide_model.startswith("gpt-5"):
+            request_params["reasoning"] = {"effort": "low"}
+            request_params["text"] = {"verbosity": "medium"}
+
+        resp = client.responses.create(**request_params)
+
+        # Extract text content
+        content = ""
+        if getattr(resp, 'output', None):
+            for item in resp.output:
+                if getattr(item, 'type', '') == 'message' and getattr(item, 'content', None):
+                    for c in item.content:
+                        if getattr(c, 'type', '') == 'output_text' and getattr(c, 'text', None):
+                            content = c.text
+                            break
+                if content:
+                    break
+        if not content and hasattr(resp, 'output_text'):
+            content = resp.output_text
+        if not content:
+            raise HTTPException(status_code=500, detail="No content received from OpenAI")
+
+        # Strip accidental markdown fences if present
+        stripped = content.strip()
+        if stripped.startswith("```"):
+            # Remove the first fence line
+            first_newline = stripped.find("\n")
+            if first_newline != -1:
+                stripped = stripped[first_newline+1:]
+            # Remove trailing fence if present
+            if stripped.endswith("```"):
+                stripped = stripped[:-3].strip()
+
+        # Ensure timestamp exists
+        if "timestamp-br" not in stripped:
+            import datetime
+            ts = datetime.datetime.now().strftime("%b %d, %Y • %H:%M %Z")
+            # If no timezone available, drop %Z result if empty
+            if ts.endswith(" "):
+                ts = ts.strip()
+            timestamp_html = f'<div class="timestamp-br">Generated {ts}</div>'
+            # Insert before closing body if possible
+            if "</body>" in stripped:
+                stripped = stripped.replace("</body>", f"  {timestamp_html}\n</body>")
+            else:
+                stripped = stripped + "\n" + timestamp_html
+
+        response = SlideGenerationResponse(
+            slide_html=stripped,
+            framework_used=request.css_framework,
+            model_used=slide_model,
+            generation_metadata={
+                "request_length": len(request.slide_request),
+                "html_length": len(stripped),
+                "framework": request.css_framework,
+                "method": "responses_api",
+            },
+        )
+
+        return response
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Slide generation (mini) failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
