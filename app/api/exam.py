@@ -717,6 +717,135 @@ async def ingest_first_day_letter(payload: Dict[str, Any], user=Depends(get_curr
     return {"created": len(inserted), "requests": inserted}
 
 
+@router.post("/fdl/ingest-text")
+async def ingest_first_day_letter_text(payload: Dict[str, Any], user=Depends(get_current_user)):
+    """Ingest raw FDL text (simulated or pasted) and create requests without requiring storage."""
+    document_text = payload.get('text')
+    study_id = payload.get('study_id')
+    if not document_text or not study_id:
+        raise HTTPException(status_code=400, detail="text and study_id are required")
+
+    # Choose examination-specific model (defaults to faster GPT-5-mini)
+    exam_model = settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL
+
+    client = openai_manager.get_client()
+    if not client:
+        raise HTTPException(status_code=500, detail="OpenAI client not available")
+
+    system_prompt = (
+        "Extract distinct information requests (RFI) from the First Day Letter text. "
+        "For each request, return json fields: title, description, category, "
+        "request_code if present, regulatory_deadline if present (ISO), priority (0-3). "
+        "For category, use ONLY these exact values: "
+        "'Credit Risk', 'Interest Rate Risk', 'Liquidity Risk', 'Price Risk', "
+        "'Operational Risk', 'Compliance Risk', 'Strategic Risk', "
+        "'Governance/Management Oversight', 'IT/Cybersecurity', 'BSA/AML', "
+        "'Capital Adequacy/Financial Reporting', 'Asset Management/Trust'. "
+        "If unsure, use 'Operational Risk'. Respond in valid json only."
+    )
+
+    request_params = {
+        "model": exam_model,
+        "input": [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "input_text", "text": document_text}
+                ],
+            },
+        ],
+        "instructions": system_prompt,
+        "max_output_tokens": 6000,
+        "text": {"format": {"type": "json_object"}},
+        "store": False,
+        "stream": False,
+    }
+    if exam_model.startswith("gpt-5"):
+        request_params["reasoning"] = {"effort": "medium"}
+        request_params["text"] = {"verbosity": "high"}
+
+    resp = client.responses.create(**request_params)
+    content = ""
+    if resp.output:
+        for item in resp.output:
+            if getattr(item, 'type', '') == 'message' and getattr(item, 'content', None):
+                for c in item.content:
+                    if getattr(c, 'type', '') == 'output_text' and getattr(c, 'text', None):
+                        content = c.text
+                        break
+            if content:
+                break
+    if not content and hasattr(resp, 'output_text'):
+        content = resp.output_text
+    if not content:
+        raise HTTPException(status_code=500, detail="No extraction from OpenAI")
+
+    import json as _json
+    try:
+        parsed = _json.loads(content)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to parse extraction JSON: {str(e)}")
+
+    rfis = parsed.get('requests') if isinstance(parsed, dict) else parsed
+    if not isinstance(rfis, list):
+        rfis = []
+
+    VALID_CATEGORIES = {
+        'Credit Risk', 'Interest Rate Risk', 'Liquidity Risk', 'Price Risk',
+        'Operational Risk', 'Compliance Risk', 'Strategic Risk',
+        'Governance/Management Oversight', 'IT/Cybersecurity', 'BSA/AML',
+        'Capital Adequacy/Financial Reporting', 'Asset Management/Trust'
+    }
+    CATEGORY_MAPPING = {
+        'Corporate Governance': 'Governance/Management Oversight',
+        'Governance': 'Governance/Management Oversight',
+        'Management': 'Governance/Management Oversight',
+        'Technology Risk': 'IT/Cybersecurity',
+        'Cyber Risk': 'IT/Cybersecurity',
+        'Technology': 'IT/Cybersecurity',
+        'Market Risk': 'Price Risk',
+        'Legal Risk': 'Compliance Risk',
+        'Reputation Risk': 'Operational Risk',
+        'Reputational Risk': 'Operational Risk',
+        'Model Risk': 'Operational Risk'
+    }
+
+    def normalize_category(category: str) -> str:
+        if not category:
+            return 'Operational Risk'
+        if category in VALID_CATEGORIES:
+            return category
+        if category in CATEGORY_MAPPING:
+            return CATEGORY_MAPPING[category]
+        return 'Operational Risk'
+
+    rows = []
+    for r in rfis:
+        row = {
+            'user_id': user['uid'],
+            'study_id': study_id,
+            'title': r.get('title') or (r.get('description') or '')[:120] or 'Request',
+            'description': r.get('description') or '',
+            'category': normalize_category(r.get('category')),
+            'status': 'not_started',
+            'source': 'fdl',
+            'request_code': r.get('request_code'),
+            'priority': r.get('priority') if isinstance(r.get('priority'), int) else 0,
+            'regulatory_deadline': r.get('regulatory_deadline'),
+            'internal_due_date': None,
+            'owner': None,
+            'reviewer': None
+        }
+        rows.append(row)
+
+    inserted = []
+    if rows:
+        res = supabase.table('exam_requests').insert(rows).execute()
+        inserted = res.data or []
+
+    return {"created": len(inserted), "requests": inserted}
+
+
 # ============================
 # Exam Studies (isolated lane)
 # ============================

@@ -59,6 +59,10 @@ async def send_error(error_message: str) -> str:
     """Format error as SSE data"""
     return f"data: {json.dumps({'type': 'error', 'data': {'message': error_message}})}\n\n"
 
+async def send_letter_chunk(content: str) -> str:
+    """Format a simulated letter text chunk as SSE data"""
+    return f"data: {json.dumps({'type': 'letter_chunk', 'data': {'content': content}})}\n\n"
+
 @router.post("/fdl/ingest")
 async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_user)):
     """Stream FDL ingestion with real-time reasoning"""
@@ -502,6 +506,117 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
         except Exception as e:
             yield await send_error(f"Unexpected error: {str(e)}")
     
+    return StreamingResponse(
+        generate_stream(),
+        media_type="text/plain",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Content-Type": "text/event-stream",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "*",
+        }
+    )
+
+
+@router.post("/fdl/simulate")
+async def simulate_fdl(payload: Dict[str, Any], user=Depends(get_current_user)):
+    """Stream generation of a simulated First Day Letter using the exam model."""
+    regulator = (payload.get("regulator") or "OCC").strip() or "OCC"
+    focus_areas = payload.get("focus_areas") or []
+    additional_focus = payload.get("additional_focus") or ""
+    organization = payload.get("organization") or "Your Bank"
+
+    async def generate_stream() -> AsyncGenerator[str, None]:
+        try:
+            yield "data: {\"type\": \"connected\"}\n\n"
+
+            step = ReasoningStep(
+                "Generating First Day Letter",
+                f"Preparing a realistic {regulator} first-day letter with selected focus areas...",
+                "file"
+            )
+            yield await send_reasoning_step(step)
+
+            client = openai_manager.get_client()
+            if not client:
+                yield await send_error("AI generation service unavailable")
+                return
+
+            exam_model = settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL
+
+            system_prompt = (
+                "You are Oliver, producing a professional First Day Letter (FDL) that a regulator would send "
+                "to a bank prior to an on-site or remote examination. Write a realistic, concise, and formal "
+                "letter in well-structured markdown. Include: date, recipient, greeting, a brief overview of the "
+                "examination scope, bulletized or enumerated requests by domain, logistics (due dates, contact, "
+                "format expectations), and a professional sign-off. Keep it readable and organized."
+            )
+
+            areas_str = ", ".join([str(a) for a in focus_areas]) if focus_areas else "general examination domains"
+            user_prompt = (
+                f"Regulator: {regulator}. Organization: {organization}.\n"
+                f"Primary focus areas: {areas_str}.\n"
+                f"Additional considerations: {additional_focus}\n\n"
+                "Please draft the First Day Letter accordingly. Use markdown for headings and numbered lists."
+            )
+
+            request_params = {
+                "model": exam_model,
+                "input": [{
+                    "role": "user",
+                    "content": [
+                        {"type": "input_text", "text": user_prompt}
+                    ]
+                }],
+                "instructions": system_prompt,
+                "max_output_tokens": 4000,
+                "store": False,
+                "stream": True,
+            }
+            if exam_model.startswith("gpt-5"):
+                request_params["reasoning"] = {"effort": "low"}
+                request_params["text"] = {"verbosity": "medium"}
+
+            response = client.responses.create(**request_params)
+
+            full_text = ""
+            if hasattr(response, "__iter__"):
+                for chunk in response:
+                    if hasattr(chunk, 'output') and chunk.output:
+                        for item in chunk.output:
+                            if getattr(item, 'type', '') == 'message' and getattr(item, 'content', None):
+                                for c in item.content:
+                                    if getattr(c, 'type', '') == 'output_text' and getattr(c, 'text', None):
+                                        text_piece = c.text
+                                        full_text += text_piece
+                                        # Stream piece to client
+                                        yield await send_letter_chunk(text_piece)
+            else:
+                # Non-streaming fallback
+                content = ""
+                if response.output:
+                    for item in response.output:
+                        if getattr(item, 'type', '') == 'message' and getattr(item, 'content', None):
+                            for c in item.content:
+                                if getattr(c, 'type', '') == 'output_text' and getattr(c, 'text', None):
+                                    content = c.text
+                                    break
+                        if content:
+                            break
+                full_text = content
+                if full_text:
+                    yield await send_letter_chunk(full_text)
+
+            # Finish
+            step.complete()
+            step.content = "Letter generation completed."
+            yield await send_reasoning_step(step)
+            yield await send_completion({"letter": full_text, "ai_model": exam_model})
+
+        except Exception as e:
+            yield await send_error(f"Simulation failed: {str(e)}")
+
     return StreamingResponse(
         generate_stream(),
         media_type="text/plain",
