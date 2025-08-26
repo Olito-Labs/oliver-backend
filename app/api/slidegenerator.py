@@ -703,6 +703,7 @@ async def generate_slide_mini(request: SlideGenerationRequest) -> SlideGeneratio
             5. Use the appropriate color scheme based on the framework and design guidelines.
             6. Ensure the slide is responsive and works across different devices.
             8. Bottom-left source element for any information that is not your own.
+            9. VERY VERY IMPORTANT: Ensure slide is a 16:9 aspect ratio standard slide that will print as a PDF in the same way a standard slide would. Do not go beyond 16:9. Synthesize synthesize synthesize - what is the one key takeaway fromt hsi slide? 
             """
         )
 
