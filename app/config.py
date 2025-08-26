@@ -10,6 +10,8 @@ class Settings:
     # OpenAI Configuration
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
     OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-5")  # Default to GPT-5
+    # Examination-specific model (defaults to faster GPT-5-mini for workflow performance)
+    OPENAI_EXAM_MODEL: str = os.getenv("OPENAI_EXAM_MODEL", "gpt-5-mini")
     
     # Model Settings
     MAX_TOKENS: int = int(os.getenv("MAX_TOKENS", "2048"))

@@ -117,8 +117,8 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
             
             # Step 3: AI Model Initialization
             step3 = ReasoningStep(
-                "Initializing GPT-5 Analysis Engine",
-                "Connecting to OpenAI GPT-5 and preparing regulatory examination context...",
+                "Initializing GPT Analysis Engine",
+                "Connecting to OpenAI model and preparing regulatory examination context...",
                 "brain"
             )
             yield await send_reasoning_step(step3)
@@ -132,13 +132,13 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
                 return
                 
             step3.complete()
-            step3.content = "GPT-5 connected successfully. Model configured for regulatory document analysis."
+            step3.content = f"Model {settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL} connected successfully for regulatory document analysis."
             yield await send_reasoning_step(step3)
             
             # Step 4: Document Encoding
             step4 = ReasoningStep(
                 "Encoding Document for AI Processing",
-                "Converting PDF to base64 format for secure transmission to GPT-5...",
+                "Converting PDF to base64 format for secure transmission to AI...",
                 "file"
             )
             yield await send_reasoning_step(step4)
@@ -174,8 +174,10 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
                     "Respond with a brief analysis of what sections contain examination requests."
                 )
                 
+                # Use examination-specific model (defaults to GPT-5-mini)
+                exam_model = settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL
                 structure_params = {
-                    "model": settings.OPENAI_MODEL,
+                    "model": exam_model,
                     "input": [{"role": "user", "content": [
                         {"type": "input_file", "filename": document['filename'], "file_data": f"data:application/pdf;base64,{base64_pdf}"},
                         {"type": "input_text", "text": structure_prompt}
@@ -186,7 +188,7 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
                     "store": True,
                 }
                 
-                if settings.OPENAI_MODEL.startswith("gpt-5"):
+                if exam_model.startswith("gpt-5"):
                     structure_params["reasoning"] = {"effort": "low"}  # Fast analysis
                     structure_params["text"] = {"verbosity": "medium"}
                 
@@ -241,8 +243,9 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
                     "Explain which categories you find and where they appear in the document."
                 )
                 
+                exam_model = settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL
                 category_params = {
-                    "model": settings.OPENAI_MODEL,
+                    "model": exam_model,
                     "input": [{"role": "user", "content": [
                         {"type": "input_file", "filename": document['filename'], "file_data": f"data:application/pdf;base64,{base64_pdf}"},
                         {"type": "input_text", "text": f"Document structure context: {structure_content[:500]}\n\n{category_prompt}"}
@@ -253,7 +256,7 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
                     "store": True,
                 }
                 
-                if settings.OPENAI_MODEL.startswith("gpt-5"):
+                if exam_model.startswith("gpt-5"):
                     category_params["reasoning"] = {"effort": "low"}
                     category_params["text"] = {"verbosity": "medium"}
                 
@@ -309,8 +312,9 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
                     "Return valid JSON only."
                 )
                 
+                exam_model = settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL
                 extraction_params = {
-                    "model": settings.OPENAI_MODEL,
+                    "model": exam_model,
                     "input": [{"role": "user", "content": [
                         {"type": "input_file", "filename": document['filename'], "file_data": f"data:application/pdf;base64,{base64_pdf}"},
                         {"type": "input_text", "text": f"Context:\nStructure: {structure_content[:300]}\nCategories: {category_content[:300]}\n\n{extraction_prompt}"}
@@ -322,7 +326,7 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
                     "store": True,
                 }
                 
-                if settings.OPENAI_MODEL.startswith("gpt-5"):
+                if exam_model.startswith("gpt-5"):
                     extraction_params["reasoning"] = {"effort": "medium"}
                     extraction_params["text"]["verbosity"] = "high"
                 
@@ -485,7 +489,7 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
                     "created": len(inserted),
                     "requests": inserted,
                     "processing_time": "Real-time with streaming feedback",
-                    "ai_model": settings.OPENAI_MODEL
+                    "ai_model": settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL
                 }
                 yield await send_completion(completion_data)
                 

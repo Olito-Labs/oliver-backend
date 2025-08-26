@@ -87,9 +87,12 @@ async def _analyze_exam_document_with_o3(document_text: str) -> Dict[str, Any]:
         f"{document_text}\n\nRespond in valid json."
     )
 
+    # Choose examination-specific model (defaults to faster GPT-5-mini)
+    exam_model = settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL
+
     # Build parameters based on model type
     request_params = {
-        "model": settings.OPENAI_MODEL,
+        "model": exam_model,
         "input": user_prompt,
         "instructions": system_prompt,
         "max_output_tokens": 6000,
@@ -99,10 +102,10 @@ async def _analyze_exam_document_with_o3(document_text: str) -> Dict[str, Any]:
     }
     
     # Add model-specific parameters
-    if settings.OPENAI_MODEL.startswith("gpt-5"):
+    if exam_model.startswith("gpt-5"):
         request_params["reasoning"] = {"effort": "medium"}  # Thorough analysis for documents
         request_params["text"]["verbosity"] = "high"  # Detailed extraction results
-    elif settings.OPENAI_MODEL.startswith("o3"):
+    elif exam_model.startswith("o3"):
         request_params["reasoning"] = {"effort": "medium", "summary": "detailed"}
     else:
         request_params["temperature"] = 0.7  # Consistent extraction for other models
@@ -443,9 +446,12 @@ async def validate_request(request_id: str, user=Depends(get_current_user)):
             "text": "No evidence documents have been linked to this request yet."
         })
 
+    # Choose examination-specific model (defaults to faster GPT-5-mini)
+    exam_model = settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL
+
     # Build parameters for Responses API with document inputs
     request_params = {
-        "model": settings.OPENAI_MODEL,
+        "model": exam_model,
         "input": [
             {
                 "role": "user",
@@ -460,10 +466,10 @@ async def validate_request(request_id: str, user=Depends(get_current_user)):
     }
     
     # Add model-specific parameters
-    if settings.OPENAI_MODEL.startswith("gpt-5"):
+    if exam_model.startswith("gpt-5"):
         request_params["reasoning"] = {"effort": "medium"}  # Careful validation analysis
         request_params["text"]["verbosity"] = "medium"  # Balanced validation detail
-    elif settings.OPENAI_MODEL.startswith("o3"):
+    elif exam_model.startswith("o3"):
         request_params["reasoning"] = {"effort": "medium", "summary": "detailed"}
     else:
         request_params["temperature"] = 0.7  # Consistent validation for other models
@@ -578,9 +584,12 @@ async def ingest_first_day_letter(payload: Dict[str, Any], user=Depends(get_curr
     import base64
     base64_pdf = base64.b64encode(file_bytes).decode('utf-8')
     
+    # Choose examination-specific model (defaults to faster GPT-5-mini)
+    exam_model = settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL
+
     # Build parameters for Responses API with PDF input
     request_params = {
-        "model": settings.OPENAI_MODEL,
+        "model": exam_model,
         "input": [
             {
                 "role": "user",
@@ -605,10 +614,10 @@ async def ingest_first_day_letter(payload: Dict[str, Any], user=Depends(get_curr
     }
     
     # Add model-specific parameters
-    if settings.OPENAI_MODEL.startswith("gpt-5"):
+    if exam_model.startswith("gpt-5"):
         request_params["reasoning"] = {"effort": "medium"}  # Thorough FDL analysis
         request_params["text"]["verbosity"] = "high"  # Detailed request extraction
-    elif settings.OPENAI_MODEL.startswith("o3"):
+    elif exam_model.startswith("o3"):
         request_params["reasoning"] = {"effort": "medium", "summary": "detailed"}
     else:
         request_params["temperature"] = 0.7  # Consistent extraction for other models
