@@ -106,6 +106,13 @@ class DocumentAnalysisRequest(BaseModel):
     analysis_type: str = "mra-intake"
 
 # Pydantic models for structured MRA analysis output
+class RecommendedAction(BaseModel):
+    action: str
+    owner: Optional[str] = None
+    timeframe: Optional[str] = None  # e.g., "0-30 days", "30-60 days"
+    effort: Optional[str] = None     # Low | Medium | High
+    impact: Optional[str] = None     # Low | Medium | High
+
 class MRAFinding(BaseModel):
     id: str
     type: str  # 'BSA/AML', 'Lending', 'Operations', 'Capital', 'Management', 'IT', 'Other'
@@ -116,6 +123,36 @@ class MRAFinding(BaseModel):
     response_required: bool
     extracted_text: str
     confidence: float
+    # First-principles extensions (optional)
+    what_it_means: Optional[str] = None
+    why_it_matters: Optional[str] = None
+    root_causes: Optional[List[str]] = None
+    regulatory_expectations: Optional[List[str]] = None
+    control_gaps: Optional[List[str]] = None
+    recommended_actions: Optional[List[RecommendedAction]] = None
+    acceptance_criteria: Optional[List[str]] = None
+    artifacts_to_prepare: Optional[List[str]] = None
+    risk_impact: Optional[str] = None  # Low | Medium | High
+    urgency: Optional[str] = None      # e.g., Immediate, 30 days, 60-90 days
+    dependencies: Optional[List[str]] = None
+    closure_narrative_outline: Optional[str] = None
+
+class FirstPrinciplesOverview(BaseModel):
+    problem_statement: Optional[str] = None
+    decomposition: Optional[List[str]] = None
+    causal_factors: Optional[List[str]] = None
+    regulatory_expectations: Optional[List[str]] = None
+    risks: Optional[List[str]] = None
+
+class RemediationGuidance(BaseModel):
+    quick_wins: Optional[List[str]] = []
+    critical_actions: Optional[List[str]] = []
+    phases: Optional[List[Dict[str, Any]]] = []  # [{phase, goals[], notes}]
+    owners: Optional[List[str]] = []
+    timeline_30_60_90: Optional[Dict[str, List[str]]] = None  # keys: "30_days","60_days","90_days"
+    acceptance_criteria: Optional[List[str]] = []
+    monitoring_metrics: Optional[List[str]] = []
+    required_artifacts: Optional[List[str]] = []
 
 class MRAAnalysisResult(BaseModel):
     summary: str
@@ -124,6 +161,12 @@ class MRAAnalysisResult(BaseModel):
     critical_deadlines: List[str]
     processing_time_ms: int
     confidence: float
+    # First-principles extensions (optional)
+    first_principles: Optional[FirstPrinciplesOverview] = None
+    remediation_guidance: Optional[RemediationGuidance] = None
+    overall_risk_level: Optional[str] = None  # Low | Medium | High
+    urgency: Optional[str] = None
+    key_regulatory_citations: Optional[List[str]] = None
 
 async def analyze_mra_document_with_ai(document_text: str) -> MRAAnalysisResult:
     """Analyze MRA document using OpenAI (GPT-5/o3) with structured output"""
@@ -136,7 +179,7 @@ async def analyze_mra_document_with_ai(document_text: str) -> MRAAnalysisResult:
     # Create specialized MRA analysis prompt with exact JSON schema
     system_prompt = """You are a regulatory compliance expert specializing in analyzing Matter Requiring Attention (MRA) documents from bank examinations.
 
-Your task is to extract structured information from MRA documents, identifying regulatory findings with high precision.
+Your task is to extract structured information from MRA documents, identifying regulatory findings with high precision, and to break them down from first principles so a bank officer knows exactly what it says and how to remediate effectively.
 
 CRITICAL: You MUST return a valid JSON object that exactly matches this schema:
 
@@ -144,27 +187,69 @@ CRITICAL: You MUST return a valid JSON object that exactly matches this schema:
   "summary": "Brief summary of the document and findings",
   "findings": [
     {
-      "id": "finding-1", 
+      "id": "finding-1",
       "type": "BSA/AML|Lending|Operations|Capital|Management|IT|Other",
-      "severity": "Matter Requiring Attention|Deficiency|Violation|Recommendation", 
+      "severity": "Matter Requiring Attention|Deficiency|Violation|Recommendation",
       "description": "Clear summary of the finding",
       "regulatory_citation": "Specific regulation cited or null",
       "deadline": "YYYY-MM-DD format or null",
-      "response_required": true/false,
+      "response_required": true,
       "extracted_text": "Exact quote from document",
-      "confidence": 0.85
+      "confidence": 0.85,
+
+      // First-principles optional detail
+      "what_it_means": "Plain-language explanation",
+      "why_it_matters": "Business/regulatory impact",
+      "root_causes": ["root cause 1", "root cause 2"],
+      "regulatory_expectations": ["expectation 1"],
+      "control_gaps": ["gap 1"],
+      "recommended_actions": [
+        {"action": "specific action", "owner": "Risk", "timeframe": "0-30 days", "effort": "Medium", "impact": "High"}
+      ],
+      "acceptance_criteria": ["what proves closure"],
+      "artifacts_to_prepare": ["policy update", "evidence log"],
+      "risk_impact": "High",
+      "urgency": "Immediate (0-30 days)",
+      "dependencies": ["data migration"],
+      "closure_narrative_outline": "Outline for regulator response"
     }
   ],
   "total_findings": 5,
   "critical_deadlines": ["2025-06-30", "2025-12-31"],
   "processing_time_ms": 2500,
-  "confidence": 0.87
+  "confidence": 0.87,
+
+  // First-principles (optional but preferred)
+  "first_principles": {
+    "problem_statement": "Crisp articulation of the core problem",
+    "decomposition": ["sub-problem 1", "sub-problem 2"],
+    "causal_factors": ["factor 1"],
+    "regulatory_expectations": ["what the regulation expects"],
+    "risks": ["risk 1"]
+  },
+  "remediation_guidance": {
+    "quick_wins": ["win 1"],
+    "critical_actions": ["critical action 1"],
+    "phases": [{"phase": "stabilize", "goals": ["stop-gap control"]}],
+    "owners": ["Compliance", "IT"],
+    "timeline_30_60_90": {
+      "30_days": ["actions"],
+      "60_days": ["actions"],
+      "90_days": ["actions"]
+    },
+    "acceptance_criteria": ["measurable outcomes"],
+    "monitoring_metrics": ["KRI1", "KCI1"],
+    "required_artifacts": ["evidence list"]
+  },
+  "overall_risk_level": "Medium|High|Low",
+  "urgency": "Immediate|30-60 days|>90 days",
+  "key_regulatory_citations": ["12 CFR ..."]
 }
 
 FIELD REQUIREMENTS:
 - id: Generate unique IDs like "finding-1", "finding-2", etc.
 - type: Must be one of the exact values listed
-- severity: Must be one of the exact values listed  
+- severity: Must be one of the exact values listed
 - description: Clear, professional summary
 - regulatory_citation: Include if cited, otherwise null
 - deadline: YYYY-MM-DD format if mentioned, otherwise null
@@ -176,7 +261,10 @@ FIELD REQUIREMENTS:
 - processing_time_ms: Always set to 2500 (will be calculated server-side)
 - confidence: Overall confidence in entire analysis
 
-Be precise and conservative. Only extract findings clearly stated in the document."""
+GUIDANCE:
+- Prefer including the first_principles and remediation_guidance sections to help the officer act.
+- Be precise and conservative. Only extract findings clearly stated in the document.
+- Keep content concise, actionable, and bank-ready."""
 
     user_prompt = f"""Analyze this MRA document and extract all regulatory findings. Return ONLY valid JSON matching the exact schema provided:
 

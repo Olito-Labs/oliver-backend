@@ -693,7 +693,7 @@ async def generate_slide_mini(request: SlideGenerationRequest) -> SlideGeneratio
             """### **System Prompt**
 
             You are an expert in the field of presentation design and development.
-            Your task is to generate a professional slide for a given description.
+            Your task is to generate a professional slide for a given description using html for output.
             
             ### **Requirements**
             1. Design a slide that follows the given framework and design guidelines.
@@ -703,7 +703,7 @@ async def generate_slide_mini(request: SlideGenerationRequest) -> SlideGeneratio
             5. Use the appropriate color scheme based on the framework and design guidelines.
             6. Ensure the slide is responsive and works across different devices.
             8. Bottom-left source element for any information that is not your own.
-            9. VERY VERY IMPORTANT: Ensure slide is a 16:9 aspect ratio standard slide that will print as a PDF in the same way a standard slide would. Do not go beyond 16:9. Synthesize synthesize synthesize - what is the one key takeaway fromt hsi slide? 
+            9. VERY VERY IMPORTANT: Ensure slide is a 16:9 aspect ratio standard slide that will print as a PDF in the same way a standard slide would. Do not go beyond 16:9. Synthesize synthesize synthesize - what should the viewer take away from the slide? Put it in title or subtitle. Don't overcrowd the slide. Fit to 16:9. 
             """
         )
 
