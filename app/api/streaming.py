@@ -934,6 +934,187 @@ async def simulate_fdl(payload: Dict[str, Any], user=Depends(get_current_user)):
     )
 
 # ====================================================================
+# MRA Simulation (streamed reasoning + synthetic analysis)
+# ====================================================================
+
+@router.post("/mra/simulate")
+async def simulate_mra(payload: Dict[str, Any], user=Depends(get_current_user)):
+    """Stream generation of a simulated MRA analysis result with reasoning steps.
+
+    Payload (optional fields):
+      { "study_id": str, "domain": str, "num_findings": int, "notes": str }
+    """
+    study_id = (payload.get("study_id") or "").strip() or None
+    domain = (payload.get("domain") or "").strip() or None
+    num_findings = payload.get("num_findings") or 4
+    notes = (payload.get("notes") or "").strip() or None
+
+    async def generate_stream() -> AsyncGenerator[str, None]:
+        try:
+            # Connected event
+            yield "data: {\"type\": \"connected\"}\n\n"
+
+            # Step 1: Initialize context
+            s1 = ReasoningStep(
+                "Understanding context",
+                f"Preparing simulated MRA analysis for{f' {domain}' if domain else ''} with ~{num_findings} findings...",
+                "brain"
+            )
+            yield await send_reasoning_step(s1)
+            await asyncio.sleep(0.6)
+            s1.complete()
+            yield await send_reasoning_step(s1)
+
+            # Step 2: Drafting structure
+            s2 = ReasoningStep(
+                "Drafting analysis structure",
+                "Setting up JSON schema: summary, findings[], first_principles, remediation_guidance...",
+                "layers"
+            )
+            yield await send_reasoning_step(s2)
+            await asyncio.sleep(0.6)
+            s2.complete()
+            yield await send_reasoning_step(s2)
+
+            # Step 3: Call OpenAI to synthesize JSON
+            s3 = ReasoningStep(
+                "Synthesizing findings",
+                "Generating realistic findings and guidance in strict JSON format...",
+                "sparkles"
+            )
+            yield await send_reasoning_step(s3)
+
+            client = openai_manager.get_client()
+            if not client:
+                s3.error("OpenAI client not available")
+                yield await send_reasoning_step(s3)
+                yield await send_error("AI analysis service unavailable")
+                return
+
+            # Build prompt
+            domain_hint = f"Focus domain: {domain}." if domain else ""
+            notes_hint = f"Additional notes: {notes}." if notes else ""
+            system_prompt = (
+                "You are a regulatory compliance expert generating a simulated MRA analysis. "
+                "Return ONLY a valid JSON object matching the schema defined below. Keep it bank-realistic, concise, and actionable."
+            )
+            user_prompt = f"""
+Generate a simulated MRA analysis as valid JSON. Target approximately {num_findings} findings.
+{domain_hint}
+{notes_hint}
+
+Schema:
+{{
+  "summary": string,
+  "findings": [
+    {{
+      "id": string,
+      "type": "BSA/AML|Lending|Operations|Capital|Management|IT|Other",
+      "severity": "Matter Requiring Attention|Deficiency|Violation|Recommendation",
+      "description": string,
+      "regulatory_citation": string|null,
+      "deadline": string|null,  
+      "response_required": boolean,
+      "extracted_text": string,
+      "confidence": number,
+      "what_it_means": string|null,
+      "why_it_matters": string|null,
+      "root_causes": string[]|null,
+      "regulatory_expectations": string[]|null,
+      "control_gaps": string[]|null,
+      "recommended_actions": [{{"action": string, "owner": string|null, "timeframe": string|null, "effort": string|null, "impact": string|null}}]|null,
+      "acceptance_criteria": string[]|null,
+      "artifacts_to_prepare": string[]|null,
+      "risk_impact": string|null,
+      "urgency": string|null,
+      "dependencies": string[]|null,
+      "closure_narrative_outline": string|null
+    }}
+  ],
+  "total_findings": number,
+  "critical_deadlines": string[],
+  "processing_time_ms": number,
+  "confidence": number,
+  "first_principles": object|null,
+  "remediation_guidance": object|null,
+  "overall_risk_level": string|null,
+  "urgency": string|null,
+  "key_regulatory_citations": string[]|null
+}}
+"""
+
+            req = {
+                "model": settings.OPENAI_MODEL,
+                "input": user_prompt,
+                "instructions": system_prompt,
+                "max_output_tokens": 7000,
+                "text": {"format": {"type": "json_object"}},
+                "store": True,
+                "stream": False,
+            }
+            if settings.OPENAI_MODEL.startswith("gpt-5"):
+                req["reasoning"] = {"effort": "medium"}
+            elif settings.OPENAI_MODEL.startswith("o3"):
+                req["reasoning"] = {"effort": "medium", "summary": "concise"}
+            else:
+                req["temperature"] = 0.7
+
+            import time, json as _json
+            t0 = time.time()
+            try:
+                resp = client.responses.create(**req)
+                content = ""
+                if getattr(resp, 'output', None):
+                    for item in resp.output:
+                        if getattr(item, 'type', '') == 'message' and getattr(item, 'content', None):
+                            for c in item.content:
+                                if getattr(c, 'type', '') == 'output_text' and getattr(c, 'text', None):
+                                    content = c.text
+                                    break
+                        if content:
+                            break
+                if not content and hasattr(resp, 'output_text'):
+                    content = resp.output_text
+                if not content:
+                    raise Exception("No response content received from OpenAI")
+
+                analysis = _json.loads(content)
+                analysis["processing_time_ms"] = int((time.time() - t0) * 1000)
+            except Exception as ex:
+                s3.error(f"Synthesis failed: {str(ex)}")
+                yield await send_reasoning_step(s3)
+                yield await send_error("Failed to synthesize MRA analysis")
+                return
+
+            s3.complete()
+            yield await send_reasoning_step(s3)
+
+            # Step 4: Finalize
+            s4 = ReasoningStep(
+                "Finalizing output",
+                "Returning structured analysis and ready to display findings.",
+                "check"
+            )
+            s4.complete()
+            yield await send_reasoning_step(s4)
+            yield await send_completion({"results": analysis, "study_id": study_id})
+
+        except Exception as e:
+            yield await send_error(f"Simulation failed: {str(e)}")
+
+    return StreamingResponse(
+        generate_stream(),
+        media_type="text/plain",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Content-Type": "text/event-stream",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "*",
+        }
+    )
+
+# ====================================================================
 # Generic Agent Runner (tool-calling skeleton with streaming UX)
 # ====================================================================
 
