@@ -37,6 +37,7 @@ def _ensure_study(study_id: str, user_id: str) -> None:
         'user_id': user_id,
         'title': 'Examination Prep',
         'description': None,
+        'intent': 'examination-prep',
         'workflow_type': 'examination-prep',
         'status': 'active',
         'current_step': 0,
