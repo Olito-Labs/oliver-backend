@@ -63,6 +63,13 @@ async def send_letter_chunk(content: str) -> str:
     """Format a simulated letter text chunk as SSE data"""
     return f"data: {json.dumps({'type': 'letter_chunk', 'data': {'content': content}})}\n\n"
 
+# NEW: Tool call helpers for generic agent streams
+async def send_tool_call(tool: str, args: Dict[str, Any]) -> str:
+    return f"data: {json.dumps({'type': 'tool_call', 'data': {'tool': tool, 'args': args}})}\n\n"
+
+async def send_tool_result(tool: str, result: Any) -> str:
+    return f"data: {json.dumps({'type': 'tool_result', 'data': {'tool': tool, 'result': result}})}\n\n"
+
 @router.post("/fdl/ingest")
 async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_user)):
     """Stream FDL ingestion with real-time reasoning"""
@@ -638,6 +645,121 @@ async def simulate_fdl(payload: Dict[str, Any], user=Depends(get_current_user)):
 
         except Exception as e:
             yield await send_error(f"Simulation failed: {str(e)}")
+
+    return StreamingResponse(
+        generate_stream(),
+        media_type="text/plain",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Content-Type": "text/event-stream",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "*",
+        }
+    )
+
+# ====================================================================
+# Generic Agent Runner (tool-calling skeleton with streaming UX)
+# ====================================================================
+
+@router.post("/agent/run")
+async def agent_run(payload: Dict[str, Any], user=Depends(get_current_user)):
+    """Stream a simple autonomous agent that plans, calls demo tools, and reports results.
+
+    Request payload shape (flexible):
+      { "goal": str, "url": Optional[str], "study_id": Optional[str] }
+    """
+    goal = (payload.get("goal") or "").strip() or "Explore and demonstrate tool-calling"
+    url = (payload.get("url") or "").strip() or None
+
+    async def generate_stream() -> AsyncGenerator[str, None]:
+        try:
+            # Connected event
+            yield "data: {\"type\": \"connected\"}\n\n"
+
+            # Step: Understand goal
+            s1 = ReasoningStep(
+                "Understanding the goal",
+                f"Interpreting user goal: '{goal}' and preparing a lightweight plan...",
+                "brain"
+            )
+            yield await send_reasoning_step(s1)
+            await asyncio.sleep(0.3)
+            s1.complete()
+            s1.content = "Goal parsed. I'll create a short plan and pick the first tool."
+            yield await send_reasoning_step(s1)
+
+            # Step: Plan
+            plan = [
+                "Draft plan with milestones",
+                "Call demo tools to gather a small piece of data",
+                "Summarize what happened and return a result"
+            ]
+            s2 = ReasoningStep(
+                "Creating a plan",
+                "Plan: 1) Draft plan 2) Run one demo tool 3) Summarize",
+                "lightbulb",
+                details="\n".join(f"- {p}" for p in plan)
+            )
+            yield await send_reasoning_step(s2)
+            await asyncio.sleep(0.3)
+            s2.complete()
+            s2.content = "Plan ready. Proceeding to tool execution."
+            yield await send_reasoning_step(s2)
+
+            # Tool execution branch
+            if url:
+                # Tool: fetch_url_title
+                yield await send_tool_call("fetch_url_title", {"url": url})
+                try:
+                    import httpx, re
+                    async with httpx.AsyncClient(follow_redirects=True, timeout=10) as client:
+                        r = await client.get(url)
+                        text = r.text[:20000] if r.text else ""
+                        m = re.search(r"<title[^>]*>(.*?)</title>", text, re.IGNORECASE | re.DOTALL)
+                        title = m.group(1).strip() if m else None
+                        meta = {
+                            "status": r.status_code,
+                            "title": title,
+                            "bytes": len(r.content) if r.content else 0
+                        }
+                        yield await send_tool_result("fetch_url_title", meta)
+                        await asyncio.sleep(0.2)
+                        s3 = ReasoningStep(
+                            "Analyzing fetched page",
+                            f"HTTP {meta['status']}. Title: {meta['title'] or 'N/A'}",
+                            "search",
+                            details=str(meta)
+                        )
+                        yield await send_reasoning_step(s3)
+                        s3.complete()
+                        yield await send_reasoning_step(s3)
+                except Exception as e:
+                    yield await send_tool_result("fetch_url_title", {"error": str(e)})
+            else:
+                # Tool: sleep
+                duration = 1
+                yield await send_tool_call("sleep", {"seconds": duration})
+                await asyncio.sleep(duration)
+                yield await send_tool_result("sleep", {"ok": True, "slept": duration})
+
+            # Completion summary
+            summary = {
+                "goal": goal,
+                "used_tool": "fetch_url_title" if url else "sleep",
+                "note": "This is a working skeleton. Swap in real tools as needed."
+            }
+
+            s4 = ReasoningStep("Summarizing outcome", "Packaging results and finishing up...", "check")
+            yield await send_reasoning_step(s4)
+            await asyncio.sleep(0.2)
+            s4.complete()
+            s4.content = "Done. Emitting completion event."
+            yield await send_reasoning_step(s4)
+            yield await send_completion(summary)
+
+        except Exception as e:
+            yield await send_error(f"Agent failed: {str(e)}")
 
     return StreamingResponse(
         generate_stream(),
