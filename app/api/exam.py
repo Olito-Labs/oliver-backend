@@ -19,6 +19,41 @@ except ImportError:
     docx = None
 
 router = APIRouter(prefix="/api/exam", tags=["examination"])
+def _ensure_study(study_id: str, user_id: str) -> None:
+    """Ensure a row exists in public.studies for the given study_id and user.
+
+    This aligns Exam Prep with the single studies table (Option A).
+    """
+    try:
+        exists = supabase.table('studies').select('id').eq('id', study_id).eq('user_id', user_id).single().execute()
+        if getattr(exists, 'data', None):
+            return
+    except Exception:
+        # Proceed to attempt insert if not found or select errored
+        pass
+
+    study_row = {
+        'id': study_id,
+        'user_id': user_id,
+        'title': 'Examination Prep',
+        'description': None,
+        'workflow_type': 'examination-prep',
+        'status': 'active',
+        'current_step': 0,
+        'workflow_status': 'not_started',
+        'workflow_data': {}
+    }
+    try:
+        supabase.table('studies').insert(study_row).execute()
+    except Exception as insert_ex:
+        # Ignore race if created concurrently; otherwise log
+        try:
+            exists2 = supabase.table('studies').select('id').eq('id', study_id).eq('user_id', user_id).single().execute()
+            if not getattr(exists2, 'data', None):
+                print(f"[exam] ensure_study insert failed and not found: {insert_ex}")
+        except Exception:
+            print(f"[exam] ensure_study select-after-insert failed: {insert_ex}")
+
 # With Option A, we use the single public.studies table; no exam_studies auto-creation needed.
 
 
@@ -140,7 +175,8 @@ async def upload_exam_document(
     user=Depends(get_current_user)
 ):
     try:
-        # Option A: study_id references public.studies(id) directly
+        # Ensure a base study row exists (Option A)
+        _ensure_study(study_id, user['uid'])
         allowed_types = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
         if file.content_type not in allowed_types:
             raise HTTPException(status_code=400, detail=f"Unsupported file type: {file.content_type}")
@@ -903,7 +939,8 @@ async def create_exam_document_from_text(payload: Dict[str, Any], user=Depends(g
         raise HTTPException(status_code=400, detail="text and study_id are required")
 
     try:
-        # Option A: study_id references public.studies(id) directly
+        # Ensure a base study row exists (Option A)
+        _ensure_study(study_id, user['uid'])
         row = {
             'id': str(uuid.uuid4()),
             'filename': filename,
