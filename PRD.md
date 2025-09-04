@@ -1,93 +1,111 @@
 ## Product Requirements Document (PRD): Oliver Backend
 
-### 1. Objective
-Deliver a reliable, secure, and scalable backend that powers Oliver’s AI-driven compliance workflows for banks. The backend ingests documents, analyzes them with LLMs, persists structured results, and exposes authenticated APIs for the frontend.
+This document is a concise handover for new engineers/agents working on the Oliver backend. It reflects the current, running system and how to extend it safely.
 
-### 2. Primary Users
-- Compliance Officers, Risk Managers, Audit Leads
-- Internal Admin/Developers (observability, ops)
+### 1) Objective
+Provide secure, RLS‑compatible APIs that power Oliver’s compliance workflows (MRA Finding Analysis, Examination Prep, streaming agent), using Supabase for auth/storage/DB and OpenAI Responses for analysis. All user data is tenant‑isolated via `user_id` filters.
 
-### 3. Scope (V1-V2)
-- V1: Studies CRUD, document ingest, analysis (MRA, Exam FDL/Requests), chat streaming proxy, Supabase auth integration, RLS-compatible storage, structured JSON outputs.
-- V2: First-principles MRA analysis (implemented), request validation (implemented), presentation slide synthesis, richer analytics & audit trails.
+### 2) Architecture (Runtime)
 
-### 4. Key Workflows
-- MRA Intake: Upload → Extract Text → Structured MRA findings → First-principles + remediation guidance.
-- Exam Prep: FDL ingest (PDF/text) → Request extraction → Requests CRUD → Evidence validation.
-- Chat: Streaming analysis with conversation state and reasoning metadata.
+- FastAPI app at `app/main.py`
+  - Routers: `api/studies.py`, `api/documents.py` (MRA), `api/exam.py` (Exam lane), `api/chat.py`, `api/streaming.py` (SSE), plus feature endpoints.
+- Supabase
+  - Buckets: `mra-documents`, `exam-documents`
+  - Tables: `studies`, `exam_studies`, `mra_documents`, `exam_documents`, `exam_requests`, `exam_request_documents`
+- OpenAI Responses API via `app/llm_providers.py` (`gpt-5-*` default, optional `o3-*`)
+- Optional external search: EXA (`EXA_API_KEY`) used by agent streaming route
 
-### 5. Functional Requirements
+Request flow examples
+1) MRA: upload → store in `mra-documents` → analyze via OpenAI → structured JSON persisted on `mra_documents.analysis_results` → frontend renders findings and guidance
+2) Exam: upload FDL → `/api/streaming/fdl/ingest` streams reasoning while creating rows in `exam_requests` → evidence linking and per‑request validation persisted to `exam_requests.validation_results`
+3) Agent: `/api/streaming/agent/run` emits `reasoning_step`, `tool_call`, `tool_result`, and `completion` events; optionally calls EXA and summarizes with OpenAI
 
-5.1 Authentication & Authorization
-- Supabase JWT auth required for all endpoints (RLS-friendly).
-- Enforce user-level ownership on all reads/writes (filter by `user_id`).
+### 3) Workflows (Backend responsibilities)
 
-5.2 Studies
-- Create/list/get/update studies in `studies` (and `exam_studies` for isolated exam lane).
-- Fields: `workflow_type`, `workflow_status`, `current_step`, `workflow_data` JSON.
+- MRA Finding Analysis
+  - Ingest PDF/DOC/DOCX, extract text (PyMuPDF/python‑docx)
+  - Call OpenAI with strict JSON schema (see section 8)
+  - Persist `analysis_results` on `mra_documents`
 
-5.3 Documents (MRA)
-- Upload to Supabase Storage `mra-documents` and persist row in `mra_documents`.
-- Analyze with OpenAI Responses API to return strict JSON (schema below).
-- Track `processing_status`, `error_message`, `analysis_results`.
+- Examination Prep
+  - First‑Day Letter ingest (PDF or text) → request extraction to `exam_requests`
+  - Evidence upload to `exam_documents`, link via `exam_request_documents`
+  - Validation: load linked files, send to OpenAI, persist `validation_results` and `last_validated_at` on `exam_requests`
+  - Streaming variants in `api/streaming.py` provide UI reasoning steps
 
-5.4 Documents (Exam)
-- Upload to Storage `exam-documents`, persist rows in `exam_documents`.
-- Analyze for checklist/requests; FDL ingest (PDF/text) to `exam_requests`.
-- Link documents to requests; validate evidence with LLM and store results.
+- Streaming Agent (Oliver)
+  - Route: `POST /api/streaming/agent/run` (SSE)
+  - Emits `reasoning_step` (UI timeline), optional `exa_search` `tool_call/tool_result`, final `completion`
+  - Summarization via OpenAI from search snippets when EXA is configured
 
-5.5 Chat Streaming
-- Proxy `/api/chat/stream` for SSE; support `previous_response_id` and structured event types: `content`, `canvas_content`, `status`, `reasoning`, `artifacts`, `done`.
+### 4) Authentication & Security
 
-### 6. Data Models (summary)
-- studies, exam_studies
-- mra_documents, exam_documents
-- exam_requests, exam_request_documents
-- messages (for reasoning analytics; optional in V1 workflows)
+- Supabase JWT required; `get_current_user` injects `user['uid']`
+- All DB reads/writes are filtered by `user_id` (checked in every route)
+- No plaintext keys in responses; environment loaded via `app/config.py`
 
-### 7. Core APIs (high-level)
-- Studies: `POST/GET/PATCH /api/studies`, Exam lane at `/api/exam/studies`.
-- MRA Documents: `POST /api/documents/upload`, `GET /api/documents/{id}`, `POST /api/documents/{id}/analyze`, `GET /api/documents/study/{study_id}`, `DELETE /api/documents/{id}`.
-- Exam: `POST /api/exam/documents/upload`, `POST /api/exam/documents/{id}/analyze`, `GET /api/exam/documents/{id}`, `POST /api/exam/fdl/ingest`, `POST /api/exam/fdl/ingest-text`, `GET/POST/PATCH/DELETE /api/exam/requests*`, `POST /api/exam/requests/{id}/validate`.
-- Chat: `POST /api/chat/stream` (server-sent events).
+### 5) Core Data Models
 
-### 8. LLM Integration
-- OpenAI Responses API via `openai_manager` with model selection (`gpt-5-*` or `o3-*`).
-- JSON output enforcement: `text.format.type = json_object`.
-- Reasoning controls: `reasoning.effort`, `text.verbosity`.
+- `studies` / `exam_studies`: per‑user workflow state
+  - `workflow_type`, `current_step`, `workflow_status`, `workflow_data` JSON
+- `mra_documents`: file metadata, `processing_status`, `analysis_results`
+- `exam_documents`: file metadata + `processing_status`
+- `exam_requests`: extracted RFI records with `validation_results`
+- `exam_request_documents`: join table
 
-### 9. MRA Analysis: JSON Schema (V2)
+### 6) Public API Surface
+
+- Studies: `POST/GET/PATCH /api/studies` (and `/api/exam/studies` for exam lane)
+- MRA Documents: 
+  - `POST /api/documents/upload`
+  - `GET /api/documents/{id}`
+  - `POST /api/documents/{id}/analyze`
+  - `GET /api/documents/study/{study_id}`
+  - `DELETE /api/documents/{id}`
+- Examination:
+  - `POST /api/exam/documents/upload`
+  - `GET /api/exam/documents/{id}`
+  - `POST /api/exam/documents/{id}/analyze`
+  - `POST /api/exam/fdl/ingest` and `POST /api/exam/fdl/ingest-text`
+  - `GET/POST/PATCH/DELETE /api/exam/requests*`
+  - `POST /api/exam/requests/{id}/validate`
+  - Streaming: `POST /api/streaming/fdl/ingest`, `POST /api/streaming/fdl/simulate`
+- Chat (SSE proxy): `POST /api/chat/stream`
+- Agent (SSE): `POST /api/streaming/agent/run`
+
+SSE event types used by UI
+- Reasoning stream: `{ type: 'reasoning_step', data: { id, title, content, status, ... } }`
+- Tooling: `{ type: 'tool_call' | 'tool_result', data: { tool, args/result } }`
+- Completion/Error: `{ type: 'completion' | 'error', data: {...} }`
+
+### 7) Environment Configuration
+
+`app/config.py` reads:
+- `OPENAI_API_KEY` (required)
+- `OPENAI_MODEL` (default `gpt-5`), `OPENAI_EXAM_MODEL` (default `gpt-5-mini`)
+- `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_KEY`
+- `EXA_API_KEY` (optional: enables EXA search in the agent)
+- `FRONTEND_URL`, `PORT`
+
+### 8) JSON Contracts (extract)
+
+MRAAnalysisResult (persisted on `mra_documents.analysis_results`)
 ```
-MRAAnalysisResult {
   summary: string
   findings: MRAFinding[]
   total_findings: number
   critical_deadlines: string[]
   processing_time_ms: number
   confidence: number
-  first_principles?: {
-    problem_statement?: string
-    decomposition?: string[]
-    causal_factors?: string[]
-    regulatory_expectations?: string[]
-    risks?: string[]
-  }
-  remediation_guidance?: {
-    quick_wins?: string[]
-    critical_actions?: string[]
-    phases?: { phase: string; goals?: string[]; notes?: string }[]
-    owners?: string[]
-    timeline_30_60_90?: { 30_days?: string[]; 60_days?: string[]; 90_days?: string[] }
-    acceptance_criteria?: string[]
-    monitoring_metrics?: string[]
-    required_artifacts?: string[]
-  }
+first_principles?: { ... }
+remediation_guidance?: { ... }
   overall_risk_level?: string
   urgency?: string
   key_regulatory_citations?: string[]
-}
+```
 
-MRAFinding {
+MRAFinding (per finding)
+```
   id: string
   type: 'BSA/AML'|'Lending'|'Operations'|'Capital'|'Management'|'IT'|'Other'
   severity: 'Matter Requiring Attention'|'Deficiency'|'Violation'|'Recommendation'
@@ -97,6 +115,7 @@ MRAFinding {
   response_required: boolean
   extracted_text: string
   confidence: number
+// optional first‑principles fields
   what_it_means?: string
   why_it_matters?: string
   root_causes?: string[]
@@ -109,41 +128,34 @@ MRAFinding {
   urgency?: string
   dependencies?: string[]
   closure_narrative_outline?: string
-}
 ```
 
-### 10. Non-Functional Requirements (NFRs)
-- Security: All endpoints require Supabase JWT; enforce user scoping; no PII in logs.
-- Availability: 99.9% uptime target; graceful degradation on LLM/API failures.
-- Performance: Document analysis < 30s typical; endpoints < 500ms p50 (non-analysis).
-- Observability: Structured logs, request IDs, error traces around LLM calls/storage/DB.
-- Data Integrity: Transactions or compensating actions (e.g., storage cleanup on DB failure).
+### 9) Non‑Functional Requirements
+- Security: JWT required; RLS enforced; no PII in logs.
+- Availability: 99.9% target; degrade gracefully on LLM or EXA failure.
+- Performance: document analysis typically < 30s; standard endpoints < 500ms p50.
+- Observability: meaningful log lines around each external I/O (OpenAI, storage, DB).
+- Data integrity: clean up storage on DB insert failure (already implemented best‑effort).
 
-### 11. Error Handling
-- Standard JSON error envelope with `detail` and HTTP status.
-- Analysis failures set `processing_status=failed` and populate `error_message`.
+### 10) Developer Runbook
 
-### 12. Storage & Tables (Supabase)
-- Buckets: `mra-documents`, `exam-documents`.
-- Tables: `mra_documents`, `exam_documents`, `exam_requests`, `exam_request_documents`, `studies`, `exam_studies`, optionally `messages` for analytics.
-- RLS policies: user must match `user_id`.
+Local dev
+1. `python -m venv .venv && source .venv/bin/activate`
+2. `pip install -r requirements.txt`
+3. Set env: `OPENAI_API_KEY`, Supabase keys; optional `EXA_API_KEY`
+4. `uvicorn app.main:app --reload`
 
-### 13. Configuration
-- Environment: `OPENAI_MODEL`, `OPENAI_EXAM_MODEL`, Supabase URL/keys.
-- Model tuning: switchable `gpt-5-*` vs `o3-*` with reasoning verbosity.
+Adding a new streaming step
+- Put SSE in `api/streaming.py`; use helpers `send_reasoning_step`, `send_tool_call`, `send_tool_result`, `send_completion`
+- Always filter DB reads/writes by `user['uid']`
 
-### 14. Migration/Compatibility
-- Frontend types extended to consume new fields safely; UIs fallback if absent.
-- Existing endpoints unchanged; response shape extended (non-breaking additions).
+### 11) Compatibility & Migration
+- Frontend handles missing optional fields defensively (e.g., no guidance → generic next steps)
+- New routes should follow existing patterns and return stable JSON envelopes
 
-### 15. Open Questions
-- Do we store reasoning traces for compliance audit? Scope and retention policy.
-- Background job queue for long-running analyses? (Celery/Redis or serverless tasks.)
-- Rate limiting per user to control LLM costs.
-
-### 16. Milestones
-- M1: MRA V2 first-principles (DONE)
-- M2: Validation analytics summaries & exports
-- M3: Presentation generator integration
+### 12) Roadmap
+- Validation analytics exports
+- Better audit metadata for LLM calls
+- Background batch jobs for large PDFs
 
 
