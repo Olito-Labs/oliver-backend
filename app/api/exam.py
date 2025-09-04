@@ -19,6 +19,8 @@ except ImportError:
     docx = None
 
 router = APIRouter(prefix="/api/exam", tags=["examination"])
+# With Option A, we use the single public.studies table; no exam_studies auto-creation needed.
+
 
 
 class ExamDocumentResponse(BaseModel):
@@ -138,6 +140,7 @@ async def upload_exam_document(
     user=Depends(get_current_user)
 ):
     try:
+        # Option A: study_id references public.studies(id) directly
         allowed_types = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
         if file.content_type not in allowed_types:
             raise HTTPException(status_code=400, detail=f"Unsupported file type: {file.content_type}")
@@ -900,6 +903,7 @@ async def create_exam_document_from_text(payload: Dict[str, Any], user=Depends(g
         raise HTTPException(status_code=400, detail="text and study_id are required")
 
     try:
+        # Option A: study_id references public.studies(id) directly
         row = {
             'id': str(uuid.uuid4()),
             'filename': filename,
