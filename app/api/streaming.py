@@ -900,6 +900,8 @@ async def agent_qa(payload: Dict[str, Any], user=Depends(get_current_user)):
                 stream_params["text"] = {"verbosity": "medium"}
 
             citations: list[dict] = []
+            tool_args_buffer: str = ""
+            current_tool_name: str | None = None
 
             with client.responses.stream(**{k: v for k, v in stream_params.items() if v is not None}) as resp_stream:
                 for event in resp_stream:
@@ -911,38 +913,55 @@ async def agent_qa(payload: Dict[str, Any], user=Depends(get_current_user)):
                         if delta:
                             yield await send_answer_chunk(delta)
 
-                    # Tool call requested by the model
-                    elif ev_type == 'response.tool_call':
-                        # Execute tool synchronously and submit back to the stream
-                        name = getattr(event, 'name', '') or getattr(event, 'tool', '')
-                        args = getattr(event, 'arguments', None) or {}
-                        yield await send_tool_call(name or 'tool', args)
+                    # Tool call streaming: accumulate arguments
+                    elif ev_type == 'response.tool_call.delta':
+                        delta = getattr(event, 'delta', '') or ''
+                        name = getattr(event, 'name', '') or getattr(event, 'tool_name', '') or current_tool_name or 'tool'
+                        current_tool_name = name
+                        tool_args_buffer += delta
+                    
+                    # Tool call completed: execute and submit result
+                    elif ev_type == 'response.tool_call.done':
+                        name = getattr(event, 'name', '') or getattr(event, 'tool_name', '') or current_tool_name or 'tool'
+                        args = {}
+                        try:
+                            import json as _json
+                            args = _json.loads(tool_args_buffer) if tool_args_buffer else {}
+                        except Exception:
+                            args = {"_raw": tool_args_buffer}
+                        # Emit tool_call event for UI
+                        yield await send_tool_call(name, args)
 
                         if name == 'exa_search' and settings.EXA_API_KEY:
                             import httpx
                             query = args.get('query') or question
                             numResults = int(args.get('numResults') or 5)
-                            text = bool(args.get('text') if args.get('text') is not None else True)
+                            text_flag = bool(args.get('text') if args.get('text') is not None else True)
                             try:
                                 async with httpx.AsyncClient(timeout=30) as client_http:
                                     r = await client_http.post(
                                         "https://api.exa.ai/search",
                                         headers={"x-api-key": settings.EXA_API_KEY, "Content-Type": "application/json"},
-                                        json={"query": query, "numResults": numResults, "text": text},
+                                        json={"query": query, "numResults": numResults, "text": text_flag},
                                     )
                                     payload = r.json() if r.status_code < 400 else {"error": r.text}
                                     yield await send_tool_result('exa_search', payload)
-                                    # Track citations
                                     if isinstance(payload, dict) and payload.get('results'):
                                         for res in payload['results'][:5]:
                                             if res.get('url'):
                                                 citations.append({"title": res.get('title'), "url": res['url']})
-                                    # Submit tool result back to the model stream
+                                    # Submit back to model
                                     resp_stream.submit_tool_output(event, payload)
                             except Exception as e:
                                 err = {"error": str(e)}
                                 yield await send_tool_result('exa_search', err)
                                 resp_stream.submit_tool_output(event, err)
+                        else:
+                            # Unknown tool; submit stub
+                            resp_stream.submit_tool_output(event, {"note": "tool not available"})
+                        # Reset buffer for potential next tool call
+                        tool_args_buffer = ""
+                        current_tool_name = None
 
                     elif ev_type == 'response.completed':
                         break
