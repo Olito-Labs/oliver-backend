@@ -17,6 +17,9 @@ class Settings:
     MAX_TOKENS: int = int(os.getenv("MAX_TOKENS", "2048"))
     TEMPERATURE: float = float(os.getenv("TEMPERATURE", "0.7"))
     
+    # Optional external tools
+    EXA_API_KEY: str = os.getenv("EXA_API_KEY", "")
+    
     # Supabase Configuration (backend-specific vars + fallback to frontend vars)
     SUPABASE_URL: str = os.getenv("SUPABASE_URL", os.getenv("NEXT_PUBLIC_SUPABASE_URL", ""))
     SUPABASE_ANON_KEY: str = os.getenv("SUPABASE_ANON_KEY", os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY", ""))

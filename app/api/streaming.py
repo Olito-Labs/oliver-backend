@@ -743,6 +743,67 @@ async def agent_run(payload: Dict[str, Any], user=Depends(get_current_user)):
                 await asyncio.sleep(duration)
                 yield await send_tool_result("sleep", {"ok": True, "slept": duration})
 
+            # Optional: EXA web search + summarization
+            if settings.EXA_API_KEY:
+                try:
+                    s_exa = ReasoningStep(
+                        "Searching the web (EXA)",
+                        "Querying EXA for top results and metadata...",
+                        "search"
+                    )
+                    yield await send_reasoning_step(s_exa)
+                    import httpx
+                    query = goal if goal else (f"site:{url}" if url else "Oliver compliance agent")
+                    async with httpx.AsyncClient(timeout=20) as client:
+                        exa_headers = {"x-api-key": settings.EXA_API_KEY, "Content-Type": "application/json"}
+                        exa_body = {"query": query, "numResults": 5}
+                        r = await client.post("https://api.exa.ai/search", headers=exa_headers, json=exa_body)
+                        results = r.json() if r.status_code < 400 else {"error": r.text}
+                        yield await send_tool_call("exa_search", {"query": query})
+                        yield await send_tool_result("exa_search", results)
+                        s_exa.complete(); s_exa.content = "Got search results"; s_exa.details = str(results)[:800]
+                        yield await send_reasoning_step(s_exa)
+
+                    # Summarize via OpenAI
+                    client = openai_manager.get_client()
+                    if client and results and isinstance(results, dict) and results.get("results"):
+                        docs = results.get("results", [])
+                        top_snippets = []
+                        for d in docs:
+                            snippet = (d.get("title") or "") + "\n" + (d.get("text") or d.get("snippet") or "")
+                            top_snippets.append(snippet[:1000])
+                        summary_input = "\n\n".join(top_snippets[:5])
+                        instr = (
+                            "Summarize the key points, with 3 bullets and 1-2 risks/opportunities."
+                        )
+                        req = {
+                            "model": settings.OPENAI_MODEL,
+                            "input": [{"role": "user", "content": [{"type": "input_text", "text": summary_input}]}],
+                            "instructions": instr,
+                            "max_output_tokens": 800,
+                            "store": False,
+                        }
+                        if settings.OPENAI_MODEL.startswith("gpt-5"):
+                            req["reasoning"] = {"effort": "low"}
+                            req["text"] = {"verbosity": "medium"}
+                        resp = client.responses.create(**req)
+                        text = ""
+                        if getattr(resp, 'output', None):
+                            for it in resp.output:
+                                if getattr(it, 'type', '') == 'message' and getattr(it, 'content', None):
+                                    for c in it.content:
+                                        if getattr(c, 'type', '') == 'output_text' and getattr(c, 'text', None):
+                                            text = c.text; break
+                                if text: break
+                        if not text and hasattr(resp, 'output_text'):
+                            text = resp.output_text
+                        yield await send_tool_result("summarize", {"summary": text})
+                        s_sum = ReasoningStep("Drafting summary", "Created a concise brief from search results", "lightbulb", text)
+                        s_sum.complete();
+                        yield await send_reasoning_step(s_sum)
+                except Exception as ex_err:
+                    yield await send_tool_result("exa_search", {"error": str(ex_err)})
+
             # Completion summary
             summary = {
                 "goal": goal,
