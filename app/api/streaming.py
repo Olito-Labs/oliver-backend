@@ -906,12 +906,29 @@ async def agent_qa(payload: Dict[str, Any], user=Depends(get_current_user)):
             with client.responses.stream(**{k: v for k, v in stream_params.items() if v is not None}) as resp_stream:
                 for event in resp_stream:
                     ev_type = getattr(event, 'type', '')
+                    # Debug: surface event types to client for troubleshooting
+                    try:
+                        yield await send_progress_update(0, 0, f"openai:{ev_type}")
+                    except Exception:
+                        pass
 
                     # Stream answer deltas
                     if ev_type == 'response.output_text.delta':
                         delta = getattr(event, 'delta', None)
                         if delta:
                             yield await send_answer_chunk(delta)
+                    # Some SDK variants emit 'response.message.delta' for text; handle gracefully
+                    elif ev_type == 'response.message.delta':
+                        delta = getattr(event, 'delta', None)
+                        if isinstance(delta, str) and delta:
+                            yield await send_answer_chunk(delta)
+                        else:
+                            # best-effort stringify
+                            try:
+                                import json as _json
+                                yield await send_answer_chunk(_json.dumps(delta)[:200])
+                            except Exception:
+                                pass
 
                     # Tool call streaming: accumulate arguments
                     elif ev_type == 'response.tool_call.delta':
