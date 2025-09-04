@@ -70,6 +70,10 @@ async def send_tool_call(tool: str, args: Dict[str, Any]) -> str:
 async def send_tool_result(tool: str, result: Any) -> str:
     return f"data: {json.dumps({'type': 'tool_result', 'data': {'tool': tool, 'result': result}})}\n\n"
 
+async def send_answer_chunk(content: str) -> str:
+    """Format streamed answer tokens as SSE data"""
+    return f"data: {json.dumps({'type': 'answer_chunk', 'data': {'content': content}})}\n\n"
+
 @router.post("/fdl/ingest")
 async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_user)):
     """Stream FDL ingestion with real-time reasoning"""
@@ -821,6 +825,139 @@ async def agent_run(payload: Dict[str, Any], user=Depends(get_current_user)):
 
         except Exception as e:
             yield await send_error(f"Agent failed: {str(e)}")
+
+    return StreamingResponse(
+        generate_stream(),
+        media_type="text/plain",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Content-Type": "text/event-stream",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "*",
+        }
+    )
+
+# ====================================================================
+# Streaming QA with GPT-5-mini tool calling (EXA search)
+# ====================================================================
+
+@router.post("/agent/qa")
+async def agent_qa(payload: Dict[str, Any], user=Depends(get_current_user)):
+    """Stream a direct answer to a user question using GPT-5-mini with tool-calling.
+
+    Tools available:
+      - exa.search(query, numResults=5, text=true): returns results with text and metadata
+    The model streams its thoughts (as reasoning steps) and can request a tool call; we execute and stream
+    an immediate tool_result, then resume the model stream. Answer tokens are streamed via 'answer_chunk'.
+    """
+    question = (payload.get("question") or "").strip()
+    if not question:
+        raise HTTPException(status_code=400, detail="question is required")
+
+    async def generate_stream() -> AsyncGenerator[str, None]:
+        yield "data: {\"type\": \"connected\"}\n\n"
+
+        # Build OpenAI streaming with tool-calling via the Responses stream API
+        client = openai_manager.get_client()
+        if not client:
+            yield await send_error("OpenAI client not available")
+            return
+
+        # Define tool in OpenAI-compatible schema
+        tools = []
+        if settings.EXA_API_KEY:
+            tools.append({
+                "type": "function",
+                "name": "exa_search",
+                "description": "Search the web with EXA and return results with text.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {"type": "string"},
+                        "numResults": {"type": "integer", "default": 5},
+                        "text": {"type": "boolean", "default": True}
+                    },
+                    "required": ["query"]
+                }
+            })
+
+        system_prompt = (
+            "You are Oliver. Answer concisely with citations. If unsure, call exa_search to gather evidence."
+        )
+
+        # Start the streaming session
+        try:
+            stream_params = {
+                "model": settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL,
+                "instructions": system_prompt,
+                "input": [{"role": "user", "content": [{"type": "input_text", "text": question}]}],
+                "tools": tools if tools else None,
+                "max_output_tokens": 1200,
+            }
+            if (settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL).startswith("gpt-5"):
+                stream_params["reasoning"] = {"effort": "low"}
+                stream_params["text"] = {"verbosity": "medium"}
+
+            citations: list[dict] = []
+
+            with client.responses.stream(**{k: v for k, v in stream_params.items() if v is not None}) as resp_stream:
+                for event in resp_stream:
+                    ev_type = getattr(event, 'type', '')
+
+                    # Stream answer deltas
+                    if ev_type == 'response.output_text.delta':
+                        delta = getattr(event, 'delta', None)
+                        if delta:
+                            yield await send_answer_chunk(delta)
+
+                    # Tool call requested by the model
+                    elif ev_type == 'response.tool_call':
+                        # Execute tool synchronously and submit back to the stream
+                        name = getattr(event, 'name', '') or getattr(event, 'tool', '')
+                        args = getattr(event, 'arguments', None) or {}
+                        yield await send_tool_call(name or 'tool', args)
+
+                        if name == 'exa_search' and settings.EXA_API_KEY:
+                            import httpx
+                            query = args.get('query') or question
+                            numResults = int(args.get('numResults') or 5)
+                            text = bool(args.get('text') if args.get('text') is not None else True)
+                            try:
+                                async with httpx.AsyncClient(timeout=30) as client_http:
+                                    r = await client_http.post(
+                                        "https://api.exa.ai/search",
+                                        headers={"x-api-key": settings.EXA_API_KEY, "Content-Type": "application/json"},
+                                        json={"query": query, "numResults": numResults, "text": text},
+                                    )
+                                    payload = r.json() if r.status_code < 400 else {"error": r.text}
+                                    yield await send_tool_result('exa_search', payload)
+                                    # Track citations
+                                    if isinstance(payload, dict) and payload.get('results'):
+                                        for res in payload['results'][:5]:
+                                            if res.get('url'):
+                                                citations.append({"title": res.get('title'), "url": res['url']})
+                                    # Submit tool result back to the model stream
+                                    resp_stream.submit_tool_output(event, payload)
+                            except Exception as e:
+                                err = {"error": str(e)}
+                                yield await send_tool_result('exa_search', err)
+                                resp_stream.submit_tool_output(event, err)
+
+                    elif ev_type == 'response.completed':
+                        break
+                    elif ev_type == 'response.error':
+                        err = getattr(event, 'error', None)
+                        yield await send_error(str(err) if err else 'Unknown model error')
+                        return
+
+            # Emit citations at the end
+            if citations:
+                yield f"data: {json.dumps({'type': 'citations', 'data': citations})}\n\n"
+            yield await send_completion({"done": True})
+
+        except Exception as e:
+            yield await send_error(f"QA failed: {str(e)}")
 
     return StreamingResponse(
         generate_stream(),
