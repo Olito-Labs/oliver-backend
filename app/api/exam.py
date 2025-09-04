@@ -984,9 +984,10 @@ async def create_exam_document_from_text(payload: Dict[str, Any], user=Depends(g
 
 @router.post("/studies/")
 async def create_exam_study(payload: Dict[str, Any], user=Depends(get_current_user)):
-    """Create a dedicated Examination Prep study in exam_studies."""
+    """Create a dedicated Examination Prep study in the canonical public.studies table."""
     title = payload.get('title') or 'Examination Prep'
     study_row = {
+        'id': str(uuid.uuid4()),
         'user_id': user['uid'],
         'title': title,
         'description': payload.get('description'),
@@ -996,7 +997,7 @@ async def create_exam_study(payload: Dict[str, Any], user=Depends(get_current_us
         'workflow_status': payload.get('workflow_status', 'not_started'),
         'workflow_data': payload.get('workflow_data') or {}
     }
-    res = supabase.table('exam_studies').insert(study_row).execute()
+    res = supabase.table('studies').insert(study_row).execute()
     if not res.data:
         raise HTTPException(status_code=500, detail="Failed to create exam study")
     return {"study": res.data[0]}
@@ -1004,13 +1005,29 @@ async def create_exam_study(payload: Dict[str, Any], user=Depends(get_current_us
 
 @router.get("/studies/")
 async def list_exam_studies(user=Depends(get_current_user)):
-    res = supabase.table('exam_studies').select('*').eq('user_id', user['uid']).order('last_message_at', desc=True).limit(100).execute()
+    res = (
+        supabase.table('studies')
+        .select('*')
+        .eq('user_id', user['uid'])
+        .eq('workflow_type', 'examination-prep')
+        .order('last_message_at', desc=True)
+        .limit(100)
+        .execute()
+    )
     return {"studies": res.data or []}
 
 
 @router.get("/studies/{study_id}")
 async def get_exam_study(study_id: str, user=Depends(get_current_user)):
-    res = supabase.table('exam_studies').select('*').eq('id', study_id).eq('user_id', user['uid']).single().execute()
+    res = (
+        supabase.table('studies')
+        .select('*')
+        .eq('id', study_id)
+        .eq('user_id', user['uid'])
+        .eq('workflow_type', 'examination-prep')
+        .single()
+        .execute()
+    )
     if not res.data:
         raise HTTPException(status_code=404, detail="Study not found")
     return {"study": res.data}
@@ -1020,8 +1037,24 @@ async def get_exam_study(study_id: str, user=Depends(get_current_user)):
 async def update_exam_study(study_id: str, payload: Dict[str, Any], user=Depends(get_current_user)):
     allowed = {k: v for k, v in payload.items() if k in ['title','description','current_step','workflow_status','workflow_data']}
     if not allowed:
-        return {"study": (supabase.table('exam_studies').select('*').eq('id', study_id).eq('user_id', user['uid']).single().execute().data)}
-    res = supabase.table('exam_studies').update(allowed).eq('id', study_id).eq('user_id', user['uid']).execute()
+        exist = (
+            supabase.table('studies')
+            .select('*')
+            .eq('id', study_id)
+            .eq('user_id', user['uid'])
+            .eq('workflow_type', 'examination-prep')
+            .single()
+            .execute()
+        )
+        return {"study": exist.data}
+    res = (
+        supabase.table('studies')
+        .update(allowed)
+        .eq('id', study_id)
+        .eq('user_id', user['uid'])
+        .eq('workflow_type', 'examination-prep')
+        .execute()
+    )
     if not res.data:
         raise HTTPException(status_code=404, detail="Study not found")
     return {"study": res.data[0]}
