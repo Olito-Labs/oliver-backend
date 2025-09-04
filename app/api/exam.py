@@ -185,7 +185,38 @@ async def upload_exam_document(
         result = supabase.table('exam_documents').insert(row).execute()
         if not result.data:
             raise Exception("No data returned from database insert")
-        return {"document": result.data[0]}
+        document = result.data[0]
+
+        # Extract text and store in exam_documents.extracted_text (best-effort)
+        try:
+            tmp_path = None
+            with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file.filename or '')[1] or '.pdf') as tmpf:
+                tmpf.write(content)
+                tmp_path = tmpf.name
+            try:
+                extracted = _extract_text(tmp_path, file.content_type)
+            finally:
+                try:
+                    os.unlink(tmp_path)  # cleanup
+                except Exception:
+                    pass
+
+            # Attempt to update the stored row with extracted_text and source
+            try:
+                update_res = supabase.table('exam_documents').update({
+                    'extracted_text': extracted,
+                    'source': 'upload'
+                }).eq('id', document['id']).eq('user_id', user['uid']).execute()
+                if update_res.data and len(update_res.data) > 0:
+                    document = update_res.data[0]
+            except Exception as update_ex:
+                # Column may not exist yet if migration hasn't been applied; log and continue
+                print(f"[exam] Warning: failed to update extracted_text/source: {update_ex}")
+        except Exception as parse_ex:
+            # Parsing is best-effort; analysis can still extract later if needed
+            print(f"[exam] Warning: failed to parse uploaded document text: {parse_ex}")
+
+        return {"document": document}
 
     except HTTPException as he:
         print(f"[exam] HTTPException during upload: {he}")
@@ -236,23 +267,32 @@ async def analyze_exam_document(document_id: str, user=Depends(get_current_user)
 
         supabase.table('exam_documents').update({'processing_status': 'analyzing'}).eq('id', document_id).execute()
 
-        # Download from storage
-        file_bytes = supabase.storage.from_('exam-documents').download(document['file_path'])
-        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(document['filename'])[1]) as tmpf:
-            tmpf.write(file_bytes)
-            tmp_path = tmpf.name
+        # Prefer stored extracted_text; fallback to parsing from storage
+        text: Optional[str] = None
         try:
-            text = _extract_text(tmp_path, document['file_type'])
-            if not text.strip():
-                raise Exception("No text could be extracted from the document")
-            analysis = await _analyze_exam_document_with_o3(text)
-            supabase.table('exam_documents').update({'processing_status': 'completed', 'analysis_results': analysis}).eq('id', document_id).execute()
-            return {"message": "Analysis completed", "document_id": document_id, "results": analysis}
-        finally:
+            text = (document.get('extracted_text') or '').strip() if isinstance(document, dict) else None
+        except Exception:
+            text = None
+        if not text:
+            # Download from storage and extract
+            file_bytes = supabase.storage.from_('exam-documents').download(document['file_path'])
+            with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(document['filename'])[1]) as tmpf:
+                tmpf.write(file_bytes)
+                tmp_path = tmpf.name
             try:
-                os.unlink(tmp_path)
-            except Exception:
-                pass
+                text = _extract_text(tmp_path, document['file_type'])
+            finally:
+                try:
+                    os.unlink(tmp_path)
+                except Exception:
+                    pass
+
+        if not text or not text.strip():
+            raise Exception("No text could be extracted from the document")
+
+        analysis = await _analyze_exam_document_with_o3(text)
+        supabase.table('exam_documents').update({'processing_status': 'completed', 'analysis_results': analysis}).eq('id', document_id).execute()
+        return {"message": "Analysis completed", "document_id": document_id, "results": analysis}
     except HTTPException:
         raise
     except Exception as e:
@@ -844,6 +884,56 @@ async def ingest_first_day_letter_text(payload: Dict[str, Any], user=Depends(get
         inserted = res.data or []
 
     return {"created": len(inserted), "requests": inserted}
+
+
+# ============================
+# Create exam document from text (simulation or pasted)
+# ============================
+
+@router.post("/documents/from-text", response_model=Dict[str, ExamDocumentResponse])
+async def create_exam_document_from_text(payload: Dict[str, Any], user=Depends(get_current_user)):
+    """Create an exam document row from provided text (used for simulation/paste)."""
+    text = payload.get('text')
+    study_id = payload.get('study_id')
+    filename = payload.get('filename') or 'simulated_fdl.txt'
+    if not text or not isinstance(text, str) or not study_id:
+        raise HTTPException(status_code=400, detail="text and study_id are required")
+
+    try:
+        row = {
+            'id': str(uuid.uuid4()),
+            'filename': filename,
+            'file_size': len(text.encode('utf-8')),
+            'file_type': 'text/plain',
+            'file_path': None,
+            'upload_url': '',
+            'study_id': study_id,
+            'user_id': user['uid'],
+            'processing_status': 'uploaded',
+        }
+
+        # Insert without new columns first for compatibility
+        res = supabase.table('exam_documents').insert(row).execute()
+        if not res.data:
+            raise Exception("Failed to create exam document from text")
+        document = res.data[0]
+
+        # Best-effort update of extracted_text and source
+        try:
+            upd = supabase.table('exam_documents').update({
+                'extracted_text': text,
+                'source': 'simulated'
+            }).eq('id', document['id']).eq('user_id', user['uid']).execute()
+            if upd.data and len(upd.data) > 0:
+                document = upd.data[0]
+        except Exception as ex:
+            print(f"[exam] Warning: failed to set extracted_text/source on from-text doc: {ex}")
+
+        return {"document": document}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating exam document from text: {str(e)}")
 
 
 # ============================

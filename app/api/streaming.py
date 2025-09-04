@@ -70,13 +70,9 @@ async def send_tool_call(tool: str, args: Dict[str, Any]) -> str:
 async def send_tool_result(tool: str, result: Any) -> str:
     return f"data: {json.dumps({'type': 'tool_result', 'data': {'tool': tool, 'result': result}})}\n\n"
 
-async def send_answer_chunk(content: str) -> str:
-    """Format streamed answer tokens as SSE data"""
-    return f"data: {json.dumps({'type': 'answer_chunk', 'data': {'content': content}})}\n\n"
-
 @router.post("/fdl/ingest")
 async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_user)):
-    """Stream FDL ingestion with real-time reasoning"""
+    """Stream FDL ingestion (text-only to OpenAI). Uses stored extracted_text from exam_documents."""
     document_id = payload.get('document_id')
     study_id = payload.get('study_id')
     
@@ -90,8 +86,8 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
             
             # Step 1: Document Retrieval
             step1 = ReasoningStep(
-                "Retrieving First Day Letter", 
-                "Loading document from secure storage and preparing for analysis...",
+                "Retrieving First Day Letter metadata", 
+                "Loading document metadata and previously extracted text...",
                 "file"
             )
             yield await send_reasoning_step(step1)
@@ -107,27 +103,58 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
             
             document = doc_result.data
             step1.complete()
-            step1.content = f"Successfully loaded {document['filename']} ({document['file_size']} bytes)"
+            step1.content = f"Loaded {document.get('filename','document')} (size: {document.get('file_size','n/a')} bytes)"
             yield await send_reasoning_step(step1)
             
-            # Step 2: Document Download
+            # Step 2: Get Extracted Text (prefer stored text)
             step2 = ReasoningStep(
-                "Downloading Document Content",
-                "Retrieving file contents from storage for AI analysis...",
+                "Preparing Text for AI",
+                "Fetching extracted text for analysis...",
                 "search"
             )
             yield await send_reasoning_step(step2)
             await asyncio.sleep(1)
             
             try:
-                file_bytes = supabase.storage.from_('exam-documents').download(document['file_path'])
+                extracted_text = (document.get('extracted_text') or '').strip()
+                if not extracted_text:
+                    # Fallback: download and extract quickly
+                    file_bytes = supabase.storage.from_('exam-documents').download(document['file_path'])
+                    import tempfile, os
+                    with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmpf:
+                        tmpf.write(file_bytes)
+                        tmp_path = tmpf.name
+                    try:
+                        # Minimal text extraction fallback seen in exam.py
+                        from .exam import _extract_text  # type: ignore
+                    except Exception:
+                        # Local import fallback (duplicate basic logic)
+                        def _extract_text(fp: str, ft: str) -> str:
+                            try:
+                                import fitz
+                                d = fitz.open(fp)
+                                t = ""
+                                for i in range(len(d)):
+                                    t += d[i].get_text() + "\n\n"
+                                d.close(); return t.strip()
+                            except Exception:
+                                return ""
+                    try:
+                        extracted_text = _extract_text(tmp_path, document.get('file_type') or 'application/pdf')
+                    finally:
+                        try:
+                            os.unlink(tmp_path)
+                        except Exception:
+                            pass
+                if not extracted_text:
+                    raise Exception("No extracted text available")
                 step2.complete()
-                step2.content = f"Downloaded {len(file_bytes)} bytes successfully. Preparing for GPT-5 analysis..."
+                step2.content = f"Text prepared ({len(extracted_text)} characters)."
                 yield await send_reasoning_step(step2)
             except Exception as e:
-                step2.error(f"Failed to download document: {str(e)}")
+                step2.error(f"Failed to prepare text: {str(e)}")
                 yield await send_reasoning_step(step2)
-                yield await send_error(f"Document download failed: {str(e)}")
+                yield await send_error(f"Text preparation failed: {str(e)}")
                 return
             
             # Step 3: AI Model Initialization
@@ -150,19 +177,13 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
             step3.content = f"Model {settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL} connected successfully for regulatory document analysis."
             yield await send_reasoning_step(step3)
             
-            # Step 4: Document Encoding
+            # Step 4: Text Prepared (no file upload to AI)
             step4 = ReasoningStep(
-                "Encoding Document for AI Processing",
-                "Converting PDF to base64 format for secure transmission to AI...",
+                "Using Extracted Text Only",
+                "Complying with policy: sending only text to AI (no PDFs).",
                 "file"
             )
-            yield await send_reasoning_step(step4)
-            await asyncio.sleep(1)
-            
-            import base64
-            base64_pdf = base64.b64encode(file_bytes).decode('utf-8')
             step4.complete()
-            step4.content = f"Document encoded successfully. Ready for AI analysis ({len(base64_pdf)} characters)."
             yield await send_reasoning_step(step4)
             
             # Step 5: Multi-Step Real-Time AI Analysis
@@ -194,7 +215,7 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
                 structure_params = {
                     "model": exam_model,
                     "input": [{"role": "user", "content": [
-                        {"type": "input_file", "filename": document['filename'], "file_data": f"data:application/pdf;base64,{base64_pdf}"},
+                        {"type": "input_text", "text": extracted_text[:150000]},
                         {"type": "input_text", "text": structure_prompt}
                     ]}],
                     "instructions": structure_prompt,
@@ -262,8 +283,8 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
                 category_params = {
                     "model": exam_model,
                     "input": [{"role": "user", "content": [
-                        {"type": "input_file", "filename": document['filename'], "file_data": f"data:application/pdf;base64,{base64_pdf}"},
-                        {"type": "input_text", "text": f"Document structure context: {structure_content[:500]}\n\n{category_prompt}"}
+                        {"type": "input_text", "text": extracted_text[:150000]},
+                        {"type": "input_text", "text": f"Context: {structure_content[:500]}\n\n{category_prompt}"}
                     ]}],
                     "instructions": category_prompt,
                     "max_output_tokens": 1500,
@@ -331,13 +352,13 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
                 extraction_params = {
                     "model": exam_model,
                     "input": [{"role": "user", "content": [
-                        {"type": "input_file", "filename": document['filename'], "file_data": f"data:application/pdf;base64,{base64_pdf}"},
+                        {"type": "input_text", "text": extracted_text[:150000]},
                         {"type": "input_text", "text": f"Context:\nStructure: {structure_content[:300]}\nCategories: {category_content[:300]}\n\n{extraction_prompt}"}
                     ]}],
                     "instructions": extraction_prompt,
                     "max_output_tokens": 6000,
                     "text": {"format": {"type": "json_object"}},
-                    "stream": False,  # Final extraction needs complete JSON
+                    "stream": False,
                     "store": True,
                 }
                 
@@ -517,6 +538,256 @@ async def stream_fdl_ingest(payload: Dict[str, Any], user=Depends(get_current_us
         except Exception as e:
             yield await send_error(f"Unexpected error: {str(e)}")
     
+    return StreamingResponse(
+        generate_stream(),
+        media_type="text/plain",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Content-Type": "text/event-stream",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "*",
+        }
+    )
+
+
+@router.post("/fdl/ingest-text")
+async def stream_fdl_ingest_text(payload: Dict[str, Any], user=Depends(get_current_user)):
+    """Stream FDL ingestion from provided text: persist to exam_documents, then analyze text-only."""
+    study_id = payload.get('study_id')
+    text = (payload.get('text') or '').strip()
+    if not study_id or not text:
+        raise HTTPException(status_code=400, detail="text and study_id are required")
+
+    async def generate_stream() -> AsyncGenerator[str, None]:
+        try:
+            # Connected
+            yield "data: {\"type\": \"connected\"}\n\n"
+
+            # Step A: Create document row from text
+            sA = ReasoningStep("Creating document from text", "Storing simulated First Day Letter text...", "file")
+            yield await send_reasoning_step(sA)
+            await asyncio.sleep(0.5)
+            try:
+                row = {
+                    'id': str(uuid.uuid4()),
+                    'filename': 'simulated_fdl.txt',
+                    'file_size': len(text.encode('utf-8')),
+                    'file_type': 'text/plain',
+                    'file_path': None,
+                    'upload_url': '',
+                    'study_id': study_id,
+                    'user_id': user['uid'],
+                    'processing_status': 'uploaded',
+                }
+                res = supabase.table('exam_documents').insert(row).execute()
+                if not res.data:
+                    raise Exception("Insert failed")
+                doc = res.data[0]
+                # Best effort to set extracted_text and source
+                try:
+                    upd = supabase.table('exam_documents').update({'extracted_text': text, 'source': 'simulated'}).eq('id', doc['id']).eq('user_id', user['uid']).execute()
+                    if upd.data and len(upd.data) > 0:
+                        doc = upd.data[0]
+                except Exception as uex:
+                    print(f"[streaming] warn: failed to set extracted_text/source: {uex}")
+                sA.complete(); sA.content = f"Document stored (id: {doc['id']}). Proceeding to analysis."
+                yield await send_reasoning_step(sA)
+            except Exception as ex:
+                sA.error(f"Failed to store text: {str(ex)}")
+                yield await send_reasoning_step(sA)
+                yield await send_error(f"Failed to store simulated text: {str(ex)}")
+                return
+
+            # Reuse analysis pipeline by calling stream_fdl_ingest internals using stored text
+            # We inline minimal steps: initialize + extraction prompts with text
+            # Step B: Initialize model
+            sB = ReasoningStep("Initializing GPT Analysis Engine", "Preparing regulatory examination context...", "brain")
+            yield await send_reasoning_step(sB)
+            await asyncio.sleep(0.5)
+            client = openai_manager.get_client()
+            if not client:
+                sB.error("OpenAI client not available")
+                yield await send_reasoning_step(sB)
+                yield await send_error("AI analysis service unavailable")
+                return
+            sB.complete(); sB.content = f"Model {settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL} ready."; yield await send_reasoning_step(sB)
+
+            # Step C: Structure analysis
+            sC = ReasoningStep("Analyzing Document Structure", "Identifying sections and headers from text...", "search")
+            yield await send_reasoning_step(sC)
+            exam_model = settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL
+            structure_prompt = (
+                "Analyze this First Day Letter text and identify its structure. "
+                "List the main sections and where examination requests likely appear."
+            )
+            structure_params = {
+                "model": exam_model,
+                "input": [{"role": "user", "content": [
+                    {"type": "input_text", "text": text[:150000]},
+                    {"type": "input_text", "text": structure_prompt}
+                ]}],
+                "instructions": structure_prompt,
+                "max_output_tokens": 1000,
+                "stream": True,
+                "store": True,
+            }
+            if exam_model.startswith("gpt-5"):
+                structure_params["reasoning"] = {"effort": "low"}
+                structure_params["text"] = {"verbosity": "medium"}
+            structure_response = client.responses.create(**structure_params)
+            structure_content = ""
+            if hasattr(structure_response, '__iter__'):
+                for chunk in structure_response:
+                    if hasattr(chunk, 'output') and chunk.output:
+                        for item in chunk.output:
+                            if getattr(item, 'type', '') == 'message' and getattr(item, 'content', None):
+                                for c in item.content:
+                                    if getattr(c, 'type', '') == 'output_text' and getattr(c, 'text', None):
+                                        structure_content += c.text
+                                        sC.content = f"Document structure: {structure_content[:100]}..."; yield await send_reasoning_step(sC)
+                                        await asyncio.sleep(0.05)
+            sC.complete(); sC.content = f"Structure analyzed ({len(structure_content)} chars)"; sC.details = structure_content; yield await send_reasoning_step(sC)
+
+            # Step D: Category analysis
+            sD = ReasoningStep("Identifying Risk Categories", "Scanning for regulatory domains...", "search")
+            yield await send_reasoning_step(sD)
+            category_prompt = (
+                "Identify the main regulatory risk categories in the text."
+            )
+            category_params = {
+                "model": exam_model,
+                "input": [{"role": "user", "content": [
+                    {"type": "input_text", "text": text[:150000]},
+                    {"type": "input_text", "text": f"Context: {structure_content[:500]}\n\n{category_prompt}"}
+                ]}],
+                "instructions": category_prompt,
+                "max_output_tokens": 1500,
+                "stream": True,
+                "store": True,
+            }
+            if exam_model.startswith("gpt-5"):
+                category_params["reasoning"] = {"effort": "low"}
+                category_params["text"] = {"verbosity": "medium"}
+            category_response = client.responses.create(**category_params)
+            category_content = ""
+            if hasattr(category_response, '__iter__'):
+                for chunk in category_response:
+                    if hasattr(chunk, 'output') and chunk.output:
+                        for item in chunk.output:
+                            if getattr(item, 'type', '') == 'message' and getattr(item, 'content', None):
+                                for c in item.content:
+                                    if getattr(c, 'type', '') == 'output_text' and getattr(c, 'text', None):
+                                        category_content += c.text
+                                        sD.content = f"Found categories: {category_content[:100]}..."; yield await send_reasoning_step(sD)
+                                        await asyncio.sleep(0.05)
+            sD.complete(); sD.content = f"Categories identified ({len(category_content)} chars)"; sD.details = category_content; yield await send_reasoning_step(sD)
+
+            # Step E: Extraction
+            sE = ReasoningStep("Extracting Examination Requests", "Generating structured RFI list...", "lightbulb")
+            yield await send_reasoning_step(sE)
+            extraction_prompt = (
+                "Extract all examination requests with fields: title, description, category, "
+                "request_code, regulatory_deadline (ISO), priority (0-3). Return valid JSON."
+            )
+            extraction_params = {
+                "model": exam_model,
+                "input": [{"role": "user", "content": [
+                    {"type": "input_text", "text": text[:150000]},
+                    {"type": "input_text", "text": f"Context:\nStructure: {structure_content[:300]}\nCategories: {category_content[:300]}\n\n{extraction_prompt}"}
+                ]}],
+                "instructions": extraction_prompt,
+                "max_output_tokens": 6000,
+                "text": {"format": {"type": "json_object"}},
+                "stream": False,
+                "store": True,
+            }
+            if exam_model.startswith("gpt-5"):
+                extraction_params["reasoning"] = {"effort": "medium"}
+                extraction_params["text"] = {"verbosity": "high"}
+            resp = client.responses.create(**extraction_params)
+            sE.complete(); sE.content = "Request extraction completed"; yield await send_reasoning_step(sE)
+
+            # Process JSON
+            content = ""
+            if getattr(resp, 'output', None):
+                for it in resp.output:
+                    if getattr(it, 'type', '') == 'message' and getattr(it, 'content', None):
+                        for c in it.content:
+                            if getattr(c, 'type', '') == 'output_text' and getattr(c, 'text', None):
+                                content = c.text; break
+                    if content: break
+            if not content and hasattr(resp, 'output_text'):
+                content = resp.output_text
+            import json as _json
+            try:
+                parsed = _json.loads(content)
+                rfis = parsed.get('requests') if isinstance(parsed, dict) else parsed
+                if not isinstance(rfis, list):
+                    rfis = []
+            except Exception as pe:
+                yield await send_error(f"Failed to parse AI response: {pe}")
+                return
+
+            # Normalize and store
+            VALID_CATEGORIES = {
+                'Credit Risk', 'Interest Rate Risk', 'Liquidity Risk', 'Price Risk',
+                'Operational Risk', 'Compliance Risk', 'Strategic Risk',
+                'Governance/Management Oversight', 'IT/Cybersecurity', 'BSA/AML',
+                'Capital Adequacy/Financial Reporting', 'Asset Management/Trust'
+            }
+            CATEGORY_MAPPING = {
+                'Corporate Governance': 'Governance/Management Oversight',
+                'Governance': 'Governance/Management Oversight',
+                'Management': 'Governance/Management Oversight',
+                'Technology Risk': 'IT/Cybersecurity',
+                'Cyber Risk': 'IT/Cybersecurity',
+                'Technology': 'IT/Cybersecurity',
+                'Market Risk': 'Price Risk',
+                'Legal Risk': 'Compliance Risk',
+                'Reputation Risk': 'Operational Risk',
+                'Reputational Risk': 'Operational Risk',
+                'Model Risk': 'Operational Risk'
+            }
+            def normalize_category(category: str) -> str:
+                if not category:
+                    return 'Operational Risk'
+                if category in VALID_CATEGORIES:
+                    return category
+                if category in CATEGORY_MAPPING:
+                    return CATEGORY_MAPPING[category]
+                return 'Operational Risk'
+            for r in rfis:
+                r['category'] = normalize_category(r.get('category'))
+
+            # Insert
+            rows = []
+            for r in rfis:
+                rows.append({
+                    'user_id': user['uid'],
+                    'study_id': study_id,
+                    'title': r.get('title') or (r.get('description') or '')[:120] or 'Request',
+                    'description': r.get('description') or '',
+                    'category': r.get('category'),
+                    'status': 'not_started',
+                    'source': 'fdl',
+                    'request_code': r.get('request_code'),
+                    'priority': r.get('priority') if isinstance(r.get('priority'), int) else 0,
+                    'regulatory_deadline': r.get('regulatory_deadline'),
+                    'internal_due_date': None,
+                    'owner': None,
+                    'reviewer': None
+                })
+            inserted = []
+            if rows:
+                res = supabase.table('exam_requests').insert(rows).execute()
+                inserted = res.data or []
+
+            yield await send_completion({"created": len(inserted), "requests": inserted})
+
+        except Exception as e:
+            yield await send_error(f"Unexpected error: {str(e)}")
+
     return StreamingResponse(
         generate_stream(),
         media_type="text/plain",
@@ -825,175 +1096,6 @@ async def agent_run(payload: Dict[str, Any], user=Depends(get_current_user)):
 
         except Exception as e:
             yield await send_error(f"Agent failed: {str(e)}")
-
-    return StreamingResponse(
-        generate_stream(),
-        media_type="text/plain",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "Content-Type": "text/event-stream",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "*",
-        }
-    )
-
-# ====================================================================
-# Streaming QA with GPT-5-mini tool calling (EXA search)
-# ====================================================================
-
-@router.post("/agent/qa")
-async def agent_qa(payload: Dict[str, Any], user=Depends(get_current_user)):
-    """Stream a direct answer to a user question using GPT-5-mini with tool-calling.
-
-    Tools available:
-      - exa.search(query, numResults=5, text=true): returns results with text and metadata
-    The model streams its thoughts (as reasoning steps) and can request a tool call; we execute and stream
-    an immediate tool_result, then resume the model stream. Answer tokens are streamed via 'answer_chunk'.
-    """
-    question = (payload.get("question") or "").strip()
-    if not question:
-        raise HTTPException(status_code=400, detail="question is required")
-
-    async def generate_stream() -> AsyncGenerator[str, None]:
-        yield "data: {\"type\": \"connected\"}\n\n"
-
-        # Build OpenAI streaming with tool-calling via the Responses stream API
-        client = openai_manager.get_client()
-        if not client:
-            yield await send_error("OpenAI client not available")
-            return
-
-        # Define tool in OpenAI-compatible schema
-        tools = []
-        if settings.EXA_API_KEY:
-            tools.append({
-                "type": "function",
-                "name": "exa_search",
-                "description": "Search the web with EXA and return results with text.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "query": {"type": "string"},
-                        "numResults": {"type": "integer", "default": 5},
-                        "text": {"type": "boolean", "default": True}
-                    },
-                    "required": ["query"]
-                }
-            })
-
-        system_prompt = (
-            "You are Oliver. Answer concisely with citations. If unsure, call exa_search to gather evidence."
-        )
-
-        # Start the streaming session
-        try:
-            stream_params = {
-                "model": settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL,
-                "instructions": system_prompt,
-                "input": [{"role": "user", "content": [{"type": "input_text", "text": question}]}],
-                "tools": tools if tools else None,
-                "max_output_tokens": 1200,
-            }
-            if (settings.OPENAI_EXAM_MODEL or settings.OPENAI_MODEL).startswith("gpt-5"):
-                stream_params["reasoning"] = {"effort": "low"}
-                stream_params["text"] = {"verbosity": "medium"}
-
-            citations: list[dict] = []
-            tool_args_buffer: str = ""
-            current_tool_name: str | None = None
-
-            with client.responses.stream(**{k: v for k, v in stream_params.items() if v is not None}) as resp_stream:
-                for event in resp_stream:
-                    ev_type = getattr(event, 'type', '')
-                    # Debug: surface event types to client for troubleshooting
-                    try:
-                        yield await send_progress_update(0, 0, f"openai:{ev_type}")
-                    except Exception:
-                        pass
-
-                    # Stream answer deltas
-                    if ev_type == 'response.output_text.delta':
-                        delta = getattr(event, 'delta', None)
-                        if delta:
-                            yield await send_answer_chunk(delta)
-                    # Some SDK variants emit 'response.message.delta' for text; handle gracefully
-                    elif ev_type == 'response.message.delta':
-                        delta = getattr(event, 'delta', None)
-                        if isinstance(delta, str) and delta:
-                            yield await send_answer_chunk(delta)
-                        else:
-                            # best-effort stringify
-                            try:
-                                import json as _json
-                                yield await send_answer_chunk(_json.dumps(delta)[:200])
-                            except Exception:
-                                pass
-
-                    # Tool call streaming: accumulate arguments
-                    elif ev_type == 'response.tool_call.delta':
-                        delta = getattr(event, 'delta', '') or ''
-                        name = getattr(event, 'name', '') or getattr(event, 'tool_name', '') or current_tool_name or 'tool'
-                        current_tool_name = name
-                        tool_args_buffer += delta
-                    
-                    # Tool call completed: execute and submit result
-                    elif ev_type == 'response.tool_call.done':
-                        name = getattr(event, 'name', '') or getattr(event, 'tool_name', '') or current_tool_name or 'tool'
-                        args = {}
-                        try:
-                            import json as _json
-                            args = _json.loads(tool_args_buffer) if tool_args_buffer else {}
-                        except Exception:
-                            args = {"_raw": tool_args_buffer}
-                        # Emit tool_call event for UI
-                        yield await send_tool_call(name, args)
-
-                        if name == 'exa_search' and settings.EXA_API_KEY:
-                            import httpx
-                            query = args.get('query') or question
-                            numResults = int(args.get('numResults') or 5)
-                            text_flag = bool(args.get('text') if args.get('text') is not None else True)
-                            try:
-                                async with httpx.AsyncClient(timeout=30) as client_http:
-                                    r = await client_http.post(
-                                        "https://api.exa.ai/search",
-                                        headers={"x-api-key": settings.EXA_API_KEY, "Content-Type": "application/json"},
-                                        json={"query": query, "numResults": numResults, "text": text_flag},
-                                    )
-                                    payload = r.json() if r.status_code < 400 else {"error": r.text}
-                                    yield await send_tool_result('exa_search', payload)
-                                    if isinstance(payload, dict) and payload.get('results'):
-                                        for res in payload['results'][:5]:
-                                            if res.get('url'):
-                                                citations.append({"title": res.get('title'), "url": res['url']})
-                                    # Submit back to model
-                                    resp_stream.submit_tool_output(event, payload)
-                            except Exception as e:
-                                err = {"error": str(e)}
-                                yield await send_tool_result('exa_search', err)
-                                resp_stream.submit_tool_output(event, err)
-                        else:
-                            # Unknown tool; submit stub
-                            resp_stream.submit_tool_output(event, {"note": "tool not available"})
-                        # Reset buffer for potential next tool call
-                        tool_args_buffer = ""
-                        current_tool_name = None
-
-                    elif ev_type == 'response.completed':
-                        break
-                    elif ev_type == 'response.error':
-                        err = getattr(event, 'error', None)
-                        yield await send_error(str(err) if err else 'Unknown model error')
-                        return
-
-            # Emit citations at the end
-            if citations:
-                yield f"data: {json.dumps({'type': 'citations', 'data': citations})}\n\n"
-            yield await send_completion({"done": True})
-
-        except Exception as e:
-            yield await send_error(f"QA failed: {str(e)}")
 
     return StreamingResponse(
         generate_stream(),
