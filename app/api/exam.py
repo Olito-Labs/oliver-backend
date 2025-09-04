@@ -905,7 +905,7 @@ async def create_exam_document_from_text(payload: Dict[str, Any], user=Depends(g
             'filename': filename,
             'file_size': len(text.encode('utf-8')),
             'file_type': 'text/plain',
-            'file_path': None,
+            'file_path': '',
             'upload_url': '',
             'study_id': study_id,
             'user_id': user['uid'],
