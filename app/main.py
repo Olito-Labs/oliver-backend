@@ -18,7 +18,6 @@ from app.api.competitive_intelligence_simple import router as competitive_intell
 from app.api.slidegenerator import router as slidegenerator_router
 from app.api.regulatory import router as regulatory_router
 
-from app.api.kannada_expert import router as startup_advisor_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -100,7 +99,6 @@ app.include_router(exam_router)
 app.include_router(streaming_router)
 app.include_router(competitive_intelligence_router)
 app.include_router(slidegenerator_router)
-app.include_router(startup_advisor_router)
 app.include_router(regulatory_router)
 
 # Exception handlers
