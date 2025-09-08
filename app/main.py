@@ -14,9 +14,9 @@ from app.api.studies import router as studies_router
 from app.api.documents import router as documents_router
 from app.api.exam import router as exam_router
 from app.api.streaming import router as streaming_router
-from app.api.regulatory_snapshot import router as regulatory_snapshot_router
 from app.api.competitive_intelligence_simple import router as competitive_intelligence_router
 from app.api.slidegenerator import router as slidegenerator_router
+from app.api.regulatory import router as regulatory_router
 
 from app.api.kannada_expert import router as startup_advisor_router
 
@@ -98,10 +98,10 @@ app.include_router(studies_router)
 app.include_router(documents_router)
 app.include_router(exam_router)
 app.include_router(streaming_router)
-app.include_router(regulatory_snapshot_router)
 app.include_router(competitive_intelligence_router)
 app.include_router(slidegenerator_router)
 app.include_router(startup_advisor_router)
+app.include_router(regulatory_router)
 
 # Exception handlers
 @app.exception_handler(ValueError)
