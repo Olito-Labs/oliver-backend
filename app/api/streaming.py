@@ -55,6 +55,10 @@ async def send_completion(data: Dict[str, Any]) -> str:
     """Format completion data as SSE data"""
     return f"data: {json.dumps({'type': 'completion', 'data': data})}\n\n"
 
+async def send_regulatory_snapshot_chunk(content: str) -> str:
+    """Format a regulatory snapshot text chunk as SSE data"""
+    return f"data: {json.dumps({'type': 'regulatory_snapshot_chunk', 'data': {'content': content}})}\n\n"
+
 async def send_error(error_message: str) -> str:
     """Format error as SSE data"""
     return f"data: {json.dumps({'type': 'error', 'data': {'message': error_message}})}\n\n"
