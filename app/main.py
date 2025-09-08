@@ -8,13 +8,8 @@ import logging
 
 from app.config import settings
 from app.llm_providers import openai_manager
-from app.api.chat import router as chat_router
-from app.api.health import router as health_router
-from app.api.studies import router as studies_router
-from app.api.documents import router as documents_router
 from app.api.exam import router as exam_router
 from app.api.streaming import router as streaming_router
-from app.api.competitive_intelligence_simple import router as competitive_intelligence_router
 from app.api.slidegenerator import router as slidegenerator_router
 from app.api.regulatory import router as regulatory_router
 
@@ -90,14 +85,9 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
-# Include routers
-app.include_router(health_router)
-app.include_router(chat_router)
-app.include_router(studies_router)
-app.include_router(documents_router)
+# Include minimal routers only
 app.include_router(exam_router)
 app.include_router(streaming_router)
-app.include_router(competitive_intelligence_router)
 app.include_router(slidegenerator_router)
 app.include_router(regulatory_router)
 
