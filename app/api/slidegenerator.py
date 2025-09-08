@@ -14,9 +14,7 @@ from app.models.api import (
     SlideFramework, 
     SlideExample
 )
-from app.slide_templates import SLIDE_TEMPLATES, VISUAL_COMPONENTS, SVG_ICONS
-from app.refined_slide_patterns import REFINED_PATTERNS, DESIGN_GUIDELINES, ANTI_PATTERNS, get_pattern_for_request
-from app.synthesis_prompts import get_synthesis_context
+# Note: Legacy slide template/pattern modules removed for minimal backend.
 
 # Configure logging
 logger = logging.getLogger(__name__)
