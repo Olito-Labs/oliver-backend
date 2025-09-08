@@ -8,6 +8,7 @@ from datetime import datetime
 from app.auth import get_current_user
 from app.llm_providers import openai_manager
 from app.config import settings
+from app.supabase_client import supabase
 
 router = APIRouter(prefix="/api/regulatory", tags=["regulatory"])
 
@@ -36,7 +37,7 @@ def _build_user_prompt(institution: str) -> str:
     )
 
 
-async def _stream_snapshot(client, params: Dict[str, Any]) -> AsyncGenerator[str, None]:
+async def _stream_snapshot(client, params: Dict[str, Any], user_id: str) -> AsyncGenerator[str, None]:
     try:
         stream = client.responses.create(stream=True, **params)
         accumulated = ""
@@ -69,10 +70,23 @@ async def _stream_snapshot(client, params: Dict[str, Any]) -> AsyncGenerator[str
                 yield f"data: {json.dumps({'type': 'error', 'content': str(msg), 'done': True})}\n\n"
                 return
 
-        # Completion event
+        # Persist to Supabase (best-effort)
+        ts = datetime.utcnow().isoformat()
+        try:
+            supabase.table('user_preferences').upsert({
+                'user_id': user_id,
+                'regulatory_snapshot': accumulated,
+                'regulatory_snapshot_updated_at': ts
+            }, {'on_conflict': 'user_id'}).execute()
+        except Exception:
+            # Non-fatal; continue
+            pass
+
+        # Completion event (include timestamp)
         completion = {
             "type": "done",
             "content": accumulated,
+            "updated_at": ts,
             "done": True,
         }
         yield f"data: {json.dumps(completion)}\n\n"
@@ -118,7 +132,7 @@ async def generate_regulatory_snapshot(payload: RegulatorySnapshotRequest, user=
             request_params["text"] = {"verbosity": "medium"}
 
         return StreamingResponse(
-            _stream_snapshot(client, request_params),
+            _stream_snapshot(client, request_params, user['uid']),
             media_type="text/event-stream",
             headers={
                 "Cache-Control": "no-cache",
