@@ -112,9 +112,6 @@ async def generate_regulatory_snapshot(payload: RegulatorySnapshotRequest, user=
             "store": False,
         }
 
-        # Enable streaming
-        request_params["stream"] = True
-
         # GPT-5 specific knobs
         if str(model).startswith("gpt-5"):
             request_params["reasoning"] = {"effort": "low"}
