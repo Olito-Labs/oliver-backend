@@ -158,8 +158,8 @@ class OptimizedSlideGenerator(dspy.Module):
             Spacing: 2-3rem padding, 1.5-2rem gaps
             Panels: rgba(255,255,255,0.04) backgrounds, 1px borders
             """,
-            "fulton-base": """
-            CSS: fulton-base.css | Colors: --fulton-blue (#1e4b72), light theme  
+            "oliver-professional": """
+            CSS: oliver-professional.css | Colors: --oliver-blue (#1e4b72), light theme
             Typography: Professional hierarchy, clean fonts
             Spacing: Generous whitespace, grid layouts
             Panels: Clean cards with accent borders
@@ -361,24 +361,24 @@ REFINED VISUAL PATTERNS (Based on WSFS/Tech Architecture Analysis):
    - Accent colors: var(--olito-gold) strategically, not everywhere
             """,
             "fulton-base": """
-REFINED PATTERNS FOR FULTON FRAMEWORK:
+REFINED PATTERNS FOR OLIVER PROFESSIONAL FRAMEWORK:
 
 1. CLEAN METRIC DISPLAY (Avoid Dense Dashboards):
    <div class="focused-metrics" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 600px; margin: 0 auto;">
-     <div class="metric-card" style="background: white; border-left: 4px solid var(--fulton-blue); padding: 2rem; text-align: center;">
-       <div style="font-size: 3rem; font-weight: 700; color: var(--fulton-blue); line-height: 1;">92%</div>
-       <div style="color: #666; font-size: 1rem; margin-top: 0.5rem;">Customer Satisfaction</div>
-     </div>
-   </div>
+    <div class="metric-card" style="background: white; border-left: 4px solid var(--oliver-blue); padding: 2rem; text-align: center;">
+      <div style="font-size: 3rem; font-weight: 700; color: var(--oliver-blue); line-height: 1;">92%</div>
+      <div style="color: #666; font-size: 1rem; margin-top: 0.5rem;">Customer Satisfaction</div>
+    </div>
+  </div>
 
 2. STRATEGIC COMPARISON LAYOUT:
-   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;">
-     <div style="background: rgba(30,75,114,0.05); border-left: 3px solid var(--fulton-blue); padding: 2rem;">
-       <h3 style="color: var(--fulton-blue); font-size: 1.5rem; margin-bottom: 1rem;">Current State</h3>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;">
+    <div style="background: rgba(30,75,114,0.05); border-left: 3px solid var(--oliver-blue); padding: 2rem;">
+      <h3 style="color: var(--oliver-blue); font-size: 1.5rem; margin-bottom: 1rem;">Current State</h3>
        <!-- Maximum 3 bullet points -->
      </div>
-     <div style="background: rgba(197,170,106,0.05); border-left: 3px solid var(--fulton-gold); padding: 2rem;">
-       <h3 style="color: var(--fulton-gold); font-size: 1.5rem; margin-bottom: 1rem;">Future State</h3>
+    <div style="background: rgba(197,170,106,0.05); border-left: 3px solid var(--oliver-gold); padding: 2rem;">
+      <h3 style="color: var(--oliver-gold); font-size: 1.5rem; margin-bottom: 1rem;">Future State</h3>
        <!-- Maximum 3 bullet points -->
      </div>
    </div>
@@ -589,12 +589,12 @@ async def get_available_frameworks():
             }
         ),
         SlideFramework(
-            id="fulton-base", 
-            name="Fulton Base",
+            id="oliver-professional",
+            name="Oliver Professional",
             description="Professional blue palette, enterprise banking slides",
             colors={
                 "primary": "#1e4b72",
-                "secondary": "#c5aa6a", 
+                "secondary": "#c5aa6a",
                 "background": "light"
             }
         )

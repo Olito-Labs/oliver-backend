@@ -30,8 +30,8 @@ async def analyze_competitive_intelligence_simple(
             raise HTTPException(status_code=500, detail="OpenAI client unavailable")
 
         # Super simple system prompt
-        system_prompt = f"""You are Oliver, a competitive intelligence analyst for Fulton Bank. 
-        Analyze the following query and provide strategic insights: {request.query}"""
+        system_prompt = f"""You are Oliver, a competitive intelligence analyst for financial institutions.
+        Analyze the following query and provide strategic insights that work for any bank: {request.query}"""
 
         print(f"[CI-Simple] Starting analysis with query: {request.query[:100]}...")
 
@@ -126,17 +126,17 @@ async def get_simple_templates():
             {
                 "id": "threats",
                 "title": "Competitive Threats",
-                "query": "Analyze current competitive threats facing Fulton Bank in digital banking and fintech competition"
+                "query": "Analyze current competitive threats in digital banking and fintech competition for regional banks"
             },
             {
-                "id": "performance", 
+                "id": "performance",
                 "title": "Performance Analysis",
-                "query": "Compare Fulton Bank's financial performance and market position against regional competitors"
+                "query": "Compare regional bank financial performance and market position against competitors"
             },
             {
                 "id": "strategy",
                 "title": "Strategic Opportunities",
-                "query": "Identify strategic opportunities and market positioning advantages for Fulton Bank"
+                "query": "Identify strategic opportunities and market positioning advantages for regional banks"
             }
         ]
     }
