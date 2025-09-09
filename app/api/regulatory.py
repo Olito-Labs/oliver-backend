@@ -37,7 +37,7 @@ def _build_user_prompt(institution: str) -> str:
     )
 
 
-async def _stream_snapshot(client, params: Dict[str, Any], user_id: str) -> AsyncGenerator[str, None]:
+async def _stream_snapshot(client, params: Dict[str, Any], user_id: str, institution: str) -> AsyncGenerator[str, None]:
     try:
         stream = client.responses.create(stream=True, **params)
         accumulated = ""
@@ -73,12 +73,18 @@ async def _stream_snapshot(client, params: Dict[str, Any], user_id: str) -> Asyn
         # Persist to Supabase (best-effort)
         ts = datetime.utcnow().isoformat()
         try:
-            supabase.table('user_preferences').upsert({
-                'user_id': user_id,
-                'regulatory_snapshot': accumulated,
-                'regulatory_snapshot_updated_at': ts
-            }, {'on_conflict': 'user_id'}).execute()
-        except Exception:
+            supabase.table('user_preferences').upsert(
+                {
+                    'user_id': user_id,
+                    'institution_name': institution,
+                    'regulatory_snapshot': accumulated,
+                    'regulatory_snapshot_updated_at': ts
+                },
+                on_conflict='user_id'
+            ).execute()
+        except Exception as e:
+            # Log for troubleshooting but keep streaming resilient
+            print(f"[regulatory] Upsert failed: {e}")
             # Non-fatal; continue
             pass
 
@@ -132,7 +138,7 @@ async def generate_regulatory_snapshot(payload: RegulatorySnapshotRequest, user=
             request_params["text"] = {"verbosity": "medium"}
 
         return StreamingResponse(
-            _stream_snapshot(client, request_params, user['uid']),
+            _stream_snapshot(client, request_params, user['uid'], institution),
             media_type="text/event-stream",
             headers={
                 "Cache-Control": "no-cache",
