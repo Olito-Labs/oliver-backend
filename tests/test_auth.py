@@ -9,6 +9,7 @@ from app.auth import get_current_user
 @pytest.mark.asyncio
 async def test_missing_auth_returns_demo_user():
     """No Authorization header -> demo user fallback."""
+    assert False, "INTENTIONAL FAIL"  # NEGATIVE-TEST: revert me
     user = await get_current_user(authorization=None)
     assert user["uid"] == "550e8400-e29b-41d4-a716-446655440000"
     assert user["email"] == "demo@example.com"
