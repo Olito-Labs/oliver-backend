@@ -1,5 +1,23 @@
 # Oliver Backend
 
+> **Status: archived, not maintained.** Oliver was an early Olito Labs prototype of an AI
+> assistant for bank regulatory compliance (examination prep, MRA findings, regulatory
+> snapshots). We stopped work on it in late 2025, and it is not part of Olito's current
+> product. The code stays public for anyone who wants to read it or run it, but we do not
+> accept issues or pull requests, and we do not run a hosted version.
+>
+> **To run it locally you need your own Supabase project.** The app creates a Supabase
+> client at startup, so it does not start without `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`.
+> It reads and writes the tables `studies`, `exam_documents`, `exam_requests`,
+> `exam_request_documents` and `user_preferences`, and the storage bucket `exam-documents`.
+> The table schema lived in the separate frontend and is not published here, so you must
+> create the tables yourself from the fields the code writes in `app/api/`.
+> `.env.example` lists every variable.
+>
+> **Security note:** `app/auth.py` accepts requests without a token as a demo user, and
+> `app/main.py` allows any `*.vercel.app` origin through CORS. Both are prototype settings.
+> Do not deploy this code with real API keys on a public URL.
+
 AI-powered banking compliance assistant backend using OpenAI Responses API.
 
 ## o3 Model Considerations
