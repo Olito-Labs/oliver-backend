@@ -6,6 +6,6 @@ This repo is **Oliver-era legacy** (the pre-pivot AI banking-compliance assistan
 - **This repo is PUBLIC.** Never add secrets, API keys, customer data, or internal context here — not in code, fixtures, issues, or commit messages.
 - Last substantive product work was September 2025 (the "minify-backend" commits keeping only the exam, streaming, slidegenerator, and regulatory APIs); 2026 commits are CI hygiene only.
 - Repo state reflects its legacy status: `__pycache__` directories with compiled `.pyc` bytecode (cpython-313) and `.DS_Store` files are committed to git.
-- **Disposition (archive vs privatize) is pending an owner decision.** Until then: no new features, no refactors; security fixes only if it remains deployed anywhere.
+- **Disposition: public and archived (2026-10-20).** Kept public so people can read and run the prototype. No hosted deployment exists (all Railway deployments are inactive). No new features or refactors.
 
 CI: `.github/workflows/tests.yml` runs pytest on every push (any branch); there is no deploy pipeline in this repo.
